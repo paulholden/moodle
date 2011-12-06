@@ -209,6 +209,18 @@ class course_edit_form extends moodleform {
         $options[0] = get_string('none');
         $mform->addElement('select', 'defaultgroupingid', get_string('defaultgrouping', 'group'), $options);
 
+        if (!has_capability('moodle/course:managegroups', $context)) {
+            $mform->hardFreeze('groupmode');
+            $mform->hardFreeze('groupmodeforce');
+            $mform->hardFreeze('defaultgroupingid');
+
+            if (!empty($course->id)) {
+                $mform->setConstant('groupmode', $course->groupmode);
+                $mform->setConstant('groupmodeforce', $course->groupmodeforce);
+                $mform->setConstant('defaultgroupingid', $course->defaultgroupingid);
+            }
+        }
+
 //--------------------------------------------------------------------------------
         $mform->addElement('header','', get_string('availability'));
 
