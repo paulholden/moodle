@@ -519,6 +519,28 @@ function prepare_choice_show_results($choice, $course, $cm, $allresponses, $forc
 }
 
 /**
+ * This function gets run whenever user is unenrolled from course
+ *
+ * @param stdClass $cp
+ * @return void
+ */
+function choice_user_unenrolled($cp) {
+    global $DB;
+
+    if ($cp->lastenrol) {
+        $course = $DB->get_record('course', array('id' => $cp->courseid));
+
+        if ($choices = get_all_instances_in_course('choice', $course, null, true)) {
+            foreach ($choices as $choice) {
+                $cm = get_coursemodule_from_instance('choice', $choice->id, $course->id, false, MUST_EXIST);
+
+                choice_delete_responses(array($cp->userid), $choice, $cm, $course);
+            }
+        }
+    }
+}
+
+/**
  * @global object
  * @param array $attemptids
  * @param object $choice Choice main table row

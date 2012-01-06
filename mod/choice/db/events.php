@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -14,18 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Version information
- *
- * @package    mod
- * @subpackage choice
- * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+$handlers = array (
+    'user_unenrolled' => array (
+        'handlerfile'      => '/mod/choice/lib.php',
+        'handlerfunction'  => 'choice_user_unenrolled',
+        'schedule'         => 'instant',
+        'internal'         => 1,
+    ),
+);
 
-defined('MOODLE_INTERNAL') || die();
-
-$module->version   = 2012010600;       // The current module version (Date: YYYYMMDDXX)
-$module->requires  = 2011112900;       // Requires this Moodle version
-$module->component = 'mod_choice';     // Full name of the plugin (used for diagnostics)
-$module->cron      = 0;
+?>
