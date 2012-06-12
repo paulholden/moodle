@@ -78,6 +78,9 @@ class question_category_list_item extends list_item {
         $category = $this->item;
         $url = new moodle_url('/question/category.php', ($this->parentlist->pageurl->params() + array('edit'=>$category->id)));
         $this->icons['edit']= $this->image_icon(get_string('editthiscategory', 'question'), $url, 'edit');
+        if ($this->parentlist->pageurl instanceof moodle_url) {
+            $this->parentlist->pageurl->set_anchor('cat-' . $this->id);
+        }
         parent::set_icon_html($first, $last, $lastitem);
         $toplevel = ($this->parentlist->parentitem === null);//this is a top level item
         if (($this->parentlist->nextlist !== null) && $last && $toplevel && (count($this->parentlist->items)>1)){
@@ -102,7 +105,7 @@ class question_category_list_item extends list_item {
         /// Each section adds html to be displayed as part of this list item
         $questionbankurl = new moodle_url("/question/edit.php", ($this->parentlist->pageurl->params() + array('category'=>"$category->id,$category->contextid")));
         $catediturl = $this->parentlist->pageurl->out(true, array('edit' => $this->id));
-        $item = "<b><a title=\"{$str->edit}\" href=\"$catediturl\">".$category->name ."</a></b> <a title=\"$editqestions\" href=\"$questionbankurl\">".'('.$category->questioncount.')</a>';
+        $item = "<b><a name=\"cat-{$this->id}\" title=\"{$str->edit}\" href=\"$catediturl\">".$category->name ."</a></b> <a title=\"$editqestions\" href=\"$questionbankurl\">".'('.$category->questioncount.')</a>';
 
         $item .= '&nbsp;'. $category->info;
 
