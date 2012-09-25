@@ -1206,5 +1206,19 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2012090700.01);
     }
 
+    if ($oldversion < 2013020800.01) {
+        // Correctly set mimetype in {files} for Smart notebook files
+        $extensions = array('%.gallery', '%.galleryitem', '%.gallerycollection', '%.nbk', '%.notebook', '%.xbk');
+
+        $select = $DB->sql_like('filename', '?', false);
+
+        foreach ($extensions as $extension) {
+            $DB->set_field_select('files', 'mimetype', 'application/x-smarttech-notebook', $select, array($extension));
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2013020800.01);
+    }
+
     return true;
 }
