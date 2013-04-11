@@ -46,6 +46,7 @@ class user_edit_form extends moodleform {
 
         /// extra settigs
         if (!empty($CFG->disableuserimages)) {
+            $mform->removeElement('moodle_picture');
             $mform->removeElement('deletepicture');
             $mform->removeElement('imagefile');
             $mform->removeElement('imagealt');
