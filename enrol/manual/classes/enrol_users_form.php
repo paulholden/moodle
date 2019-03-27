@@ -122,7 +122,7 @@ class enrol_manual_enrol_users_form extends moodleform {
             }
         }
 
-        $roles = get_assignable_roles($context);
+        $roles = get_assignable_roles($context, ROLENAME_BOTH);
         $mform->addElement('select', 'roletoassign', get_string('assignrole', 'enrol_manual'), $roles);
         $mform->setDefault('roletoassign', $instance->roleid);
 

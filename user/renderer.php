@@ -128,10 +128,12 @@ class core_user_renderer extends plugin_renderer_base {
         $filteroptions = [];
 
         // Filter options for role.
+        $canreviewenrol = has_capability('moodle/course:enrolreview', $context);
         $roleseditable = has_capability('moodle/role:assign', $context);
-        $roles = get_viewable_roles($context);
+        $rolesnamedisplay = ($canreviewenrol ? ROLENAME_BOTH : ROLENAME_ALIAS);
+        $roles = get_viewable_roles($context, null, $rolesnamedisplay);
         if ($roleseditable) {
-            $roles += get_assignable_roles($context, ROLENAME_ALIAS);
+            $roles += get_assignable_roles($context, ROLENAME_BOTH, false);
         }
 
         $criteria = get_string('role');
