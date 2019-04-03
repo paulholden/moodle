@@ -211,7 +211,18 @@ class enrol_manual_external extends external_api {
             if (!$enrol->allow_unenrol($instance)) {
                 throw new moodle_exception('wscannotunenrol', 'enrol_manual', '', $enrolment);
             }
-            $enrol->unenrol_user($instance, $enrolment['userid']);
+
+            if (! empty($enrolment['roleid'])) {
+                role_unassign($enrolment['roleid'], $enrolment['userid'], $context->id);
+
+                // Check whether user has any remaining roles assigned in this context, if not then perform complete unenrol.
+                $usersroles = enrol_get_course_users_roles($enrolment['courseid']);
+                if (empty($usersroles[$enrolment['userid']])) {
+                    $enrol->unenrol_user($instance, $enrolment['userid']);
+                }
+            } else {
+                $enrol->unenrol_user($instance, $enrolment['userid']);
+            }
         }
         $transaction->allow_commit();
     }

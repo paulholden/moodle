@@ -150,6 +150,57 @@ class enrol_manual_externallib_testcase extends externallib_advanced_testcase {
     }
 
     /**
+     * Test for removal of a single role from a user.
+     */
+    public function test_unenrol_user_single_role() {
+        global $CFG, $DB;
+
+        require_once($CFG->libdir . '/enrollib.php');
+
+        $this->resetAfterTest(true);
+
+        $this->setAdminUser();
+
+        $course = self::getDataGenerator()->create_course();
+        $context = context_course::instance($course->id);
+
+        // Get manual plugin instance.
+        $enrol = enrol_get_plugin('manual');
+        $enrolinstance = $DB->get_record('enrol', ['courseid' => $course->id, 'enrol' => $enrol->get_name()], '*', MUST_EXIST);
+
+        // Create a student and enrol them into the course.
+        $student = $this->getDataGenerator()->create_user();
+        $studentrole = $DB->get_record('role', ['shortname' => 'student']);
+        $enrol->enrol_user($enrolinstance, $student->id, $studentrole->id);
+
+        $this->assertTrue(is_enrolled($context, $student));
+
+        // Assign student an additional role in the course.
+        $teacherrole = $DB->get_record('role', ['shortname' => 'teacher']);
+        role_assign($teacherrole->id, $student->id, $context->id);
+
+        // Call the web service to remove student from additional role.
+        enrol_manual_external::unenrol_users([
+            ['userid' => $student->id, 'courseid' => $course->id, 'roleid' => $teacherrole->id],
+        ]);
+
+        // Student should still be enrolled, but no longer have additional role.
+        $this->assertTrue(is_enrolled($context, $student));
+
+        $this->assertTrue($DB->record_exists('role_assignments',
+            ['contextid' => $context->id, 'userid' => $student->id, 'roleid' => $studentrole->id]));
+        $this->assertFalse($DB->record_exists('role_assignments',
+            ['contextid' => $context->id, 'userid' => $student->id, 'roleid' => $teacherrole->id]));
+
+        // Now call the web service to remove student from original role.
+        enrol_manual_external::unenrol_users([
+            ['userid' => $student->id, 'courseid' => $course->id, 'roleid' => $studentrole->id],
+        ]);
+
+        $this->assertFalse(is_enrolled($context, $student));
+    }
+
+    /**
      * Test for unenrolling multiple users.
      * @throws coding_exception
      * @throws invalid_parameter_exception
