@@ -47,16 +47,15 @@ class data_field_checkbox extends data_field_base {
             $content = array();
         }
 
-        $str = '<div title="' . s($this->field->description) . '">';
-        $str .= '<fieldset><legend><span class="accesshide">'.$this->field->name;
+        $str = '<div title="' . s($this->field->description) . '" class="d-inline-flex">';
+        $str .= '<label>';
+        $str .= html_writer::span($this->field->name, 'accesshide');
         if ($this->field->required) {
-            $str .= '$nbsp;' . get_string('requiredelement', 'form');
-            $str .= '</span></legend>';
             $image = $OUTPUT->pix_icon('req', get_string('requiredelement', 'form'));
             $str .= html_writer::div($image, 'inline-req');
-        } else {
-            $str .= '</span></legend>';
         }
+        $str .= '</label>';
+        $str .= '<fieldset>';
 
         $i = 0;
         foreach (explode("\n", $this->field->param1) as $checkbox) {

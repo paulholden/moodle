@@ -44,7 +44,7 @@ class data_field_menu extends data_field_base {
         } else {
             $content = '';
         }
-        $str = '<div title="' . s($this->field->description) . '">';
+        $str = '<div title="' . s($this->field->description) . '" class="d-inline-flex">';
 
         $options = array();
         $rawoptions = explode("\n",$this->field->param1);
@@ -55,7 +55,7 @@ class data_field_menu extends data_field_base {
             }
         }
 
-        $str .= '<label for="' . 'field_' . $this->field->id . '">';
+        $str .= '<label for="field_' . $this->field->id . '">';
         $str .= html_writer::span($this->field->name, 'accesshide');
         if ($this->field->required) {
             $image = $OUTPUT->pix_icon('req', get_string('requiredelement', 'form'));

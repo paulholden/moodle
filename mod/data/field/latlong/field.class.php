@@ -59,14 +59,18 @@ class data_field_latlong extends data_field_base {
                 $long = $content->content1;
             }
         }
-        $str = '<div title="'.s($this->field->description).'">';
-        $str .= '<fieldset><legend><span class="accesshide">'.$this->field->name.'</span></legend>';
+        $str = '<div title="'.s($this->field->description).'" class="d-inline-flex">';
+        $str .= '<label>';
+        $str .= html_writer::span($this->field->name, 'accesshide');
+        if ($this->field->required) {
+            $image = $OUTPUT->pix_icon('req', get_string('requiredelement', 'form'));
+            $str .= html_writer::div($image, 'inline-req');
+        }
+        $str .= '</label>';
+
         $str .= '<table class="form-inline"><tr><td align="right">';
         $classes = 'mod-data-input form-control-static';
         $str .= '<label for="field_'.$this->field->id.'_0" class="' . $classes . '">' . get_string('latitude', 'data');
-        if ($this->field->required) {
-            $str .= $OUTPUT->pix_icon('req', get_string('requiredelement', 'form'));
-        }
         $classes = 'form-control mx-1';
         $str .= '</label></td><td>';
         $str .= '<input class="' . $classes . '" type="text" name="field_'.$this->field->id.'_0" ';
@@ -75,16 +79,12 @@ class data_field_latlong extends data_field_base {
         $classes = 'mod-data-input form-control-static';
         $str .= '<tr><td align="right"><label for="field_'.$this->field->id.'_1" class="' . $classes . '">';
         $str .= get_string('longitude', 'data');
-        if ($this->field->required) {
-            $str .= $OUTPUT->pix_icon('req', get_string('requiredelement', 'form'));
-        }
         $classes = 'form-control mx-1';
         $str .= '</label></td><td><input class="' . $classes . '" type="text" ';
         $str .= 'name="field_'.$this->field->id.'_1" id="field_'.$this->field->id.'_1" value="';
         $str .= s($long).'" size="10" />°E</td>';
         $str .= '</tr>';
         $str .= '</table>';
-        $str .= '</fieldset>';
         $str .= '</div>';
         return $str;
     }

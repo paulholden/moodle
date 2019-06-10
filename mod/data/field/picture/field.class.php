@@ -66,16 +66,16 @@ class data_field_picture extends data_field_base {
         } else {
             $itemid = file_get_unused_draft_itemid();
         }
-        $str = '<div title="' . s($this->field->description) . '">';
-        $str .= '<fieldset><legend><span class="accesshide">'.$this->field->name;
-
+        $str = '<div title="' . s($this->field->description) . '" class="d-inline-flex">';
+        $str .= '<label>';
+        $str .= html_writer::span($this->field->name, 'accesshide');
         if ($this->field->required) {
-            $str .= '&nbsp;' . get_string('requiredelement', 'form') . '</span></legend>';
             $image = $OUTPUT->pix_icon('req', get_string('requiredelement', 'form'));
             $str .= html_writer::div($image, 'inline-req');
-        } else {
-            $str .= '</span></legend>';
         }
+        $str .= '</label>';
+        $str .= '<fieldset>';
+
         $str .= '<noscript>';
         if ($file) {
             $src = file_encode_url($CFG->wwwroot.'/pluginfile.php/', $this->context->id.'/mod_data/content/'.$content->id.'/'.$file->get_filename());

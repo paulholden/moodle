@@ -50,16 +50,15 @@ class data_field_file extends data_field_base {
         }
 
         // database entry label
-        $html = '<div title="' . s($this->field->description) . '">';
-        $html .= '<fieldset><legend><span class="accesshide">'.$this->field->name;
-
+        $html = '<div title="' . s($this->field->description) . '" class="d-inline-flex">';
+        $html .= '<label>';
+        $html .= html_writer::span($this->field->name, 'accesshide');
         if ($this->field->required) {
-            $html .= '&nbsp;' . get_string('requiredelement', 'form') . '</span></legend>';
             $image = $OUTPUT->pix_icon('req', get_string('requiredelement', 'form'));
             $html .= html_writer::div($image, 'inline-req');
-        } else {
-            $html .= '</span></legend>';
         }
+        $html .= '</label>';
+        $html .= '<fieldset>';
 
         // itemid element
         $html .= '<input type="hidden" name="field_'.$this->field->id.'_file" value="'.s($itemid).'" />';

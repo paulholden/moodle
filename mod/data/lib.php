@@ -305,7 +305,7 @@ class data_field_base {     // Base class for Database Field Types (see field/*/
             $content='';
         }
 
-        $str = '<div title="' . s($this->field->description) . '">';
+        $str = '<div title="' . s($this->field->description) . '" class="d-inline-flex">';
         $str .= '<label for="field_'.$this->field->id.'"><span class="accesshide">'.$this->field->name.'</span>';
         if ($this->field->required) {
             $image = $OUTPUT->pix_icon('req', get_string('requiredelement', 'form'));
