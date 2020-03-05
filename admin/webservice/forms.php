@@ -22,6 +22,9 @@
  * @copyright 2009 Moodle Pty Ltd (http://moodle.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use core_user\external\user_summary_exporter;
+
 require_once $CFG->libdir . '/formslib.php';
 
 /**
@@ -225,7 +228,7 @@ class external_service_functions_form extends moodleform {
 class web_service_token_form extends moodleform {
 
     function definition() {
-        global $USER, $DB, $CFG;
+        global $USER, $DB;
 
         $mform = $this->_form;
         $data = $this->_customdata;
@@ -233,34 +236,19 @@ class web_service_token_form extends moodleform {
         $mform->addElement('header', 'token', get_string('token', 'webservice'));
 
         if (empty($data->nouserselection)) {
+            $options = [
+                'ajax' => 'core/form-user-selector',
+                'valuehtmlcallback' => function($value) {
+                    global $OUTPUT;
 
-            //check if the number of user is reasonable to be displayed in a select box
-            $usertotal = $DB->count_records('user',
-                    array('deleted' => 0, 'suspended' => 0, 'confirmed' => 1));
+                    $user = core_user::get_user($value, '*', MUST_EXIST);
+                    $userexport = (new user_summary_exporter($user))->export($OUTPUT);
 
-            if ($usertotal < 500) {
-                list($sort, $params) = users_order_by_sql('u');
-                // User searchable selector - return users who are confirmed, not deleted, not suspended and not a guest.
-                $sql = 'SELECT u.id, ' . get_all_user_name_fields(true, 'u') . '
-                        FROM {user} u
-                        WHERE u.deleted = 0
-                        AND u.confirmed = 1
-                        AND u.suspended = 0
-                        AND u.id != :siteguestid
-                        ORDER BY ' . $sort;
-                $params['siteguestid'] = $CFG->siteguest;
-                $users = $DB->get_records_sql($sql, $params);
-                $options = array();
-                foreach ($users as $userid => $user) {
-                    $options[$userid] = fullname($user);
+                    return $OUTPUT->render_from_template('core/form-user-selector-suggestion', $userexport);
                 }
-                $mform->addElement('searchableselector', 'user', get_string('user'), $options);
-                $mform->setType('user', PARAM_INT);
-            } else {
-                //simple text box for username or user id (if two username exists, a form error is displayed)
-                $mform->addElement('text', 'user', get_string('usernameorid', 'webservice'));
-                $mform->setType('user', PARAM_RAW_TRIMMED);
-            }
+            ];
+            $mform->addElement('autocomplete', 'user', get_string('user'), [], $options);
+            $mform->setType('user', PARAM_INT);
             $mform->addRule('user', get_string('required'), 'required', null, 'client');
         }
 
@@ -296,45 +284,24 @@ class web_service_token_form extends moodleform {
         $this->set_data($data);
     }
 
-    function get_data() {
-        global $DB;
-        $data = parent::get_data();
-
-        if (!empty($data) && !is_numeric($data->user)) {
-            //retrieve username
-            $user = $DB->get_record('user', array('username' => $data->user), 'id');
-            $data->user = $user->id;
-        }
-        return $data;
-    }
-
+    /**
+     * Perform form validation
+     *
+     * @param array $data
+     * @param array $files
+     * @return array
+     */
     function validation($data, $files) {
-        global $DB;
-
         $errors = parent::validation($data, $files);
 
-        if (is_numeric($data['user'])) {
-            $searchtype = 'id';
-        } else {
-            $searchtype = 'username';
-            //check the username is valid
-            if (clean_param($data['user'], PARAM_USERNAME) != $data['user']) {
-                $errors['user'] = get_string('invalidusername');
-            }
-        }
-
-        if (!isset($errors['user'])) {
-            $users = $DB->get_records('user', array($searchtype => $data['user']), '', 'id');
-
-            //check that the user exists in the database
-            if (count($users) == 0) {
-                $errors['user'] = get_string('usernameoridnousererror', 'webservice');
-            } else if (count($users) > 1) { //can only be a username search as id are unique
-                $errors['user'] = get_string('usernameoridoccurenceerror', 'webservice');
-            }
+        // Ensure we have a valid/active user account.
+        try {
+            $user = core_user::get_user($data['user'], '*', MUST_EXIST);
+            core_user::require_active_user($user, true, true);
+        } catch (moodle_exception $exception) {
+            $errors['user'] = get_string('forbiddenwsuser', 'webservice');
         }
 
         return $errors;
     }
-
 }

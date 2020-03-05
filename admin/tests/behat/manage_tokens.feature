@@ -17,7 +17,8 @@ Feature: Manage tokens
   Scenario: Add & delete a token
     Given I navigate to "Plugins > Web services > Manage tokens" in site administration
     And I follow "Add"
-    And I set the field "User" to "Joe Bloggs"
+    And I expand the "User" autocomplete
+    And I click on "Joe Bloggs" item in the autocomplete list
     And I set the field "IP restriction" to "127.0.0.1"
     When I press "Save changes"
     Then I should see "Joe Bloggs"
