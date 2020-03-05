@@ -2659,6 +2659,16 @@ $functions = array(
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
     ),
 
+    'core_webservice_search_users' => array(
+        'classname' => 'core_webservice_external',
+        'methodname' => 'search_users',
+        'classpath' => 'webservice/externallib.php',
+        'description' => 'Returns matching users in response to a search request',
+        'capabilities' => 'moodle/site:config',
+        'type' => 'read',
+        'ajax' => true,
+    ),
+
     // Blocks functions.
     'core_block_get_course_blocks' => array(
         'classname'     => 'core_block_external',

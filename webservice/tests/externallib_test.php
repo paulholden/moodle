@@ -185,4 +185,25 @@ class core_webservice_externallib_testcase extends externallib_advanced_testcase
         $this->assertEquals(PHP_INT_MAX, $result['userquota']);
     }
 
+    /**
+     * Test external search_users method
+     *
+     * @return void
+     */
+    public function test_search_users() {
+        $this->resetAfterTest();
+
+        $this->setAdminUser();
+
+        $user1 = $this->getDataGenerator()->create_user(['firstname' => 'Adam', 'lastname' => 'Orange']);
+        $user2 = $this->getDataGenerator()->create_user(['firstname' => 'Charlie', 'lastname' => 'Carrot']);
+        $user3 = $this->getDataGenerator()->create_user(['firstname' => 'Oliver', 'lastname' => 'Orange']);
+
+        $users = external_api::clean_returnvalue(
+            core_webservice_external::search_users_returns(),
+            core_webservice_external::search_users('orange')
+        );
+
+        $this->assertEqualsCanonicalizing([$user1->id, $user3->id], array_column($users, 'id'));
+    }
 }

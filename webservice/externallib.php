@@ -26,6 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+use core_user\external\user_summary_exporter;
+
 require_once("$CFG->libdir/externallib.php");
 
 /**
@@ -285,5 +287,60 @@ class core_webservice_external extends external_api {
                 'theme'  => new external_value(PARAM_THEME, 'Current theme for the user.', VALUE_OPTIONAL),
             )
         );
+    }
+
+    /**
+     * Returns parameter types for search_users function
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.9
+     */
+    public static function search_users_parameters() {
+        return new external_function_parameters([
+            'query' => new external_value(PARAM_RAW, 'Query string'),
+        ]);
+    }
+
+    /**
+     * Returns result type for search_users function
+     *
+     * @return external_description
+     * @since Moodle 3.9
+     */
+    public static function search_users_returns() {
+        return new external_multiple_structure(
+            user_summary_exporter::get_read_structure(),
+            'Matching users'
+        );
+    }
+
+    /**
+     * Perform search of users matching given query
+     *
+     * @param string $query
+     * @return array
+     * @since Moodle 3.9
+     */
+    public static function search_users($query) {
+        global $CFG, $PAGE;
+
+        $context = context_system::instance();
+        self::validate_context($context);
+
+        require_capability('moodle/site:config', $context);
+
+        $params = self::validate_parameters(self::search_users_parameters(), [
+            'query' => $query,
+        ]);
+        $result = [];
+
+        $output = $PAGE->get_renderer('core');
+
+        $users = core_user::search($params['query'], null, $CFG->maxusersperpage);
+        foreach ($users as $user) {
+            $result[] = (new user_summary_exporter($user))->export($output);
+        }
+
+        return $result;
     }
 }
