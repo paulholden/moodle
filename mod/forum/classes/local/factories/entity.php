@@ -158,7 +158,8 @@ class entity {
             $record->deleted,
             $record->privatereplyto,
             $record->wordcount,
-            $record->charcount
+            $record->charcount,
+            $record->attachmentcount ?? null
         );
     }
 

@@ -71,6 +71,8 @@ class post {
     private $wordcount;
     /** @var int $charcount Number of chars in the message */
     private $charcount;
+    /** @var int $attachmentcount Count of post attachments */
+    private $attachmentcount;
 
     /**
      * Constructor.
@@ -91,6 +93,7 @@ class post {
      * @param bool $mailnow Should this post be mailed immediately
      * @param bool $deleted Is the post deleted
      * @param int $privatereplyto Which user this reply is intended for in a private reply situation
+     * @param int|null $attachmentcount Count of post attachments
      */
     public function __construct(
         int $id,
@@ -110,7 +113,8 @@ class post {
         bool $deleted,
         int $privatereplyto,
         ?int $wordcount,
-        ?int $charcount
+        ?int $charcount,
+        ?int $attachmentcount = null
     ) {
         $this->id = $id;
         $this->discussionid = $discussionid;
@@ -130,6 +134,7 @@ class post {
         $this->privatereplyto = $privatereplyto;
         $this->wordcount = $wordcount;
         $this->charcount = $charcount;
+        $this->attachmentcount = $attachmentcount;
     }
 
     /**
@@ -247,6 +252,15 @@ class post {
      */
     public function has_attachments() : bool {
         return $this->hasattachments;
+    }
+
+    /**
+     * Get count of post attachments
+     *
+     * @return int|null
+     */
+    public function get_attachment_count(): ?int {
+        return $this->attachmentcount;
     }
 
     /**

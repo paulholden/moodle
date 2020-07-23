@@ -55,13 +55,14 @@ class mod_forum_entities_post_testcase extends advanced_testcase {
             'post message',
             FORMAT_MOODLE,
             true,
-            false,
+            true,
             0,
             false,
             false,
             false,
             null,
-            null
+            null,
+            4
         );
 
         $this->assertEquals(4, $post->get_id());
@@ -76,7 +77,8 @@ class mod_forum_entities_post_testcase extends advanced_testcase {
         $this->assertEquals('post message', $post->get_message());
         $this->assertEquals(FORMAT_MOODLE, $post->get_message_format());
         $this->assertEquals(true, $post->is_message_trusted());
-        $this->assertEquals(false, $post->has_attachments());
+        $this->assertTrue($post->has_attachments());
+        $this->assertEquals(4, $post->get_attachment_count());
         $this->assertEquals(0, $post->get_total_score());
         $this->assertEquals(false, $post->should_mail_now());
         $this->assertEquals(false, $post->is_deleted());

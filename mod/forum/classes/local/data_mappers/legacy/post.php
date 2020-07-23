@@ -63,6 +63,7 @@ class post {
                 'privatereplyto' => $post->get_private_reply_recipient_id(),
                 'wordcount' => $post->get_wordcount(),
                 'charcount' => $post->get_charcount(),
+                'attachmentcount' => $post->get_attachment_count(),
             ];
         }, $posts);
     }

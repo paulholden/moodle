@@ -990,6 +990,60 @@ class mod_forum_vaults_post_testcase extends advanced_testcase {
         $this->assertEquals($post4->id, array_values($entities)[3]->get_id());
     }
 
+    /**
+     * Test get_from_filters with post entities containing attachments.
+     *
+     * @covers ::get_from_filters
+     */
+    public function test_get_from_filters_with_attachments() {
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $forum = $this->getDataGenerator()->create_module('forum', ['course' => $course->id]);
+        $user = $this->getDataGenerator()->create_and_enrol($course, 'student');
+
+        // Add a discussion with two posts.
+        [$discussion, $post1] = $this->helper_post_to_forum($forum, $user);
+        $post2 = $this->helper_post_to_discussion($forum, $discussion, $user);
+
+        // Add some attachments to the second post.
+        $filestorage = get_file_storage();
+        $coursemodule = get_coursemodule_from_instance('forum', $forum->id);
+        $contextmodule = context_module::instance($coursemodule->id);
+
+        $attachment1 = $filestorage->create_file_from_string(
+            [
+                'contextid' => $contextmodule->id,
+                'component' => 'mod_forum',
+                'filearea'  => 'attachment',
+                'itemid'    => $post2->id,
+                'filepath'  => '/',
+                'filename'  => 'example1.jpg',
+            ],
+            'image contents'
+        );
+        $attachment2 = $filestorage->create_file_from_string(
+            [
+                'contextid' => $contextmodule->id,
+                'component' => 'mod_forum',
+                'filearea'  => 'attachment',
+                'itemid'    => $post2->id,
+                'filepath'  => '/',
+                'filename'  => 'example2.jpg',
+            ],
+            'image contents'
+        );
+
+        $entities = $this->vault->get_from_filters($user, ['discussionids' => [$discussion->id]], false, 'id ASC');
+        $this->assertEquals(0, array_values($entities)[0]->get_attachment_count());
+        $this->assertEquals(2, array_values($entities)[1]->get_attachment_count());
+    }
+
+    /**
+     * Test get_from_filters with from/to dates.
+     *
+     * @covers ::get_from_filters
+     */
     public function test_get_from_filters_from_to_dates() {
         $this->resetAfterTest();
 
