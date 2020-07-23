@@ -117,8 +117,8 @@ if ($form->is_cancelled()) {
     $humandates = !empty($data->humandates);
 
     $fields = ['id', 'discussion', 'parent', 'userid', 'userfullname', 'created', 'modified', 'mailed', 'subject', 'message',
-                'messageformat', 'messagetrust', 'attachment', 'totalscore', 'mailnow', 'deleted', 'privatereplyto',
-                'privatereplytofullname', 'wordcount', 'charcount'];
+                'messageformat', 'messagetrust', 'attachment', 'attachmentcount', 'totalscore', 'mailnow', 'deleted',
+                'privatereplyto', 'privatereplytofullname', 'wordcount', 'charcount'];
 
     $canviewfullname = has_capability('moodle/site:viewfullnames', $context);
 

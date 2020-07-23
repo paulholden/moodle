@@ -26,9 +26,8 @@ namespace mod_forum\local\vaults;
 
 defined('MOODLE_INTERNAL') || die();
 
-use mod_forum\local\entities\forum as forum_entity;
 use mod_forum\local\entities\post as post_entity;
-use mod_forum\local\factories\entity as entity_factory;
+use core\dml\table as dml_table;
 use stdClass;
 
 /**
@@ -73,8 +72,16 @@ class post extends db_table_vault {
     protected function generate_get_records_sql(string $wheresql = null, string $sortsql = null, ?int $userid = null) : string {
         $table = self::TABLE;
         $alias = $this->get_table_alias();
-        $fields = $alias . '.*';
-        $tables = "{{$table}} {$alias}";
+        $fields = "{$alias}.*, COALESCE(att.attcount, 0) AS attachmentcount";
+
+        $filestable = new dml_table('files', 'f', 'f_');
+        $tables = "{{$table}} {$alias}
+           LEFT JOIN (
+                SELECT COUNT(f.id) AS attcount, f.itemid AS postid
+                  FROM {$filestable->get_from_sql()}
+                 WHERE f.component = 'mod_forum' AND f.filesize > 0
+              GROUP BY f.itemid
+           ) att ON att.postid = {$alias}.id";
 
         $selectsql = "SELECT {$fields} FROM {$tables}";
         $selectsql .= $wheresql ? ' WHERE ' . $wheresql : '';
