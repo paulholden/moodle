@@ -3644,6 +3644,42 @@ class core_accesslib_testcase extends advanced_testcase {
     }
 
     /**
+     * Test that {@see context_block::get_capabilities} returns capabilities relevant to blocks
+     */
+    public function test_context_block_caps_returned_by_get_capabilities_block_context(): void {
+        $this->resetAfterTest();
+
+        $generator = $this->getDataGenerator();
+
+        $course = $generator->create_course();
+        $block = $generator->create_block('online_users', [
+            'parentcontextid' => context_course::instance($course->id)->id,
+        ]);
+
+        $capabilities = context_block::instance($block->id)->get_capabilities();
+
+        // Just test a few representative capabilities.
+        $expected = ['block/online_users:addinstance', 'moodle/block:edit', 'moodle/block:view'];
+        $this->assert_capability_list_contains($expected, $capabilities);
+    }
+
+    /**
+     * Test that {@see context_user::get_capabilities} returns capabilities relevant to users
+     */
+    public function test_context_user_caps_returned_by_get_capabilities_user_context(): void {
+        $this->resetAfterTest();
+
+        $generator = $this->getDataGenerator();
+        $user = $generator->create_user();
+
+        $capabilities = context_user::instance($user->id)->get_capabilities();
+
+        // Just test a few representative capabilities.
+        $expected = ['moodle/user:editmessageprofile', 'moodle/user:editprofile', 'moodle/user:viewalldetails'];
+        $this->assert_capability_list_contains($expected, $capabilities);
+    }
+
+    /**
      * Test updating of role capabilities during upgrade
      */
     public function test_update_capabilities() {
