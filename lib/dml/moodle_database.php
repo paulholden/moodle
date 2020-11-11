@@ -2298,6 +2298,21 @@ abstract class moodle_database {
     public abstract function sql_concat_join($separator="' '", $elements=array());
 
     /**
+     * Return SQL for performing group concatenation on given field/expression
+     *
+     * @param string $field Table field or SQL expression to be concatenated
+     * @param string $separator
+     * @param string $sort
+     * @param string $table Table name, note this is only required for SQL Server, which doesn't support native STRING_AGG
+     *      until version 2017, so includes a workaround until the minimum required version is raised to match
+     * @param string $tablealias Alias used for the main table (required for SQL Server as per above)
+     * @param string $tablealiasjoin Field used to join the main table to the aliased table (required for SQL Server)
+     * @return string
+     */
+    public abstract function sql_group_concat(string $field, string $separator, string $sort, string $table,
+        string $tablealias, string $tablealiasjoin);
+
+    /**
      * Returns the proper SQL (for the dbms in use) to concatenate $firstname and $lastname
      *
      * @todo MDL-31233 This may not be needed here.

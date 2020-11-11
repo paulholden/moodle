@@ -1429,6 +1429,41 @@ class sqlsrv_native_moodle_database extends moodle_database {
         return call_user_func_array(array($this, 'sql_concat'), $elements);
     }
 
+    /**
+     * Return SQL for performing group concatenation on given field/expression
+     *
+     * Note that native support for STRING_AGG (similar to other drivers) is only present from 2017 onwards - until minimum
+     * required version is raised to match, we can implement a workaround to allow for support of group concatenation
+     *
+     * https://www.red-gate.com/simple-talk/sql/t-sql-programming/concatenating-row-values-in-transact-sql/ for info.
+     *
+     * @param string $field
+     * @param string $separator
+     * @param string $sort
+     * @param string $table
+     * @param string $tablealias
+     * @param string $tablealiasjoin
+     * @return string
+     */
+    public function sql_group_concat(string $field, string $separator, string $sort, string $table,
+            string $tablealias, string $tablealiasjoin) {
+
+        static $aliascount = 0;
+
+        $innertablealias = 'talias' . $aliascount++;
+        $fieldsort = $sort ? "ORDER BY {$sort}" : '';
+
+        return "
+            STUFF(
+                (SELECT '{$separator}' + CAST({$field} AS NVARCHAR(255))
+                   FROM {{$table}} {$innertablealias}
+                  WHERE {$innertablealias}.{$tablealiasjoin} = {$tablealias}.{$tablealiasjoin}
+                        {$fieldsort}
+                    FOR XML PATH (''), TYPE
+                ).value('.', 'VARCHAR(MAX)')
+            , 1, " . core_text::strlen($separator) .  ", '')";
+    }
+
     public function sql_isempty($tablename, $fieldname, $nullablefield, $textfield) {
         if ($textfield) {
             return ' ('.$this->sql_compare_text($fieldname)." = '') ";

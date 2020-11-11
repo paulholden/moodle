@@ -342,6 +342,24 @@ abstract class test_moodle_database extends moodle_database {
 
     /**
      * Default implementation, throws Exception
+     *
+     * @param string $field
+     * @param string $separator
+     * @param string $sort
+     * @param string $table
+     * @param string $tablealias
+     * @param string $tablealiasjoin
+     * @return string
+     * @throws Exception
+     */
+    public function sql_group_concat(string $field, string $separator, string $sort, string $table,
+            string $tablealias, string $tablealiasjoin) {
+
+        throw new Exception('sql_group_concat() not implemented');
+    }
+
+    /**
+     * Default implementation, throws Exception
      * @return void
      * @throws Exception
      */

@@ -4295,6 +4295,143 @@ EOD;
         $this->assertEquals($expected, $result);
     }
 
+    /**
+     * Test DML libraries sql_group_contact method
+     */
+    public function test_group_concat(): void {
+        $DB = $this->tdb;
+        $dbman = $DB->get_manager();
+
+        $table = $this->get_test_table();
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('intfield', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('charfield', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $dbman->create_table($table);
+
+        $tablename = $table->getName();
+        $DB->insert_record($tablename, (object) ['intfield' => 10, 'charfield' => 'uno']);
+        $DB->insert_record($tablename, (object) ['intfield' => 20, 'charfield' => 'dos']);
+        $DB->insert_record($tablename, (object) ['intfield' => 20, 'charfield' => 'tres']);
+        $DB->insert_record($tablename, (object) ['intfield' => 30, 'charfield' => 'tres']);
+
+        $tablealias = 't';
+
+        // charfield => concatenated intfield ASC.
+        $fieldsql = $DB->sql_group_concat('intfield', ', ', 'intfield ASC', $tablename, $tablealias, 'charfield');
+        $sql = "SELECT charfield, {$fieldsql}
+                  FROM {{$tablename}} {$tablealias}
+              GROUP BY charfield";
+
+        $this->assertEquals([
+            'dos' => '20',
+            'tres' => '20, 30',
+            'uno' => '10',
+        ], $DB->get_records_sql_menu($sql));
+
+        // charfield => concatenated intfield DESC.
+        $fieldsql = $DB->sql_group_concat('intfield', ', ', 'intfield DESC', $tablename, $tablealias, 'charfield');
+        $sql = "SELECT charfield, {$fieldsql}
+                  FROM {{$tablename}} {$tablealias}
+              GROUP BY charfield";
+
+        $this->assertEquals([
+            'dos' => '20',
+            'tres' => '30, 20',
+            'uno' => '10',
+        ], $DB->get_records_sql_menu($sql));
+
+        // intfield => concatenated charfield ASC.
+        $fieldsql = $DB->sql_group_concat('charfield', ', ', 'charfield ASC', $tablename, $tablealias, 'intfield');
+        $sql = "SELECT intfield, {$fieldsql}
+                  FROM {{$tablename}} {$tablealias}
+              GROUP BY intfield";
+
+        $this->assertEquals([
+            10 => 'uno',
+            20 => 'dos, tres',
+            30 => 'tres',
+        ], $DB->get_records_sql_menu($sql));
+
+        // intfield => concatenated charfield DESC.
+        $fieldsql = $DB->sql_group_concat('charfield', ', ', 'charfield DESC', $tablename, $tablealias, 'intfield');
+        $sql = "SELECT intfield, {$fieldsql}
+                  FROM {{$tablename}} {$tablealias}
+              GROUP BY intfield";
+
+        $this->assertEquals([
+            10 => 'uno',
+            20 => 'tres, dos',
+            30 => 'tres',
+        ], $DB->get_records_sql_menu($sql));
+
+        // Assert expressions with parameters can also be used.
+        $fieldexpr = $DB->sql_concat(':greeting', 'charfield');
+        $fieldsql = $DB->sql_group_concat($fieldexpr, ', ', 'charfield ASC', $tablename, $tablealias, 'intfield');
+        $sql = "SELECT intfield, {$fieldsql}
+                  FROM {{$tablename}} {$tablealias}
+              GROUP BY intfield";
+        $this->assertEquals([
+            10 => 'Hola uno',
+            20 => 'Hola dos, Hola tres',
+            30 => 'Hola tres',
+        ], $DB->get_records_sql_menu($sql, ['greeting' => 'Hola ']));
+    }
+
+    /**
+     * Test DML libraries sql_group_contact method joining tables, aggregating data from each
+     */
+    public function test_group_concat_join_tables(): void {
+        $DB = $this->tdb;
+        $dbman = $DB->get_manager();
+
+        $tableparent = $this->get_test_table('parent');
+        $tableparent->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $tableparent->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $tableparent->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $dbman->create_table($tableparent);
+
+        $tablechild = $this->get_test_table('child');
+        $tablechild->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $tablechild->add_field('parentid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $tablechild->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $tablechild->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $tablechild->add_key('parentid', XMLDB_KEY_FOREIGN, ['parentid'], $tableparent->getName(), ['id']);
+        $dbman->create_table($tablechild);
+
+        $tableparentname = $tableparent->getName();
+        $tablechildname = $tablechild->getName();
+
+        $parentone = $DB->insert_record($tableparentname, (object) ['name' => 'Alice']);
+        $DB->insert_record($tablechildname, (object) ['parentid' => $parentone, 'name' => 'Eve']);
+        $DB->insert_record($tablechildname, (object) ['parentid' => $parentone, 'name' => 'Charlie']);
+
+        $parenttwo = $DB->insert_record($tableparentname, (object) ['name' => 'Bob']);
+        $DB->insert_record($tablechildname, (object) ['parentid' => $parenttwo, 'name' => 'Dan']);
+        $DB->insert_record($tablechildname, (object) ['parentid' => $parenttwo, 'name' => 'Grace']);
+
+        $tableparentalias = 'p';
+        $tablechildalias = 'c';
+
+        $fieldsql = $DB->sql_group_concat('name', ', ', 'name ASC', $tablechildname,
+            $tablechildalias, 'parentid');
+
+        $tablechildinner = "
+            SELECT {$tablechildalias}.parentid, {$fieldsql} AS children
+              FROM {{$tablechildname}} {$tablechildalias}
+          GROUP BY {$tablechildalias}.parentid";
+
+        $sql = "SELECT {$tableparentalias}.name, ch.children
+                  FROM {{$tableparentname}} {$tableparentalias}
+                  JOIN ({$tablechildinner}) ch ON ch.parentid = {$tableparentalias}.id
+              ORDER BY {$tableparentalias}.name";
+
+        $this->assertEquals([
+            'Alice' => 'Charlie, Eve',
+            'Bob' => 'Dan, Grace',
+        ], $DB->get_records_sql_menu($sql));
+    }
+
     public function test_sql_fullname() {
         $DB = $this->tdb;
         $sql = "SELECT ".$DB->sql_fullname(':first', ':last')." AS fullname ".$DB->sql_null_from_clause();
@@ -5861,6 +5998,8 @@ class moodle_database_for_testing extends moodle_database {
     public function delete_records_select($table, $select, array $params=null) {}
     public function sql_concat() {}
     public function sql_concat_join($separator="' '", $elements=array()) {}
+    public function sql_group_concat(string $field, string $separator, string $sort, string $table,
+        string $tablealias, string $tablealiasjoin) {}
     public function sql_substr($expr, $start, $length=false) {}
     public function begin_transaction() {}
     public function commit_transaction() {}

@@ -542,6 +542,12 @@ abstract class pdo_moodle_database extends moodle_database {
         print_error('TODO');
     }
 
+    public function sql_group_concat(string $field, string $separator, string $sort, string $table,
+            string $tablealias, string $tablealiasjoin) {
+
+        print_error('TODO');
+    }
+
     protected function begin_transaction() {
         $this->query_start('', NULL, SQL_QUERY_AUX);
         try {
