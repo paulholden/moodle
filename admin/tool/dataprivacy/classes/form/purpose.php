@@ -23,8 +23,8 @@
  */
 
 namespace tool_dataprivacy\form;
-defined('MOODLE_INTERNAL') || die();
 
+use core_text;
 use core\form\persistent;
 
 /**
@@ -384,9 +384,9 @@ class purpose extends persistent {
         $data->types["{$prefix}number"] = PARAM_INT;
 
         $unitoptions = [
-            'Y' => get_string('years'),
-            'M' => strtolower(get_string('months')),
-            'D' => strtolower(get_string('days'))
+            'Y' => core_text::strtolower(get_string('years')),
+            'M' => core_text::strtolower(get_string('months')),
+            'D' => core_text::strtolower(get_string('days'))
         ];
         $unit = $this->_form->createElement('select', "{$prefix}unit", '', $unitoptions);
 
