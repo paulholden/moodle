@@ -521,8 +521,8 @@ class core_useragent {
             return false;
         }
 
-        if (strpos($useragent, 'Edge/') === false) {
-            // Edge was not found in the UA - this is not Edge.
+        // Match one of "Edge/", "Edg/", "edge/" or "edg/".
+        if (preg_match('/[Ee]dge?\//', $useragent) !== 1) {
             return false;
         }
 
@@ -532,9 +532,8 @@ class core_useragent {
         }
 
         // Find the version.
-        // Edge versions are always in the format:
-        //      Edge/<version>.<OS build number>
-        preg_match('%Edge/([\d]+)\.(.*)$%', $useragent, $matches);
+        // Edge versions are typicaly in the format: "[Ee]dg[e]/<version>.<OS build number>".
+        preg_match('/[Ee]dge?\/([\d]+)\.(.*)$/', $useragent, $matches);
 
         // Just to be safe, round the version being tested.
         // Edge only uses integer versions - the second component is the OS build number.
