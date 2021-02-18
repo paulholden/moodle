@@ -68,6 +68,33 @@ class core_useragent_testcase extends advanced_testcase {
                     ),
                 ),
             ),
+            'Microsoft Chromium Edge for Windows 10 Desktop' => array(
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3739.0 Safari/537.36 Edg/75.0.109.0',
+                array(
+                    'is_edge'                       => true,
+                    'check_edge_version'            => array(
+                        '12'                        => true,
+                        '75'                        => true,
+                    ),
+
+                    // Edge pretends to be WebKit.
+                    'is_webkit'                     => true,
+
+                    // Edge pretends to be Chrome.
+                    // Note: Because Edge pretends to be Chrome, it will not be picked up as a Safari browser.
+                    'is_chrome'                     => true,
+                    'check_chrome_version'          => array(
+                        '7'                         => true,
+                        '8'                         => true,
+                        '10'                        => true,
+                        '39'                        => true,
+                    ),
+
+                    'versionclasses'                => array(
+                        'edge',
+                    ),
+                ),
+            ),
             'Microsoft Edge for Windows 10 Mobile' => array(
                 'Mozilla/5.0 (Windows Phone 10.0; Android 4.2.1; DEVICE INFO) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Mobile Safari/537.36 Edge/12.10136',
                 array(
@@ -1557,8 +1584,9 @@ class core_useragent_testcase extends advanced_testcase {
         }
 
         $versions = array(
-            // New versions of should be added here.
+            // New versions of Edge should be added here.
             '12'   => false,
+            '75'   => false,
         );
 
         if (isset($tests['check_edge_version'])) {
