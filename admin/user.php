@@ -183,10 +183,10 @@
     // These columns are always shown in the users list.
     $requiredcolumns = array('city', 'country', 'lastaccess');
     // Extra columns containing the extra user fields, excluding the required columns (city and country, to be specific).
-    $userfields = \core\user_fields::for_identity($context, true)->with_name()->excluding(...$requiredcolumns);
-    $extracolumns = $userfields->get_required_fields();
+    $extracolumns = \core\user_fields::for_identity($context, false)->excluding(...$requiredcolumns)->get_required_fields();
     // Get all user name fields as an array.
-    $columns = array_merge($extracolumns, $requiredcolumns);
+    $allusernamefields = \core\user_fields::get_name_fields();
+    $columns = array_merge($allusernamefields, $extracolumns, $requiredcolumns);
 
     foreach ($columns as $column) {
         $string[$column] = \core\user_fields::get_display_name($column);
@@ -226,7 +226,7 @@
     }
 
     // Order in string will ensure that the name columns are in the correct order.
-    $usernames = order_in_string($extracolumns, $fullnamesetting);
+    $usernames = order_in_string($allusernamefields, $fullnamesetting);
     $fullnamedisplay = array();
     foreach ($usernames as $name) {
         // Use the link from $$column for sorting on the user's name.
