@@ -21,9 +21,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+use message_email\privacy\provider;
+use core_privacy\local\request\writer;
+use core_privacy\tests\provider_testcase;
 
-use \core_privacy\tests\provider_testcase;
 /**
  * Unit tests for message\output\email\classes\privacy\provider.php
  *
@@ -56,5 +57,38 @@ class message_email_testcase extends provider_testcase {
         $contextlist = \message_email\privacy\provider::get_contexts_for_userid($user->id);
         $this->assertEmpty($contextlist);
     }
-}
 
+    /**
+     * Test exporting user preferences
+     */
+    public function test_export_user_preferences(): void {
+        global $CFG;
+
+        require_once("{$CFG->dirroot}/message/externallib.php");
+
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        // Submit configuration form, which adds the preferences..
+        core_message_external::message_processor_config_form($user->id, 'email', [
+            [
+                'name' => 'email_email',
+                'value' => 'alternate@example.com',
+            ],
+        ]);
+
+        // Switch to admin user (so we can validate preferences of the correct user are being exported).
+        $this->setAdminUser();
+
+        provider::export_user_preferences($user->id);
+
+        $writer = writer::with_context(context_system::instance());
+        $this->assertTrue($writer->has_any_data());
+
+        $preferences = $writer->get_user_preferences('message_email');
+        $this->assertNotEmpty($preferences->email);
+
+        $this->assertEquals('alternate@example.com', $preferences->email->value);
+        $this->assertEquals(get_string('privacy:preference:email', 'message_email'), $preferences->email->description);
+    }
+}
