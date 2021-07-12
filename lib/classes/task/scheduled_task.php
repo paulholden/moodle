@@ -434,7 +434,9 @@ abstract class scheduled_task extends task_base {
      * @return bool true when this task can be run. false otherwise.
      */
     public function can_run(): bool {
-        return $this->is_component_enabled() || $this->get_run_if_component_disabled();
+        [$component] = \core_component::normalize_component($this->get_component());
+
+        return $component === 'core' || $this->is_component_enabled() || $this->get_run_if_component_disabled();
     }
 
     /**
