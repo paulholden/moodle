@@ -712,6 +712,7 @@ class core_user {
         $fields['firstnamephonetic'] = array('type' => PARAM_NOTAGS, 'null' => NULL_ALLOWED);
         $fields['middlename'] = array('type' => PARAM_NOTAGS, 'null' => NULL_ALLOWED);
         $fields['alternatename'] = array('type' => PARAM_NOTAGS, 'null' => NULL_ALLOWED);
+        $fields['moodlenetprofile'] = array('type' => PARAM_NOTAGS, 'null' => NULL_ALLOWED);
 
         self::$propertiescache = $fields;
     }
@@ -788,11 +789,7 @@ class core_user {
 
         foreach ($user as $field => $value) {
             // Get the property parameter type and do the cleaning.
-            try {
-                $user->$field = core_user::clean_field($value, $field);
-            } catch (coding_exception $e) {
-                debugging("The property '$field' could not be cleaned.", DEBUG_DEVELOPER);
-            }
+            $user->$field = core_user::clean_field($value, $field);
         }
 
         return $user;

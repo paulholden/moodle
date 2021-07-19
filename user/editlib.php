@@ -301,7 +301,7 @@ function useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions
     $mform->addHelpButton('maildisplay', 'emaildisplay');
 
     $mform->addElement('text', 'moodlenetprofile', get_string('moodlenetprofile', 'user'));
-    $mform->setType('moodlenetprofile', PARAM_NOTAGS);
+    $mform->setType('moodlenetprofile', core_user::get_property_type('moodlenetprofile'));
     $mform->addHelpButton('moodlenetprofile', 'moodlenetprofile', 'user');
 
     $mform->addElement('text', 'city', get_string('city'), 'maxlength="120" size="21"');

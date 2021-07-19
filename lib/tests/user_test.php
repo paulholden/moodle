@@ -550,6 +550,7 @@ class core_user_testcase extends advanced_testcase {
         $user->email = ' john@testing.com ';
         $user->deleted = 'no';
         $user->description = '<b>A description <script>alert(123);</script>about myself.</b>';
+        $user->moodlenetprofile = '@lionel@moodle.net';
         $usercleaned = core_user::clean_data($user);
 
         // Expected results.
@@ -557,6 +558,7 @@ class core_user_testcase extends advanced_testcase {
         $this->assertEquals('john@testing.com', $usercleaned->email);
         $this->assertEquals(0, $usercleaned->deleted);
         $this->assertEquals('<b>A description <script>alert(123);</script>about myself.</b>', $user->description);
+        $this->assertEquals('@lionel@moodle.net', $user->moodlenetprofile);
         $this->assertEquals('john_doe', $user->username);
 
         // Try to clean an invalid property (userfullname).
@@ -577,6 +579,7 @@ class core_user_testcase extends advanced_testcase {
         $user->email = ' john@testing.com ';
         $user->deleted = 'no';
         $user->description = '<b>A description <script>alert(123);</script>about myself.</b>';
+        $user->moodlenetprofile = '@lionel@moodle.net';
         $user->userfullname = 'John Doe';
 
         // Expected results.
@@ -584,6 +587,7 @@ class core_user_testcase extends advanced_testcase {
         $this->assertEquals('john_doe', core_user::clean_field($user->username, 'username'));
         $this->assertEquals('john@testing.com', core_user::clean_field($user->email, 'email'));
         $this->assertEquals(0, core_user::clean_field($user->deleted, 'deleted'));
+        $this->assertEquals('@lionel@moodle.net', core_user::clean_field($user->moodlenetprofile, 'moodlenetprofile'));
         $this->assertEquals('<b>A description <script>alert(123);</script>about myself.</b>', core_user::clean_field($user->description, 'description'));
 
         // Try to clean an invalid property (fullname).
