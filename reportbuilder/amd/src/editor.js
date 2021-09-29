@@ -68,7 +68,7 @@ export const init = () => {
             getReport(reportElement.dataset.reportId, toggledEditMode)
                 .then(response => {
                     customjs = response.javascript;
-                    return Templates.render('core_reportbuilder/custom_report', response);
+                    return Templates.render('core_reportbuilder/editor', response);
                 })
                 .then((html, js) => {
                     return Templates.replaceNodeContents(reportElement, html, js + customjs);

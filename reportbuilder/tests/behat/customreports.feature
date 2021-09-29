@@ -149,10 +149,10 @@ Feature: Manage custom reports
     When I log in as "<user>"
     And I navigate to "Reports > Report builder > Custom reports" in site administration
     And I click on "<link>" "link" in the "My report" "table_row"
-    Then <previewvisible> "Preview" in the "[data-region='core_reportbuilder/report-header']" "css_element"
-    And <editvisible> "Edit" in the "[data-region='core_reportbuilder/report-header']" "css_element"
-    And <settingsvisible> "Settings" in the "[data-region='core_reportbuilder/report-header']" "css_element"
-    And <filtersvisible> "Filters" in the "[data-region='core_reportbuilder/report-header']" "css_element"
+    Then <previewvisible> "Preview" in the "[data-region='core_reportbuilder/report']" "css_element"
+    And <editvisible> "Edit" in the "[data-region='core_reportbuilder/report']" "css_element"
+    And <settingsvisible> "Settings" in the "[data-region='core_reportbuilder/report']" "css_element"
+    And <filtersvisible> "Filters" in the "[data-region='core_reportbuilder/report']" "css_element"
     Examples:
       | user  | link       | previewvisible    | editvisible       | settingsvisible   | filtersvisible    |
       | admin | My report  | I should see      | I should not see  | I should see      | I should not see  |

@@ -97,7 +97,7 @@ class system_report_exporter extends persistent_exporter {
         $table->set_filterset($filterset);
 
         // Generate filters form if report contains any filters.
-        $filterspresent = !empty($source->get_filters());
+        $filterspresent = !empty($source->get_active_filters());
         if ($filterspresent) {
             $filtersform = new filter(null, null, 'post', '', [], true, [
                 'reportid' => $this->persistent->get('id'),

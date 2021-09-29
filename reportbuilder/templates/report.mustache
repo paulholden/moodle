@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template core_reportbuilder/system_report
+    @template core_reportbuilder/report
 
     Template for a system report
 
@@ -31,7 +31,7 @@
 }}
 <div data-region="core_reportbuilder/report"
         data-report-id="{{id}}"
-        data-source="{{source}}"
+        data-report-type="{{type}}"
         data-parameter="{{parameters}}">
             <div class="reportbuilder-wrapper">
                 {{#filterspresent}}

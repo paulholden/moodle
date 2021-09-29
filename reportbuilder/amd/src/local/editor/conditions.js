@@ -64,6 +64,9 @@ const reloadSettingsConditionsRegion = (reportElement, templateContext) => {
 const initConditionsForm = reportElement => {
     // Handle dynamic conditions form.
     const conditionFormContainer = reportElement.querySelector(reportSelectors.regions.settingsConditions);
+    if (!conditionFormContainer) {
+        return;
+    }
     const conditionForm = new DynamicForm(conditionFormContainer, '\\core_reportbuilder\\form\\condition');
 
     // Submit report conditions.
