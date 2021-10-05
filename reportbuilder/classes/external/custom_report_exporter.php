@@ -93,6 +93,7 @@ class custom_report_exporter extends persistent_exporter {
             'conditions' => ['type' => custom_report_conditions_exporter::read_properties_definition()],
             'filters' => ['type' => custom_report_filters_exporter::read_properties_definition()],
             'sorting' => ['type' => custom_report_columns_sorting_exporter::read_properties_definition()],
+            'cardview' => ['type' => custom_report_card_view_exporter::read_properties_definition()],
             'filtersapplied' => ['type' => PARAM_INT],
             'filterspresent' => ['type' => PARAM_BOOL],
             'filtersform' => [
@@ -155,6 +156,7 @@ class custom_report_exporter extends persistent_exporter {
             'conditions' => $conditions ?? [],
             'filters' => $filters ?? [],
             'sorting' => $sorting ?? [],
+            'cardview' => $cardview ?? [],
             'filtersapplied' => $report->get_applied_filter_count(),
             'filterspresent' => $filterspresent,
             'filtersform' => $filtersform,

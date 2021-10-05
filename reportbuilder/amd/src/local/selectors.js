@@ -45,6 +45,7 @@ const SELECTORS = {
         activeFilters: '[data-region="active-filters"]',
         activeFilter: '[data-region="active-filter"]',
         settingsSorting: '[data-region="settings-sorting"]',
+        settingsCardView: '[data-region="settings-cardview"]',
     },
     actions: {
         reportActionPopup: '[data-action="report-action-popup"]',
