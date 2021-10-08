@@ -148,6 +148,8 @@ class custom_report_exporter extends persistent_exporter {
             $filters = (array) $filtersexporter->export($output);
             $sortingexporter = new custom_report_columns_sorting_exporter(null, ['report' => $report]);
             $sorting = (array) $sortingexporter->export($output);
+            $cardviewexporter = new custom_report_card_view_exporter(null, ['report' => $report]);
+            $cardview = (array) $cardviewexporter->export($output);
         }
 
         return [

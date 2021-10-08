@@ -62,6 +62,7 @@ const SELECTORS = {
         reportToggleColumnSortDirection: '[data-action="report-toggle-sort-direction"]',
         sidebarSearch: '[data-action="sidebar-search"]',
         toggleEditPreview: '[data-action="toggle-edit-preview"]',
+        toggleCardView: '[data-action="toggle-card"]',
     },
 };
 

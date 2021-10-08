@@ -47,7 +47,7 @@ export const init = () => {
     conditionsEditorInit(reportElement, initialized);
     filtersEditorInit(reportElement, initialized);
     sortingEditorInit(reportElement, initialized);
-    cardviewEditorInit(reportElement, initialized);
+    cardviewEditorInit(reportElement);
 
     // Ensure we only add our listeners once (can be called multiple times by mustache template).
     if (initialized) {

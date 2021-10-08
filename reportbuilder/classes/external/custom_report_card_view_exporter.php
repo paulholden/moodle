@@ -52,9 +52,11 @@ class custom_report_card_view_exporter extends exporter {
         return [
             'form' => [
                 'type' => PARAM_RAW,
+                'optional' => true,
             ],
             'helpicon' => [
                 'type' => PARAM_RAW,
+                'optional' => true,
             ],
         ];
     }

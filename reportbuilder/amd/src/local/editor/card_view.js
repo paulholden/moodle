@@ -38,6 +38,9 @@ import * as reportSelectors from 'core_reportbuilder/local/selectors';
  */
 export const init = (reportElement) => {
     const cardViewFormContainer = document.querySelector(reportSelectors.regions.settingsCardView);
+    if (!cardViewFormContainer) {
+        return;
+    }
     const cardViewForm = new DynamicForm(cardViewFormContainer, '\\core_reportbuilder\\form\\card_view');
 
     cardViewForm.addEventListener(cardViewForm.events.FORM_SUBMITTED, (event) => {
