@@ -14,7 +14,7 @@ static site builder.
 
 After installing Node.js you can build the Component Library pages by running:
 
-Grunt componentlibrary
+`grunt componentlibrary`
 
 When completed the Component Library will be available from Site Administration > Development > UI Component Library
 
@@ -32,6 +32,7 @@ the docs folder in admin/tool/componentlibrary. The content of the docs folder i
 
 ### JS Files
 When serving the HTML pages some additional JavaScript is loaded:
+
 * clipboardwrapper.js and clipboard.js: This allows you to click a button to copy the contents of a code example to your clipboard so you can easily paste it in your code editor when you want to use the code example in your project
 
 * search.js and lunr.js: When the component library docs folder is generated, the contents of the docs folder is indexed by the hugo-lunr-indexer npm module. This generates a json file in `/admin/tool/componentlibrary/hugo/site/data/my-index.json` containing page references to search words. The lunr.js amd module parses this search index and the search.js amd module interfaces the search input field with the lunr.js to show a dropdown with search results on user input
@@ -71,12 +72,16 @@ admin/tool/componentlibrary/content/bootstrap/
 Remove any pages about the bootstrap project itself (see paragraph above).
 
 Add a _index.md file in each subfolder of admin/tool/componentlibrary/content/bootstrap/, the contents of the _index.md file should look something like this:
+
+```
 ---
 title: "Components"
 date: 2021-05-05T15:15:15Z
 draft: true
 weight: 20
 ---
+```
+
 Adding _index.md files ensures they show up as collapsable sections in the Component Library navigation
 
 Copy changed files from bootstrap/site/data/ to admin/tool/componentlibrary/hugo/site/data/

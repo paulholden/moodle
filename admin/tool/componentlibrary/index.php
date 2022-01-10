@@ -23,10 +23,22 @@
  */
 
 require_once(__DIR__ . '/../../../config.php');
+require_once("{$CFG->libdir}/adminlib.php");
 
 require_login();
 require_capability('moodle/site:configview', context_system::instance());
 
-$firstpage = new moodle_url('/admin/tool/componentlibrary/docspage.php/library/getting-started/');
+// Component library page.
+if (file_exists("{$CFG->dirroot}/{$CFG->admin}/tool/componentlibrary/docs/")) {
+    $firstpage = new moodle_url('/admin/tool/componentlibrary/docspage.php/library/getting-started/');
+    redirect($firstpage);
+}
 
-redirect($firstpage);
+admin_externalpage_setup('toolcomponentlibrary');
+
+echo $OUTPUT->header();
+
+$info = file_get_contents("{$CFG->dirroot}/{$CFG->admin}/tool/componentlibrary/moodle_readme.txt");
+echo markdown_to_html($info);
+
+echo $OUTPUT->footer();
