@@ -76,10 +76,7 @@ class platform_registration_form extends \moodleform {
         $mform->addRule('accesstokenurl', $strrequired, 'required', null, 'client');
         $mform->addHelpButton('accesstokenurl', 'registerplatform:accesstokenurl', 'enrol_lti');
 
-        $buttonarray = [];
-        $buttonarray[] = $mform->createElement('submit', 'submitbutton', get_string('savechanges'));
-        $buttonarray[] = $mform->createElement('cancel');
-        $mform->addGroup($buttonarray, 'buttonar', '', ' ', false);
+        $this->add_action_buttons();
     }
 
     /**
