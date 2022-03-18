@@ -61,11 +61,7 @@ class qtype_random_edit_form extends question_edit_form {
 
         $this->add_hidden_fields();
 
-        $buttonarray = array();
-        $buttonarray[] = $mform->createElement('submit', 'submitbutton', get_string('savechanges'));
-        $buttonarray[] = $mform->createElement('cancel');
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
-        $mform->closeHeaderBefore('buttonar');
+        $this->add_action_buttons();
     }
 
     public function set_data($question) {

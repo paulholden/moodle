@@ -52,13 +52,9 @@ class deployment_form extends \moodleform {
         $mform->setType('deploymentid', PARAM_TEXT);
         $mform->addRule('deploymentid', $strrequired, 'required', null, 'client');
         $mform->addRule('deploymentid', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
-
         $mform->addHelpButton('deploymentid', 'adddeployment:deploymentid', 'enrol_lti');
 
-        $buttonarray = [];
-        $buttonarray[] = $mform->createElement('submit', 'submitbutton', get_string('savechanges'));
-        $buttonarray[] = $mform->createElement('cancel');
-        $mform->addGroup($buttonarray, 'buttonar', '', ' ', false);
+        $this->add_action_buttons();
     }
 
     /**

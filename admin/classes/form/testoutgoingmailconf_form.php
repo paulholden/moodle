@@ -59,13 +59,7 @@ class testoutgoingmailconf_form extends \moodleform {
         $mform->addElement('text', 'additionalsubject', get_string('testoutgoingmailconf_subjectadditional', 'admin'), $options);
         $mform->setType('additionalsubject', PARAM_TEXT);
 
-        $buttonarray = array();
-        $buttonarray[] = $mform->createElement('submit', 'send', get_string('testoutgoingmailconf_sendtest', 'admin'));
-        $buttonarray[] = $mform->createElement('cancel');
-
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
-        $mform->closeHeaderBefore('buttonar');
-
+        $this->add_action_buttons(true, get_string('testoutgoingmailconf_sendtest', 'admin'));
     }
 
     /**
