@@ -1348,8 +1348,8 @@ abstract class moodleform {
         if ($cancel){
             //when two elements we need a group
             $buttonarray=array();
-            $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $submitlabel);
             $buttonarray[] = &$mform->createElement('cancel');
+            $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $submitlabel);
             $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
             $mform->closeHeaderBefore('buttonar');
         } else {
