@@ -222,9 +222,9 @@ class tool_uploadcourse_step2_form extends tool_uploadcourse_base_form {
     public function add_action_buttons($cancel = true, $submitlabel = null) {
         $mform =& $this->_form;
         $buttonarray = array();
+        $buttonarray[] = &$mform->createElement('cancel');
         $buttonarray[] = &$mform->createElement('submit', 'showpreview', get_string('preview', 'tool_uploadcourse'));
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $submitlabel);
-        $buttonarray[] = &$mform->createElement('cancel');
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonar');
     }

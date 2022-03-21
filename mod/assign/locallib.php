@@ -8115,13 +8115,13 @@ class assign {
         if (!$gradingpanel) {
 
             $buttonarray = array();
+            $buttonarray[] = $mform->createElement('cancel', 'cancelbutton', get_string('cancel'));
             $name = get_string('savechanges', 'assign');
             $buttonarray[] = $mform->createElement('submit', 'savegrade', $name);
             if (!$last) {
                 $name = get_string('savenext', 'assign');
                 $buttonarray[] = $mform->createElement('submit', 'saveandshownext', $name);
             }
-            $buttonarray[] = $mform->createElement('cancel', 'cancelbutton', get_string('cancel'));
             $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
             $mform->closeHeaderBefore('buttonar');
             $buttonarray = array();

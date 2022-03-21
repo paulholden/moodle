@@ -278,11 +278,11 @@ class assign_override_form extends moodleform {
                 get_string('reverttodefaults', 'assign'));
 
         $buttonarray = array();
+        $buttonarray[] = $mform->createElement('cancel');
         $buttonarray[] = $mform->createElement('submit', 'submitbutton',
                 get_string('save', 'assign'));
         $buttonarray[] = $mform->createElement('submit', 'againbutton',
                 get_string('saveoverrideandstay', 'assign'));
-        $buttonarray[] = $mform->createElement('cancel');
 
         $mform->addGroup($buttonarray, 'buttonbar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonbar');

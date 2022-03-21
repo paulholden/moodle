@@ -75,6 +75,7 @@ class gradingform_guide_editguide extends moodleform {
         $form->setType('guide', PARAM_RAW);
 
         $buttonarray = array();
+        $buttonarray[] = &$form->createElement('cancel');
         $buttonarray[] = &$form->createElement('submit', 'saveguide', get_string('saveguide', 'gradingform_guide'));
         if ($this->_customdata['allowdraft']) {
             $buttonarray[] = &$form->createElement('submit', 'saveguidedraft', get_string('saveguidedraft', 'gradingform_guide'));
@@ -82,7 +83,6 @@ class gradingform_guide_editguide extends moodleform {
         $editbutton = &$form->createElement('submit', 'editguide', ' ');
         $editbutton->freeze();
         $buttonarray[] = &$editbutton;
-        $buttonarray[] = &$form->createElement('cancel');
         $form->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         $form->closeHeaderBefore('buttonar');
     }

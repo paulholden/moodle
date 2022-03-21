@@ -53,8 +53,8 @@ class filter_form extends \moodleform {
 
         // Add the filter/cancel buttons (without 'closeHeaderBefore', so they collapse with the filter).
         $buttonarray = [
-            $mform->createElement('submit', 'submitbutton', get_string('filter')),
             $mform->createElement('cancel'),
+            $mform->createElement('submit', 'submitbutton', get_string('filter')),
         ];
         $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
     }

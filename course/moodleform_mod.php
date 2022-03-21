@@ -1214,6 +1214,10 @@ abstract class moodleform_mod extends moodleform {
         // elements in a row need a group
         $buttonarray = array();
 
+        if ($cancel) {
+            $buttonarray[] = &$mform->createElement('cancel');
+        }
+
         // Label for the submit button to return to the course.
         // Ignore this button in single activity format because it is confusing.
         if ($submit2label !== false && $this->courseformat->has_view_page()) {
@@ -1222,10 +1226,6 @@ abstract class moodleform_mod extends moodleform {
 
         if ($submitlabel !== false) {
             $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $submitlabel);
-        }
-
-        if ($cancel) {
-            $buttonarray[] = &$mform->createElement('cancel');
         }
 
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);

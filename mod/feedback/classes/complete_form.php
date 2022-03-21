@@ -107,12 +107,12 @@ class mod_feedback_complete_form extends moodleform {
         // Add buttons to go to previous/next pages and submit the feedback.
         if ($this->mode == self::MODE_COMPLETE) {
             $buttonarray = array();
+            $buttonarray[] = &$mform->createElement('cancel');
             $buttonarray[] = &$mform->createElement('submit', 'gopreviouspage', get_string('previous_page', 'feedback'));
             $buttonarray[] = &$mform->createElement('submit', 'gonextpage', get_string('next_page', 'feedback'),
                     array('class' => 'form-submit'));
             $buttonarray[] = &$mform->createElement('submit', 'savevalues', get_string('save_entries', 'feedback'),
                     array('class' => 'form-submit'));
-            $buttonarray[] = &$mform->createElement('cancel');
             $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
             $mform->closeHeaderBefore('buttonar');
         }

@@ -119,10 +119,10 @@ class course_reset_form extends moodleform {
         $mform->setType('id', PARAM_INT);
 
         $buttonarray = array();
+        $buttonarray[] = &$mform->createElement('cancel');
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('resetcourse'));
         $buttonarray[] = &$mform->createElement('submit', 'selectdefault', get_string('selectdefault'));
         $buttonarray[] = &$mform->createElement('submit', 'deselectall', get_string('deselectall'));
-        $buttonarray[] = &$mform->createElement('cancel');
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonar');
     }

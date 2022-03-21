@@ -89,6 +89,7 @@ abstract class feedback_item_form extends moodleform {
         $mform->setType('options', PARAM_ALPHA);
 
         $buttonarray = array();
+        $buttonarray[] = &$mform->createElement('cancel');
         if (!empty($item->id)) {
             $buttonarray[] = &$mform->createElement('submit',
                                                     'update_item',
@@ -104,7 +105,6 @@ abstract class feedback_item_form extends moodleform {
                                                     'save_item',
                                                     get_string('savechanges'));
         }
-        $buttonarray[] = &$mform->createElement('cancel');
         $mform->addGroup($buttonarray, 'buttonar', '&nbsp;', array(' '), false);
 
     }

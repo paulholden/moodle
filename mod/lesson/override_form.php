@@ -241,11 +241,11 @@ class lesson_override_form extends moodleform {
                 get_string('reverttodefaults', 'lesson'));
 
         $buttonarray = array();
+        $buttonarray[] = $mform->createElement('cancel');
         $buttonarray[] = $mform->createElement('submit', 'submitbutton',
                 get_string('save', 'lesson'));
         $buttonarray[] = $mform->createElement('submit', 'againbutton',
                 get_string('saveoverrideandstay', 'lesson'));
-        $buttonarray[] = $mform->createElement('cancel');
 
         $mform->addGroup($buttonarray, 'buttonbar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonbar');

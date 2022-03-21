@@ -233,11 +233,11 @@ class quiz_override_form extends moodleform {
                 get_string('reverttodefaults', 'quiz'));
 
         $buttonarray = array();
+        $buttonarray[] = $mform->createElement('cancel');
         $buttonarray[] = $mform->createElement('submit', 'submitbutton',
                 get_string('save', 'quiz'));
         $buttonarray[] = $mform->createElement('submit', 'againbutton',
                 get_string('saveoverrideandstay', 'quiz'));
-        $buttonarray[] = $mform->createElement('cancel');
 
         $mform->addGroup($buttonarray, 'buttonbar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonbar');

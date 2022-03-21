@@ -70,6 +70,7 @@ class gradingform_rubric_editrubric extends moodleform {
         $form->setType('rubric', PARAM_RAW);
 
         $buttonarray = array();
+        $buttonarray[] = &$form->createElement('cancel');
         $buttonarray[] = &$form->createElement('submit', 'saverubric', get_string('saverubric', 'gradingform_rubric'));
         if ($this->_customdata['allowdraft']) {
             $buttonarray[] = &$form->createElement('submit', 'saverubricdraft', get_string('saverubricdraft', 'gradingform_rubric'));
@@ -77,7 +78,6 @@ class gradingform_rubric_editrubric extends moodleform {
         $editbutton = &$form->createElement('submit', 'editrubric', ' ');
         $editbutton->freeze();
         $buttonarray[] = &$editbutton;
-        $buttonarray[] = &$form->createElement('cancel');
         $form->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         $form->closeHeaderBefore('buttonar');
     }

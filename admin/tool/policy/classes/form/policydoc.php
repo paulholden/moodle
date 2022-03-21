@@ -123,11 +123,11 @@ class policydoc extends moodleform {
 
         // Add "Save" button and, optionally, "Save as draft".
         $buttonarray = [];
+        $buttonarray[] = $mform->createElement('cancel');
         $buttonarray[] = $mform->createElement('submit', 'save', get_string('save', 'tool_policy'));
         if ($formdata->id && $formdata->status == policy_version::STATUS_ACTIVE) {
             $buttonarray[] = $mform->createElement('submit', 'saveasdraft', get_string('saveasdraft', 'tool_policy'));
         }
-        $buttonarray[] = $mform->createElement('cancel');
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonar');
 

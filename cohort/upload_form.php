@@ -86,14 +86,14 @@ class cohort_upload_form extends moodleform {
 
         $buttonarray = array();
 
-        $submitlabel = get_string('uploadcohorts', 'cohort');
-        $buttonarray[] = $mform->createElement('submit', 'submitbutton', $submitlabel);
+        $buttonarray[] = $mform->createElement('cancel');
 
         $previewlabel = get_string('preview', 'cohort');
         $buttonarray[] = $mform->createElement('submit', 'previewbutton', $previewlabel);
         $mform->registerNoSubmitButton('previewbutton');
 
-        $buttonarray[] = $mform->createElement('cancel');
+        $submitlabel = get_string('uploadcohorts', 'cohort');
+        $buttonarray[] = $mform->createElement('submit', 'submitbutton', $submitlabel);
 
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonar');
@@ -120,9 +120,14 @@ class cohort_upload_form extends moodleform {
         }
         if (!$allowsubmitform) {
             // Hide submit button.
-            $el = $mform->getElement('buttonar')->getElements()[0];
-            $el->setValue('');
-            $el->freeze();
+            $submitbutton = array_filter($mform->getElement('buttonar')->getElements(),
+                static function(HTML_QuickForm_input $element): bool {
+                    return $element->getName() === 'submitbutton';
+                }
+            );
+            $submitbutton = reset($submitbutton);
+            $submitbutton->setValue('');
+            $submitbutton->freeze();
         } else {
             $mform->setExpanded('cohortfileuploadform', false);
         }

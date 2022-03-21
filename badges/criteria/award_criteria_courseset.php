@@ -85,8 +85,8 @@ class award_criteria_courseset extends award_criteria {
             $mform->addRule('courses', get_string('requiredcourse', 'badges'), 'required');
             $mform->addHelpButton('courses', 'addcourse', 'badges');
 
-            $buttonarray[] =& $mform->createElement('submit', 'submitcourse', get_string('addcourse', 'badges'));
             $buttonarray[] =& $mform->createElement('submit', 'cancel', get_string('cancel'));
+            $buttonarray[] =& $mform->createElement('submit', 'submitcourse', get_string('addcourse', 'badges'));
             $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
 
             $mform->addElement('hidden', 'addcourse', 'addcourse');
