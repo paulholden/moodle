@@ -40,6 +40,7 @@ require_once($CFG->dirroot . '/mod/wiki/pagelib.php');
 $pageid = required_param('pageid', PARAM_INT);
 $contentformat = optional_param('contentformat', '', PARAM_ALPHA);
 $option = optional_param('editoption', '', PARAM_TEXT);
+$cancel = optional_param('cancel', '', PARAM_TEXT);
 $section = optional_param('section', "", PARAM_RAW);
 $version = optional_param('version', -1, PARAM_INT);
 $attachments = optional_param('attachments', 0, PARAM_INT);
@@ -96,7 +97,7 @@ if ($option == get_string('save', 'wiki')) {
         $wikipage = new page_wiki_preview($wiki, $subwiki, $cm, 'modulepage');
         $wikipage->set_page($page);
     } else {
-        if ($option == get_string('cancel')) {
+        if ($cancel == get_string('cancel')) {
             //delete lock
             wiki_delete_locks($page->id, $USER->id, $section);
 

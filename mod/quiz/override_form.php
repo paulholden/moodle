@@ -239,8 +239,8 @@ class quiz_override_form extends moodleform {
                 get_string('saveoverrideandstay', 'quiz'));
         $buttonarray[] = $mform->createElement('cancel');
 
-        $mform->addGroup($buttonarray, 'buttonbar', '', array(' '), false);
-        $mform->closeHeaderBefore('buttonbar');
+        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->closeHeaderBefore('buttonar');
     }
 
     /**

@@ -285,11 +285,11 @@ class mod_forum_post_form extends moodleform {
             $mform->setType('discussionsubscribe', PARAM_INT);
             $mform->disable_form_change_checker();
             $buttonarray = array();
-            $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $submitstring);
             $buttonarray[] = &$mform->createElement('button', 'cancelbtn',
                 get_string('cancel', 'core'),
                 // Additional attribs to handle collapsible div.
                 ['data-toggle' => 'collapse', 'data-target' => "#collapseAddForm"]);
+            $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $submitstring);
             $buttonarray[] = &$mform->createElement('submit', 'advancedadddiscussion',
                 get_string('showadvancededitor'), null, null, ['customclassoverride' => 'btn-link']);
 
