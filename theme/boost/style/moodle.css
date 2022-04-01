@@ -17593,6 +17593,12 @@ textarea[data-auto-rows] {
     .form-inline .col-md-3 label {
       margin-left: 1rem; } }
 
+[data-groupname="buttonar"] .form-group.fitem.btn-cancel {
+  order: 0; }
+
+[data-groupname="buttonar"] .form-group.fitem:not(.btn-cancel) {
+  order: 1; }
+
 [data-fieldtype="modgrade"] .form-group {
   padding-bottom: 0.375rem; }
 

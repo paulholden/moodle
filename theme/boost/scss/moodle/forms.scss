@@ -403,6 +403,18 @@ textarea[data-auto-rows] {
     }
 }
 
+// In button arrays, ensure cancel is ordered first, all subsequent elements retaining original order.
+[data-groupname="buttonar"] {
+    .form-group.fitem {
+        &.btn-cancel {
+            order: 0;
+        }
+        &:not(.btn-cancel) {
+            order: 1;
+        }
+    }
+}
+
 [data-fieldtype="modgrade"] .form-group {
     padding-bottom: $input-padding-y;
 }
