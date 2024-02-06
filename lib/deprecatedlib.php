@@ -2872,6 +2872,14 @@ function get_array_of_activities() {
 }
 
 /**
+ * @deprecated since Moodle 4.0
+ */
+#[\core\attribute\deprecated('category_action_bar tertiary navigation', since: '4.0', final: true)]
+function print_course_request_buttons() {
+    \core\deprecation::emit_deprecation_if_present(__FUNCTION__);
+}
+
+/**
  * @deprecated since Moodle 4.1
  */
 #[\core\attribute\deprecated(
