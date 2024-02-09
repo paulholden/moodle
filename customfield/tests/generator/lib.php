@@ -134,6 +134,9 @@ class core_customfield_generator extends component_generator_base {
             'startyear' => 2000,
             'endyear' => 3000,
             'includetime' => 1,
+            'minimumvalue' => 0,
+            'maximumvalue' => 0,
+            'decimalplaces' => 0,
         ];
         $record->configdata = json_encode($configdata);
 
