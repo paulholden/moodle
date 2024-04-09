@@ -45,7 +45,7 @@ class qbank_chooser_item extends \core\output\chooser_item {
      */
     public function __construct($qtype, $context) {
         $icon = new pix_icon('icon', $qtype->local_name(), $qtype->plugin_name(), [
-            'class' => 'icon',
+            'class' => 'iconsize-small',
             'title' => $qtype->local_name()
         ]);
         $help = new lang_string('pluginnamesummary', $qtype->plugin_name());
