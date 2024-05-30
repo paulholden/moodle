@@ -433,6 +433,7 @@ $string['cookiesecure'] = 'Secure cookies only';
 $string['contenttypeuninstalling'] = 'There are {$a->count} contents supported by {$a->type}. They will be deleted. Are you sure you want to proceed?';
 $string['country'] = 'Default country';
 $string['course_customfield'] = 'Course custom fields';
+$string['coursecat_customfield'] = 'Category custom fields';
 $string['coursecolor'] = 'Colour {$a}';
 $string['coursecolorheading_desc'] = 'Any courses without a course image set in the course settings are displayed on the My courses page with a patterned course card. The colours used in the pattern may be specified below.';
 $string['coursecolorsettings'] = 'Course card colours';

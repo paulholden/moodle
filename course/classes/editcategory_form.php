@@ -93,7 +93,17 @@ class core_course_editcategory_form extends moodleform {
         $mform->setType('id', PARAM_INT);
         $mform->setDefault('id', $categoryid);
 
+        \core_course\customfield\coursecat_handler::create()->instance_form_definition($mform, $categoryid);
+
         $this->add_action_buttons(true, $strsubmit);
+    }
+
+    /**
+     * Definition after data
+     */
+    public function definition_after_data()  {
+        parent::definition_after_data();
+        \core_course\customfield\coursecat_handler::create()->instance_form_definition_after_data($this->_form);
     }
 
     /**
@@ -131,6 +141,7 @@ class core_course_editcategory_form extends moodleform {
                 }
             }
         }
+        $errors += \core_course\customfield\coursecat_handler::create()->instance_form_validation($data, $files);
         return $errors;
     }
 }

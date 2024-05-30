@@ -96,7 +96,7 @@ $mform = new core_course_editcategory_form(null, array(
     'context' => $context,
     'itemid' => $itemid
 ));
-$mform->set_data(file_prepare_standard_editor(
+$formdata = file_prepare_standard_editor(
     $category,
     'description',
     $mform->get_description_editor_options(),
@@ -104,7 +104,9 @@ $mform->set_data(file_prepare_standard_editor(
     'coursecat',
     'description',
     $itemid
-));
+);
+\core_course\customfield\coursecat_handler::create()->instance_form_before_set_data($formdata);
+$mform->set_data($formdata);
 
 $manageurl = new moodle_url('/course/management.php');
 if ($mform->is_cancelled()) {

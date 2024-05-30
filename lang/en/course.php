@@ -85,6 +85,7 @@ $string['customfield_visibility_help'] = 'This setting determines who can view t
 $string['customfield_visibletoall'] = 'Everyone';
 $string['customfield_visibletoteachers'] = 'Teachers';
 $string['customfieldsettings'] = 'Common course custom fields settings';
+$string['customfieldsettingscat'] = 'Settings for category custom fields';
 $string['daystakingcourse'] = 'Days taking course';
 $string['defaultsettingscategory'] = 'Default settings';
 $string['downloadcourseconfirmation'] = 'You are about to download a zip file of course content (excluding items which cannot be downloaded and any files larger than {$a}).';
