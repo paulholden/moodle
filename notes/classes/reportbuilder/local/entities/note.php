@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 namespace core_notes\reportbuilder\local\entities;
 
+use core\context\course;
 use lang_string;
 use stdClass;
 use core_reportbuilder\local\entities\base;
@@ -104,12 +105,19 @@ class note extends base {
             ->add_joins($this->get_joins())
             ->set_type(column::TYPE_LONGTEXT)
             ->add_field($contentfieldsql, 'content')
-            ->add_field("{$postalias}.format")
+            ->add_fields("{$postalias}.format, {$postalias}.id, {$postalias}.courseid")
             ->add_callback(static function(?string $content, stdClass $note): string {
+                global $CFG;
+                require_once("{$CFG->libdir}/filelib.php");
+
                 if ($content === null) {
                     return '';
                 }
-                return format_text($content, $note->format);
+
+                $context = course::instance($note->courseid);
+                $content = file_rewrite_pluginfile_urls($content, 'pluginfile.php', $context->id, 'notes', 'content', $note->id);
+
+                return format_text($content, $note->format, ['context' => $context]);
             });
 
         // Publish state.
