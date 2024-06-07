@@ -373,23 +373,27 @@ function user_get_user_details($user, $course = null, array $userfields = array(
         return null;
     }
 
-    $userdetails = array();
-    $userdetails['id'] = $user->id;
+    // User ID and fullname are always included.
+    $userdetails = [
+        'id' => $user->id,
+        'fullname' => fullname($user, $canviewfullnames),
+    ];
+
+    // User first/lastname included if capability check passes, or the same is present in fullname.
+    if (in_array('firstname', $userfields) &&
+            ($canviewfullnames || core_text::strrpos($userdetails['fullname'], $user->firstname) !== false)) {
+        $userdetails['firstname'] = $user->firstname;
+    }
+    if (in_array('lastname', $userfields) &&
+            ($canviewfullnames || core_text::strrpos($userdetails['fullname'], $user->lastname) !== false)) {
+        $userdetails['lastname'] = $user->lastname;
+    }
 
     if (in_array('username', $userfields)) {
         if ($currentuser or has_capability('moodle/user:viewalldetails', $context)) {
             $userdetails['username'] = $user->username;
         }
     }
-    if ($isadmin or $canviewfullnames) {
-        if (in_array('firstname', $userfields)) {
-            $userdetails['firstname'] = $user->firstname;
-        }
-        if (in_array('lastname', $userfields)) {
-            $userdetails['lastname'] = $user->lastname;
-        }
-    }
-    $userdetails['fullname'] = fullname($user, $canviewfullnames);
 
     if (in_array('customfields', $userfields)) {
         $categories = profile_get_user_fields_with_data_by_category($user->id);
