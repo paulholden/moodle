@@ -51,17 +51,23 @@ class block_mentees extends block_base {
 
         // get all the mentees, i.e. users you have a direct assignment to
         $userfieldsapi = \core_user\fields::for_name();
-        $allusernames = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
-        if ($usercontexts = $DB->get_records_sql("SELECT c.instanceid, c.instanceid, $allusernames
+        $userfieldssql = $userfieldsapi->get_sql('u', false, '', '', false);
+
+        [$usersort] = users_order_by_sql('u', null, $this->context, $userfieldssql->mappings);
+
+        if ($users = $DB->get_records_sql("SELECT u.id, $userfieldssql->selects
                                                     FROM {role_assignments} ra, {context} c, {user} u
                                                    WHERE ra.userid = ?
                                                          AND ra.contextid = c.id
                                                          AND c.instanceid = u.id
-                                                         AND c.contextlevel = ".CONTEXT_USER, array($USER->id))) {
+                                                         AND c.contextlevel = ?
+                                                   ORDER BY $usersort", [$USER->id, CONTEXT_USER])) {
 
             $this->content->text = '<ul>';
-            foreach ($usercontexts as $usercontext) {
-                $this->content->text .= '<li><a href="'.$CFG->wwwroot.'/user/view.php?id='.$usercontext->instanceid.'&amp;course='.SITEID.'">'.fullname($usercontext).'</a></li>';
+            foreach ($users as $user) {
+                $userprofileurl = \core_user::get_profile_url($user);
+                $userfullname = \core_user::get_fullname($user, $this->context);
+                $this->content->text .= '<li>' . \html_writer::link($userprofileurl, $userfullname) . '</li>';
             }
             $this->content->text .= '</ul>';
         }
