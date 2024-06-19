@@ -1,0 +1,8 @@
+issueNumber: MDL-82244
+notes:
+  core_course:
+    - message: >-
+        If the value of the `visible` property isn't provided when calling the
+        `core_course_create_courses` external method, then the default defined
+        in site administration will be used
+      type: changed
