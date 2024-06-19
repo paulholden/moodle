@@ -557,10 +557,13 @@ class backup_course_structure_step extends backup_structure_step {
                                  FROM {course_format_options}
                                  WHERE courseid = ? AND sectionid = 0', [ backup::VAR_PARENTID ]);
 
-        $handler = core_course\customfield\course_handler::create();
-        $fieldsforbackup = $handler->get_instance_data_for_backup($this->task->get_courseid());
-        $handler->backup_define_structure($this->task->get_courseid(), $customfield);
-        $customfield->set_source_array($fieldsforbackup);
+        // Custom fields.
+        if ($this->get_setting_value('customfield')) {
+            $handler = core_course\customfield\course_handler::create();
+            $fieldsforbackup = $handler->get_instance_data_for_backup($this->task->get_courseid());
+            $handler->backup_define_structure($this->task->get_courseid(), $customfield);
+            $customfield->set_source_array($fieldsforbackup);
+        }
 
         // Some annotations
 
@@ -1424,9 +1427,12 @@ class backup_groups_structure_step extends backup_structure_step {
                 $member->set_source_table('groups_members', array('groupid' => backup::VAR_PARENTID));
             }
 
-            $courseid = $this->task->get_courseid();
-            $groupcustomfield->set_source_array($this->get_group_custom_fields_for_backup($courseid));
-            $groupingcustomfield->set_source_array($this->get_grouping_custom_fields_for_backup($courseid));
+            // Custom fields.
+            if ($this->get_setting_value('customfield')) {
+                $courseid = $this->task->get_courseid();
+                $groupcustomfield->set_source_array($this->get_group_custom_fields_for_backup($courseid));
+                $groupingcustomfield->set_source_array($this->get_grouping_custom_fields_for_backup($courseid));
+            }
         }
 
         // Define id annotations (as final)
