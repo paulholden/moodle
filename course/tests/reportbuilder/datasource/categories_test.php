@@ -19,6 +19,7 @@ declare(strict_types=1);
 namespace core_course\reportbuilder\datasource;
 
 use core_course_category;
+use core_customfield_generator;
 use core_reportbuilder_generator;
 use core_reportbuilder_testcase;
 use core_reportbuilder\local\filters\{category, select, text};
@@ -71,11 +72,18 @@ class categories_test extends core_reportbuilder_testcase {
 
         set_config('allowcategorythemes', true);
 
+        /** @var core_customfield_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_customfield');
+
+        $fieldcategory = $generator->create_category(['component' => 'core_course', 'area' => 'coursecat']);
+        $field = $generator->create_field(['categoryid' => $fieldcategory->get('id'), 'shortname' => 'hi']);
+
         $category = $this->getDataGenerator()->create_category([
             'name' => 'Zoo',
             'idnumber' => 'Z01',
             'description' => 'Animals',
             'theme' => 'boost',
+            'customfield_hi' => 'Hello',
         ]);
         $course = $this->getDataGenerator()->create_course(['category' => $category->id, 'fullname' => 'Zebra']);
 
@@ -96,6 +104,7 @@ class categories_test extends core_reportbuilder_testcase {
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'course_category:path']);
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'course_category:description']);
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'course_category:theme']);
+        $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'course_category:customfield_hi']);
 
         // Add column from each of our entities.
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'course:fullname']);
@@ -106,23 +115,25 @@ class categories_test extends core_reportbuilder_testcase {
         $content = $this->get_custom_report_content($report->get('id'));
         $this->assertCount(2, $content);
 
-        [$namewithlink, $path, $description, $theme, $coursename, $cohortname, $rolename, $userfullname] =
+        [$namewithlink, $path, $description, $theme, $custom, $coursename, $cohortname, $rolename, $userfullname] =
             array_values($content[0]);
         $this->assertStringContainsString(get_string('defaultcategoryname'), $namewithlink);
         $this->assertEquals(get_string('defaultcategoryname'), $path);
         $this->assertEmpty($description);
         $this->assertEmpty($theme);
+        $this->assertEmpty($custom);
         $this->assertEmpty($coursename);
         $this->assertEmpty($cohortname);
         $this->assertEmpty($rolename);
         $this->assertEmpty($userfullname);
 
-        [$namewithlink, $path, $description, $theme, $coursename, $cohortname, $rolename, $userfullname] =
+        [$namewithlink, $path, $description, $theme, $custom, $coursename, $cohortname, $rolename, $userfullname] =
             array_values($content[1]);
         $this->assertStringContainsString($category->get_formatted_name(), $namewithlink);
         $this->assertEquals($category->get_nested_name(false), $path);
         $this->assertEquals(format_text($category->description, $category->descriptionformat), $description);
         $this->assertEquals('Boost', $theme);
+        $this->assertEquals('Hello', $custom);
         $this->assertEquals($course->fullname, $coursename);
         $this->assertEquals($cohort->name, $cohortname);
         $this->assertEquals('Manager', $rolename);
