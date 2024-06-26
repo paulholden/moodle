@@ -101,10 +101,6 @@ $PAGE->activityheader->set_attrs([
 ]);
 echo $OUTPUT->header();
 
-/// print the tabs
-$current_tab = 'edit';
-$id = $cm->id;
-
 //print errormsg
 if (isset($error)) {
     echo $error;
