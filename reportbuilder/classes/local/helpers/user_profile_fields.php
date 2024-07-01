@@ -104,30 +104,23 @@ class user_profile_fields {
      * @return column[]
      */
     public function get_columns(): array {
-        global $DB;
-
         $columns = [];
 
         foreach ($this->userprofilefields as $profilefield) {
             $userinfotablealias = $this->get_table_alias($profilefield);
             $userinfosql = "{$userinfotablealias}.data";
+            $userinfoparams = [];
 
-            if ($DB->get_dbfamily() === 'oracle') {
-                $userinfosql = $DB->sql_order_by_text($userinfosql, 1024);
-            }
-
-            // Numeric column (non-text) should cast/coalesce with default, as should all fields for Oracle, for aggregation.
+            // Numeric column (non-text) should cast/coalesce with default.
             $columntype = $this->get_user_field_type($profilefield->field->datatype);
             if (!in_array($columntype, [column::TYPE_TEXT, column::TYPE_LONGTEXT])) {
-
-                // See MDL-78783 regarding no bound parameters, and Oracle limitations of GROUP BY.
+                $paramdefault = database::generate_param_name();
                 $userinfosql = "
                     CASE WHEN {$this->usertablefieldalias} IS NOT NULL
-                         THEN " .
-                            $DB->sql_cast_char2int("COALESCE({$userinfosql}, '" . (float) $profilefield->field->defaultdata . "')")
-                            . "
+                         THEN COALESCE({$userinfosql}, :{$paramdefault})
                          ELSE NULL
                     END";
+                $userinfoparams[$paramdefault] = $profilefield->field->defaultdata;
             }
 
             $columns[] = (new column(
@@ -138,11 +131,12 @@ class user_profile_fields {
             ))
                 ->add_joins($this->get_joins())
                 ->add_join($this->get_table_join($profilefield))
-                ->add_field($userinfosql, 'data')
+                ->set_type($columntype)
+                ->add_field($userinfosql, 'data', $userinfoparams)
                 ->add_field("{$userinfotablealias}.dataformat")
                 ->add_field($this->usertablefieldalias, 'userid')
-                ->set_type($columntype)
-                ->set_is_sortable($columntype !== column::TYPE_LONGTEXT)
+                ->set_groupby_sql("{$userinfotablealias}.data")
+                ->set_is_sortable(true)
                 ->add_callback(static function($value, stdClass $row, profile_field_base $field): string {
                     if ($row->userid === null && $value === null) {
                         return '';
@@ -187,29 +181,20 @@ class user_profile_fields {
                     break;
                 case 'menu':
                     $classname = select::class;
-                    $userinfosql = $DB->sql_cast_to_char($userinfosql);
                     break;
                 case 'text':
                 case 'textarea':
                 default:
                     $classname = text::class;
-                    $userinfosql = $DB->sql_cast_to_char($userinfosql);
                     break;
             }
 
             // Account for field default value, when joined to the user table.
             if (($fielddefault = $profilefield->field->defaultdata) !== null) {
                 $paramdefault = database::generate_param_name();
-
-                // Oracle be crazy.
-                $paramdefaultsql = ":{$paramdefault}";
-                if ($DB->get_dbfamily() === 'oracle' && in_array($profilefield->field->datatype, ['checkbox', 'datetime'])) {
-                    $paramdefaultsql = $DB->sql_cast_char2int($paramdefaultsql);
-                }
-
                 $userinfosql = "
                         CASE WHEN {$this->usertablefieldalias} IS NOT NULL
-                             THEN COALESCE({$userinfosql}, {$paramdefaultsql})
+                             THEN COALESCE({$userinfosql}, :{$paramdefault})
                              ELSE NULL
                         END";
                 $userinfoparams[$paramdefault] = $fielddefault;

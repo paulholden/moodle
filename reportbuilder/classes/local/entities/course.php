@@ -150,21 +150,6 @@ class course extends base {
     }
 
     /**
-     * Check if this field is sortable
-     *
-     * @param string $fieldname
-     * @return bool
-     */
-    protected function is_sortable(string $fieldname): bool {
-        // Some columns can't be sorted, like longtext or images.
-        $nonsortable = [
-            'summary',
-        ];
-
-        return !in_array($fieldname, $nonsortable);
-    }
-
-    /**
      * Return appropriate column type for given user field
      *
      * @param string $coursefield
@@ -222,8 +207,6 @@ class course extends base {
      * @return column[]
      */
     protected function get_all_columns(): array {
-        global $DB;
-
         $coursefields = $this->get_course_fields();
         $tablealias = $this->get_table_alias('course');
         $contexttablealias = $this->get_table_alias('context');
@@ -267,11 +250,6 @@ class course extends base {
         foreach ($coursefields as $coursefield => $coursefieldlang) {
             $columntype = $this->get_course_field_type($coursefield);
 
-            $columnfieldsql = "{$tablealias}.{$coursefield}";
-            if ($columntype === column::TYPE_LONGTEXT && $DB->get_dbfamily() === 'oracle') {
-                $columnfieldsql = $DB->sql_order_by_text($columnfieldsql, 1024);
-            }
-
             $column = (new column(
                 $coursefield,
                 $coursefieldlang,
@@ -279,9 +257,9 @@ class course extends base {
             ))
                 ->add_joins($this->get_joins())
                 ->set_type($columntype)
-                ->add_field($columnfieldsql, $coursefield)
+                ->add_field("{$tablealias}.{$coursefield}")
                 ->add_callback([$this, 'format'], $coursefield)
-                ->set_is_sortable($this->is_sortable($coursefield));
+                ->set_is_sortable(true);
 
             // Join on the context table so that we can use it for formatting these columns later.
             if ($coursefield === 'summary' || $coursefield === 'shortname' || $coursefield === 'fullname') {
@@ -302,18 +280,11 @@ class course extends base {
      * @return array
      */
     protected function get_all_filters(): array {
-        global $DB;
-
         $filters = [];
         $tablealias = $this->get_table_alias('course');
 
         $fields = $this->get_course_fields();
         foreach ($fields as $field => $name) {
-            $filterfieldsql = "{$tablealias}.{$field}";
-            if ($this->get_course_field_type($field) === column::TYPE_LONGTEXT) {
-                $filterfieldsql = $DB->sql_cast_to_char($filterfieldsql);
-            }
-
             $optionscallback = [static::class, 'get_options_for_' . $field];
             if (is_callable($optionscallback)) {
                 $filterclass = select::class;
@@ -330,7 +301,7 @@ class course extends base {
                 $field,
                 $name,
                 $this->get_entity_name(),
-                $filterfieldsql
+                "{$tablealias}.{$field}"
             ))
                 ->add_joins($this->get_joins());
 

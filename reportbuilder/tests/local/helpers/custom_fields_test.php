@@ -106,12 +106,6 @@ final class custom_fields_test extends core_reportbuilder_testcase {
             [column::TYPE_TEXT, column::TYPE_LONGTEXT, column::TYPE_BOOLEAN, column::TYPE_TIMESTAMP, column::TYPE_TEXT],
             array_map(fn(column $column) => $column->get_type(), $columns)
         );
-
-        // Column sortable.
-        $this->assertEquals(
-            [true, false, true, true, true],
-            array_map(fn(column $column) => $column->get_is_sortable(), $columns)
-        );
     }
 
     /**

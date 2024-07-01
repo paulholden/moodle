@@ -103,8 +103,6 @@ class custom_fields {
      * @return column[]
      */
     public function get_columns(): array {
-        global $DB;
-
         $columns = [];
 
         $categorieswithfields = $this->handler->get_categories_with_fields();
@@ -116,19 +114,18 @@ class custom_fields {
 
                 $customdatatablealias = $this->get_table_alias($field);
                 $customdatasql = "{$customdatatablealias}.{$datafield}";
+                $customdataparams = [];
 
-                // Numeric column (non-text) should coalesce with default, as should text fields for Oracle, for aggregation.
+                // Numeric column (non-text) should coalesce with default.
                 $columntype = $this->get_column_type($field, $datafield);
                 if (!in_array($columntype, [column::TYPE_TEXT, column::TYPE_LONGTEXT])) {
-
-                    // See MDL-78783 regarding no bound parameters, and Oracle limitations of GROUP BY.
+                    $paramdefault = database::generate_param_name();
                     $customdatasql = "
                         CASE WHEN {$this->tablefieldalias} IS NOT NULL
-                             THEN COALESCE({$customdatasql}, " . (float) $datacontroller->get_default_value() . ")
+                             THEN COALESCE({$customdatasql}, :{$paramdefault})
                              ELSE NULL
                         END";
-                } else if ($columntype === column::TYPE_LONGTEXT && $DB->get_dbfamily() === 'oracle') {
-                    $customdatasql = $DB->sql_order_by_text($customdatasql, 1024);
+                    $customdataparams[$paramdefault] = $datacontroller->get_default_value();
                 }
 
                 // Select enough fields to re-create and format each custom field instance value.
@@ -145,11 +142,12 @@ class custom_fields {
                 ))
                     ->add_joins($this->get_joins())
                     ->add_join($this->get_table_join($field))
-                    ->add_field($customdatasql, $datafield)
+                    ->set_type($columntype)
+                    ->add_field($customdatasql, $datafield, $customdataparams)
                     ->add_fields($customdatasqlextra)
                     ->add_field($this->tablefieldalias, 'tablefieldalias')
-                    ->set_type($columntype)
-                    ->set_is_sortable($columntype !== column::TYPE_LONGTEXT)
+                    ->set_groupby_sql("{$customdatatablealias}.{$datafield}")
+                    ->set_is_sortable(true)
                     ->add_callback(static function($value, stdClass $row, field_controller $field, ?string $aggregation): string {
                         if ($row->tablefieldalias === null && $value === null) {
                             return '';
@@ -233,16 +231,9 @@ class custom_fields {
                 // Account for field default value, when joined to the instance table related to the custom fields.
                 if (($fielddefault = $datacontroller->get_default_value()) !== null) {
                     $paramdefault = database::generate_param_name();
-
-                    // Oracle be crazy.
-                    $paramdefaultsql = ":{$paramdefault}";
-                    if ($DB->get_dbfamily() === 'oracle' && in_array($datafield, ['intvalue', 'decvalue'])) {
-                        $paramdefaultsql = $DB->sql_cast_char2int($paramdefaultsql);
-                    }
-
                     $customdatasql = "
                         CASE WHEN {$this->tablefieldalias} IS NOT NULL
-                             THEN COALESCE({$customdatasql}, {$paramdefaultsql})
+                             THEN COALESCE({$customdatasql}, :{$paramdefault})
                              ELSE NULL
                         END";
                     $customdataparams[$paramdefault] = $fielddefault;
