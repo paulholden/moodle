@@ -1185,9 +1185,11 @@ function purge_all_caches() {
  *
  * @param bool[] $options Specific parts of the cache to purge. Valid options are:
  *        'muc'    Purge MUC caches?
+ *        'courses' Purge courses cache
  *        'theme'  Purge theme cache?
  *        'lang'   Purge language string cache?
  *        'js'     Purge javascript cache?
+ *        'template' Purge template cache
  *        'filter' Purge text filter cache?
  *        'other'  Purge all other caches?
  */
