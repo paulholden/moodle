@@ -1,0 +1,13 @@
+issueNumber: MDL-82464
+notes:
+  core_reportbuilder:
+    - message: >
+        It's possible to pass additional arguments `$callable` and
+        `$additionalarguments` when calling `$column->set_aggregation` to
+        specify the callback to execute on output
+      type: improved
+    - message: >
+        When numeric columns (those of `TYPE_INTEGER` or `TYPE_FLOAT`) are
+        aggregated using "count" or "countdistinct" methods, defined column
+        callbacks will be executed
+      type: changed

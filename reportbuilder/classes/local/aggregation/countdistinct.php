@@ -28,7 +28,7 @@ use core_reportbuilder\local\report\column;
  * @copyright   2021 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class countdistinct extends base {
+class countdistinct extends count {
 
     /**
      * Return aggregation name
@@ -37,16 +37,6 @@ class countdistinct extends base {
      */
     public static function get_name(): lang_string {
         return new lang_string('aggregationcountdistinct', 'core_reportbuilder');
-    }
-
-    /**
-     * This aggregation can be performed on all column types
-     *
-     * @param int $columntype
-     * @return bool
-     */
-    public static function compatible(int $columntype): bool {
-        return true;
     }
 
     /**
@@ -78,18 +68,5 @@ class countdistinct extends base {
         }
 
         return "COUNT(DISTINCT {$field})";
-    }
-
-    /**
-     * Return formatted value for column when applying aggregation
-     *
-     * @param mixed $value
-     * @param array $values
-     * @param array $callbacks
-     * @param int $columntype
-     * @return int
-     */
-    public static function format_value($value, array $values, array $callbacks, int $columntype): int {
-        return (int) reset($values);
     }
 }

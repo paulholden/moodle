@@ -470,17 +470,23 @@ final class column {
     }
 
     /**
-     * Set column aggregation type
+     * Set column aggregation type. If a callback is defined, it will overwrite any others for the column {@see set_callback}
      *
      * @param string|null $aggregation Type of aggregation, e.g. 'sum', 'count', etc
+     * @param callable|null $callable
+     * @param mixed $additionalarguments
      * @return self
      * @throws coding_exception For invalid aggregation type, or one that is incompatible with column type
      */
-    public function set_aggregation(?string $aggregation): self {
+    public function set_aggregation(?string $aggregation, ?callable $callable = null, $additionalarguments = null): self {
         if (!empty($aggregation)) {
             $aggregation = aggregation::get_full_classpath($aggregation);
             if (!aggregation::valid($aggregation) || !$aggregation::compatible($this->get_type())) {
                 throw new coding_exception('Invalid column aggregation', $aggregation);
+            }
+
+            if ($callable !== null) {
+                $this->set_callback($callable, $additionalarguments);
             }
         }
 

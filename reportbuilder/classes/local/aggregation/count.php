@@ -69,13 +69,21 @@ class count extends base {
     /**
      * Return formatted value for column when applying aggregation
      *
+     * Numeric columns execute original callbacks if present
+     *
      * @param mixed $value
      * @param array $values
      * @param array $callbacks
      * @param int $columntype
-     * @return int
+     * @return mixed
      */
-    public static function format_value($value, array $values, array $callbacks, int $columntype): int {
-        return (int) reset($values);
+    public static function format_value($value, array $values, array $callbacks, int $columntype) {
+        $count = (int) reset($values);
+
+        if (($columntype !== column::TYPE_INTEGER && $columntype !== column::TYPE_FLOAT) || empty($callbacks)) {
+            return $count;
+        }
+
+        return parent::format_value($count, $values, $callbacks, $columntype);
     }
 }
