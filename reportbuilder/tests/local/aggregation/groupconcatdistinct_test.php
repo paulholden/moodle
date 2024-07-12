@@ -23,7 +23,6 @@ use core_reportbuilder_generator;
 use core_reportbuilder\manager;
 use core_reportbuilder\local\report\column;
 use core_user\reportbuilder\datasource\users;
-use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -39,7 +38,7 @@ require_once("{$CFG->dirroot}/reportbuilder/tests/helpers.php");
  * @copyright   2021 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class groupconcatdistinct_test extends core_reportbuilder_testcase {
+final class groupconcatdistinct_test extends core_reportbuilder_testcase {
 
     /**
      * Test setup, we need to skip these tests on non-supported databases
@@ -142,7 +141,7 @@ class groupconcatdistinct_test extends core_reportbuilder_testcase {
         // Add callback to format the column.
         $instance = manager::get_report_from_persistent($report);
         $instance->get_column('user:confirmed')
-            ->add_callback(static function(string $value, stdClass $row, $arguments, ?string $aggregation): string {
+            ->add_callback(static function(string $value, $row, $arguments, string $aggregation): string {
                 // Simple callback to return the given value, and append aggregation type.
                 return "{$value} ({$aggregation})";
             });
@@ -150,14 +149,8 @@ class groupconcatdistinct_test extends core_reportbuilder_testcase {
         // Assert confirmed column was aggregated, and sorted predictably with callback applied.
         $content = $this->get_custom_report_content($report->get('id'));
         $this->assertEquals([
-            [
-                'c0_firstname' => 'Admin',
-                'c1_confirmed' => 'Yes (groupconcatdistinct)',
-            ],
-            [
-                'c0_firstname' => 'Bob',
-                'c1_confirmed' => 'No (groupconcatdistinct), Yes (groupconcatdistinct)',
-            ],
-        ], $content);
+            ['Admin', 'Yes (groupconcatdistinct)'],
+            ['Bob', 'No (groupconcatdistinct), Yes (groupconcatdistinct)'],
+        ], array_map('array_values', $content));
     }
 }

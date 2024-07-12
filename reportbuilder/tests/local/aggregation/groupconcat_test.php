@@ -24,7 +24,6 @@ use core_reportbuilder_testcase;
 use core_reportbuilder_generator;
 use core_reportbuilder\manager;
 use core_user\reportbuilder\datasource\users;
-use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -40,7 +39,7 @@ require_once("{$CFG->dirroot}/reportbuilder/tests/helpers.php");
  * @copyright   2021 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class groupconcat_test extends core_reportbuilder_testcase {
+final class groupconcat_test extends core_reportbuilder_testcase {
 
     /**
      * Test aggregation when applied to column
@@ -131,7 +130,7 @@ class groupconcat_test extends core_reportbuilder_testcase {
         // Add callback to format the column.
         $instance = manager::get_report_from_persistent($report);
         $instance->get_column('user:confirmed')
-            ->add_callback(static function(string $value, stdClass $row, $arguments, ?string $aggregation): string {
+            ->add_callback(static function(string $value, $row, $arguments, string $aggregation): string {
                 // Simple callback to return the given value, and append aggregation type.
                 return "{$value} ({$aggregation})";
             });
@@ -139,15 +138,9 @@ class groupconcat_test extends core_reportbuilder_testcase {
         // Assert confirmed column was aggregated, and sorted predictably with callback applied.
         $content = $this->get_custom_report_content($report->get('id'));
         $this->assertEquals([
-            [
-                'c0_firstname' => 'Admin',
-                'c1_confirmed' => 'Yes (groupconcat)',
-            ],
-            [
-                'c0_firstname' => 'Bob',
-                'c1_confirmed' => 'No (groupconcat), Yes (groupconcat), Yes (groupconcat)',
-            ],
-        ], $content);
+            ['Admin', 'Yes (groupconcat)'],
+            ['Bob', 'No (groupconcat), Yes (groupconcat), Yes (groupconcat)'],
+        ], array_map('array_values', $content));
     }
 
     /**
@@ -188,14 +181,8 @@ class groupconcat_test extends core_reportbuilder_testcase {
         // Assert description column was aggregated, with callbacks accounting for null values.
         $content = $this->get_custom_report_content($report->get('id'));
         $this->assertEquals([
-            [
-                'c0_name' => $badgeone->name,
-                'c1_description' => "{$userone->description}, {$usertwo->description}",
-            ],
-            [
-                'c0_name' => $badgetwo->name,
-                'c1_description' => '',
-            ],
-        ], $content);
+            [$badgeone->name, "{$userone->description}, {$usertwo->description}"],
+            [$badgetwo->name, ''],
+        ], array_map('array_values', $content));
     }
 }

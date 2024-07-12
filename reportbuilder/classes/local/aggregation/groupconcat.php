@@ -101,9 +101,8 @@ class groupconcat extends base {
      * @return mixed
      */
     public static function format_value($value, array $values, array $callbacks, int $columntype) {
-        $firstvalue = reset($values);
-        if ($firstvalue === null) {
-            return '';
+        if (($groupconcat = reset($values)) === null) {
+            return null;
         }
 
         $formattedvalues = [];
@@ -113,7 +112,7 @@ class groupconcat extends base {
         $valuenamescount = count($valuenames);
 
         // Loop over each extracted value from the concatenated string.
-        $values = explode(self::FIELD_VALUE_DELIMETER, (string)$firstvalue);
+        $values = explode(self::FIELD_VALUE_DELIMETER, $groupconcat);
         foreach ($values as $value) {
 
             // Ensure we have equal number of value names/data, account for truncation by DB.

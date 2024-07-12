@@ -23,7 +23,6 @@ use core_reportbuilder_generator;
 use core_reportbuilder\manager;
 use core_reportbuilder\local\report\column;
 use core_user\reportbuilder\datasource\users;
-use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -39,7 +38,7 @@ require_once("{$CFG->dirroot}/reportbuilder/tests/helpers.php");
  * @copyright   2021 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class sum_test extends core_reportbuilder_testcase {
+final class sum_test extends core_reportbuilder_testcase {
 
     /**
      * Test aggregation when applied to column
@@ -90,29 +89,25 @@ class sum_test extends core_reportbuilder_testcase {
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'user:firstname', 'sortenabled' => 1]);
 
         // This is the column we'll aggregate.
-        $generator->create_column(
-            ['reportid' => $report->get('id'), 'uniqueidentifier' => 'user:suspended', 'aggregation' => sum::get_class_name()]
-        );
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'user:suspended',
+            'aggregation' => sum::get_class_name(),
+        ]);
 
         // Set callback to format the column (hack column definition to ensure callbacks are executed).
         $instance = manager::get_report_from_persistent($report);
         $instance->get_column('user:suspended')
             ->set_type(column::TYPE_INTEGER)
-            ->set_callback(static function(int $value, stdClass $row, $arguments, ?string $aggregation): string {
+            ->set_callback(static function(int $value, $row, $arguments, string $aggregation): string {
                 // Simple callback to return the given value, and append aggregation type.
                 return "{$value} ({$aggregation})";
             });
 
         $content = $this->get_custom_report_content($report->get('id'));
         $this->assertEquals([
-            [
-                'c0_firstname' => 'Admin',
-                'c1_suspended' => '0 (sum)',
-            ],
-            [
-                'c0_firstname' => 'Bob',
-                'c1_suspended' => '2 (sum)',
-            ],
-        ], $content);
+            ['Admin', '0 (sum)'],
+            ['Bob', '2 (sum)'],
+        ], array_map('array_values', $content));
     }
 }
