@@ -130,8 +130,9 @@ class user_profile_fields {
                     END";
             }
 
-            $columns[] = (new column(
-                'profilefield_' . core_text::strtolower($profilefield->field->shortname),
+            $columnname = 'profilefield_' . core_text::strtolower($profilefield->field->shortname);
+            $columns[$columnname] = (new column(
+                $columnname,
                 new lang_string('customfieldcolumn', 'core_reportbuilder',
                     format_string($profilefield->field->name, true, ['escape' => false, 'context' => system::instance()])),
                 $this->entityname
@@ -157,7 +158,7 @@ class user_profile_fields {
                 }, $profilefield);
         }
 
-        return $columns;
+        return array_values($columns);
     }
 
     /**
@@ -215,9 +216,10 @@ class user_profile_fields {
                 $userinfoparams[$paramdefault] = $fielddefault;
             }
 
+            $filtername = 'profilefield_' . core_text::strtolower($profilefield->field->shortname);
             $filter = (new filter(
                 $classname,
-                'profilefield_' . core_text::strtolower($profilefield->field->shortname),
+                $filtername,
                 new lang_string('customfieldcolumn', 'core_reportbuilder',
                     format_string($profilefield->field->name, true, ['escape' => false, 'context' => system::instance()])),
                 $this->entityname,
@@ -232,10 +234,10 @@ class user_profile_fields {
                 $filter->set_options($profilefield->options);
             }
 
-            $filters[] = $filter;
+            $filters[$filtername] = $filter;
         }
 
-        return $filters;
+        return array_values($filters);
     }
 
     /**
