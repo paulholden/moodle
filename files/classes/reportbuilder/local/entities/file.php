@@ -114,7 +114,10 @@ class file extends base {
             ->add_field("{$filesalias}.filesize")
             ->add_field("CASE WHEN {$filesalias}.filename = '.' THEN 1 ELSE 0 END", 'directory')
             ->set_is_sortable(true)
-            ->add_callback(static function($filesize, stdClass $fileinfo): string {
+            ->add_callback(static function($value, stdClass $fileinfo, $arguments, ?string $aggregation): string {
+                if (in_array($aggregation, ['count', 'countdistinct'])) {
+                    return (string) $value;
+                }
                 // Absent file size and/or directory should not return output.
                 if ($fileinfo->filesize === null || $fileinfo->directory) {
                     return '';
