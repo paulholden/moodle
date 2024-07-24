@@ -890,7 +890,6 @@ $string['failedtaskbody'] = '<p>Hi {$a->firstname},</p>
 <p>The task <b>{$a->taskname}</b> has failed multiple times and requires attention.</p>
 <p><a href="{$a->link}">See task</a></p>';
 $string['failedtasksubject'] = 'Task failed: {$a}';
-$string['failedtaskcontexturlname'] = 'Status report';
 $string['feedback'] = 'Feedback';
 $string['file'] = 'File';
 $string['fileexists'] = 'There is already a file called {$a}';
@@ -2520,5 +2519,6 @@ $string['coursesearch_help'] = 'You can search for multiple words at once and ca
 // Deprecated since Moodle 4.5.
 $string['commentscount'] = 'Comments ({$a})';
 $string['datechanged'] = 'Date changed';
+$string['failedtaskcontexturlname'] = 'Status report';
 $string['registrationcontactno'] = 'No, I do not want to be contacted by other people';
 $string['registrationcontactyes'] = 'Yes, provide a form for other Moodlers to contact me';
