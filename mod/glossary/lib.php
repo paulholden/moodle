@@ -1834,7 +1834,7 @@ function glossary_print_approval_menu($cm, $glossary,$mode, $hook, $sortkey = ''
 
     glossary_print_all_links($cm, $glossary, $mode, $hook);
 
-    glossary_print_sorting_links($cm, $mode, 'CREATION', 'asc');
+    glossary_print_sorting_links($cm, $mode, $sortkey, $sortorder);
 }
 /**
  * @param object $cm
@@ -2059,6 +2059,11 @@ function glossary_print_sorting_links($cm, $mode, $sortkey = '',$sortorder = '')
      $neworder = '';
      $currentorder = '';
      $currentsort = '';
+
+     if ($sortkey === '') {
+         $sortkey = 'CREATION';
+     }
+
      if ( $sortorder ) {
          if ( $sortorder == 'asc' ) {
              $currentorder = $asc;
@@ -2083,8 +2088,6 @@ function glossary_print_sorting_links($cm, $mode, $sortkey = '',$sortorder = '')
      }
      $ficon     = '';
      $fneworder = '';
-     $fbtag     = '';
-     $fendbtag  = '';
 
      $sicon     = '';
      $sneworder = '';
@@ -2092,7 +2095,6 @@ function glossary_print_sorting_links($cm, $mode, $sortkey = '',$sortorder = '')
      $sbtag      = '';
      $fbtag      = '';
      $fendbtag      = '';
-     $sendbtag      = '';
 
      $sendbtag  = '';
 
