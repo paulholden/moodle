@@ -306,7 +306,7 @@ class stateactions {
         $maxsections = $format->get_max_sections();
 
         if ($lastsectionnumber >= $maxsections) {
-            throw new moodle_exception('maxsectionslimit', 'moodle', $maxsections);
+            throw new moodle_exception('maxsectionslimit', 'moodle', '', $maxsections);
         }
 
         $modinfo = get_fast_modinfo($course);
