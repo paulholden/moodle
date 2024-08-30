@@ -172,7 +172,6 @@ Feature: An administrator can browse user accounts
       | User Three             | three@example.com |
     And I click on "Filters" "button"
     And I set the following fields in the "System role" "core_reportbuilder > Filter" to these values:
-      | System role operator | Is equal to    |
       | System role value    | Course creator |
     And I click on "Apply" "button" in the "[data-region='report-filters']" "css_element"
     And I click on "Filters" "button"
