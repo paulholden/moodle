@@ -1,6 +1,10 @@
 This files describes API changes in /message/ messaging system,
 information provided here is intended especially for developers.
 
+=== 4.4.6 ===
+
+* The `contexturl` property to `\core\message\message` instances can now contain `moodle_url` values in addition to plain strings
+
 === 4.2 ===
 
 * The following methods, deprecated since 3.10, have been removed and can no longer be used:
