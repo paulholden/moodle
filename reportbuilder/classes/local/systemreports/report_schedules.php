@@ -158,18 +158,6 @@ class report_schedules extends system_report {
             })
         );
 
-        // Time scheduled column.
-        $this->add_column((new column(
-            'timescheduled',
-            new lang_string('startingfrom'),
-            $this->get_schedule_entity_name()
-        ))
-            ->set_type(column::TYPE_TIMESTAMP)
-            ->add_fields("{$tablealias}.timescheduled")
-            ->set_is_sortable(true)
-            ->add_callback([format::class, 'userdate'])
-        );
-
         // Time last sent column.
         $this->add_column((new column(
             'timelastsent',
@@ -186,6 +174,18 @@ class report_schedules extends system_report {
 
                 return format::userdate($timelastsent, $row);
             })
+        );
+
+        // Time next send column.
+        $this->add_column((new column(
+            'timenextsend',
+            new lang_string('timenextsend', 'core_reportbuilder'),
+            $this->get_schedule_entity_name()
+        ))
+            ->set_type(column::TYPE_TIMESTAMP)
+            ->add_fields("{$tablealias}.timenextsend")
+            ->set_is_sortable(true)
+            ->add_callback([format::class, 'userdate'])
         );
 
         // Format column.
@@ -253,7 +253,7 @@ class report_schedules extends system_report {
             "{$tablealias}.name"
         )));
 
-        // Time created filter.
+        // Time last sent filter.
         $this->add_filter((new filter(
             date::class,
             'timelastsent',
@@ -264,12 +264,22 @@ class report_schedules extends system_report {
             ->set_limited_operators([
                 date::DATE_ANY,
                 date::DATE_EMPTY,
+                date::DATE_NOT_EMPTY,
                 date::DATE_RANGE,
-                date::DATE_PREVIOUS,
+                date::DATE_BEFORE,
+                date::DATE_LAST,
                 date::DATE_CURRENT,
             ])
         );
 
+        // Time next send filter.
+        $this->add_filter((new filter(
+            date::class,
+            'timenextsend',
+            new lang_string('timenextsend', 'core_reportbuilder'),
+            $this->get_schedule_entity_name(),
+            "{$tablealias}.timenextsend"
+        )));
     }
 
     /**
