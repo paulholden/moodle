@@ -238,7 +238,12 @@ class mod_feedback_responses_table extends table_sql {
      * @return \moodle_url
      */
     protected function get_link_single_entry($row) {
-        return new moodle_url($this->baseurl, ['userid' => $row->{$this->useridfield}, 'showcompleted' => $row->id]);
+        return new moodle_url('/mod/feedback/show_entry.php',
+        [
+            'id' => $this->feedbackstructure->get_cm()->id,
+            'userid' => $row->{$this->useridfield},
+            'showcompleted' => $row->id,
+        ]);
     }
 
     /**

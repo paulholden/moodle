@@ -536,7 +536,7 @@ function feedback_user_complete($course, $user, $mod, $feedback) {
     if ($completed = $DB->get_record('feedback_completed', $params)) {
         // User has completed feedback.
         if (has_capability('mod/feedback:viewreports', $context)) {
-            $url = new moodle_url('/mod/feedback/show_entries.php',
+            $url = new moodle_url('/mod/feedback/show_entry.php',
                 ['id' => $mod->id, 'userid' => $user->id,
                     'showcompleted' => $completed->id]);
         }
@@ -2592,7 +2592,8 @@ function feedback_send_email($cm, $feedback, $course, $user, $completed = null) 
             $info = new stdClass();
             $info->username = $printusername;
             $info->feedback = format_string($feedback->name, true);
-            $info->url = $CFG->wwwroot.'/mod/feedback/show_entries.php?'.
+            // TODO: Test this change!
+            $info->url = $CFG->wwwroot.'/mod/feedback/show_entry.php?'.
                             'id='.$cm->id.'&'.
                             'userid=' . $user->id;
             if ($completed) {

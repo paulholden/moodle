@@ -95,7 +95,11 @@ class mod_feedback_responses_anon_table extends mod_feedback_responses_table {
      * @return \moodle_url
      */
     protected function get_link_single_entry($row) {
-        return new moodle_url($this->baseurl, ['showcompleted' => $row->id]);
+        return new moodle_url('/mod/feedback/show_entry.php',
+        [
+            'id' => $this->feedbackstructure->get_cm()->id,
+            'showcompleted' => $row->id,
+        ]);
     }
 
     /**

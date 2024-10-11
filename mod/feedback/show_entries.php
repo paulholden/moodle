@@ -25,24 +25,16 @@
 require_once("../../config.php");
 require_once("lib.php");
 
-////////////////////////////////////////////////////////
-//get the params
-////////////////////////////////////////////////////////
+// Get the params.
 $id = required_param('id', PARAM_INT);
-$userid = optional_param('userid', false, PARAM_INT);
-$showcompleted = optional_param('showcompleted', false, PARAM_INT);
 $deleteid = optional_param('delete', null, PARAM_INT);
 $courseid = optional_param('courseid', null, PARAM_INT);
 
-////////////////////////////////////////////////////////
-//get the objects
-////////////////////////////////////////////////////////
-
+// Get the objects.
 list($course, $cm) = get_course_and_cm_from_cmid($id, 'feedback');
 
-$baseurl = new moodle_url('/mod/feedback/show_entries.php', array('id' => $cm->id));
-$PAGE->set_url(new moodle_url($baseurl, array('userid' => $userid, 'showcompleted' => $showcompleted,
-        'delete' => $deleteid)));
+$baseurl = new moodle_url('/mod/feedback/show_entries.php', ['id' => $cm->id]);
+$PAGE->set_url(new moodle_url($baseurl, ['delete' => $deleteid]));
 $context = context_module::instance($cm->id);
 
 require_login($course, true, $cm);
@@ -59,9 +51,6 @@ if ($deleteid) {
     $feedbackstructure = new mod_feedback_completion($feedback, $cm, 0, true, $deleteid);
     feedback_delete_completed($feedbackstructure->get_completed(), $feedback, $cm);
     redirect($baseurl);
-} else if ($showcompleted || $userid) {
-    // Viewing individual response.
-    $feedbackstructure = new mod_feedback_completion($feedback, $cm, 0, true, $showcompleted, $userid);
 } else {
     // Viewing list of reponses.
     $feedbackstructure = new mod_feedback_structure($feedback, $cm, $courseid);
@@ -90,7 +79,6 @@ $PAGE->activityheader->set_attrs([
     'hidecompletion' => true,
     'description' => ''
 ]);
-$PAGE->add_body_class('limitedwidth');
 echo $OUTPUT->header();
 
 /** @var \mod_feedback\output\renderer $renderer */
@@ -98,71 +86,22 @@ $renderer = $PAGE->get_renderer('mod_feedback');
 echo $renderer->main_action_bar($actionbar);
 echo $OUTPUT->heading(get_string('show_entries', 'mod_feedback'), 3);
 
-/// Print the main part of the page
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
+// Print the list of responses.
+$courseselectform->display();
 
-if ($userid || $showcompleted) {
-    // Print the response of the given user.
-    $completedrecord = $feedbackstructure->get_completed();
+// Show non-anonymous responses (always retrieve them even if current feedback is anonymous).
+$totalrows = $responsestable->get_total_responses_count();
+if (!$feedbackstructure->is_anonymous() || $totalrows) {
+    echo $OUTPUT->heading(get_string('non_anonymous_entries', 'feedback', $totalrows), 4);
+    $responsestable->display();
+}
 
-    if ($userid) {
-        $usr = $DB->get_record('user', array('id' => $userid), '*', MUST_EXIST);
-        $responsetitle = userdate($completedrecord->timemodified) . ' (' . fullname($usr) . ')';
-    } else {
-        $responsetitle = get_string('response_nr', 'feedback') . ': ' .
-                $completedrecord->random_response . ' (' . get_string('anonymous', 'feedback') . ')';
-    }
-
-    echo $OUTPUT->heading($responsetitle, 4);
-
-    $form = new mod_feedback_complete_form(mod_feedback_complete_form::MODE_VIEW_RESPONSE,
-            $feedbackstructure, 'feedback_viewresponse_form');
-    $form->display();
-
-    list($prevresponseurl, $returnurl, $nextresponseurl) = $userid ?
-            $responsestable->get_reponse_navigation_links($completedrecord) :
-            $anonresponsestable->get_reponse_navigation_links($completedrecord);
-
-    echo html_writer::start_div('response_navigation');
-
-    $responsenavigation = [
-        'col1content' => '',
-        'col2content' => html_writer::link($returnurl, get_string('back'), ['class' => 'back_to_list']),
-        'col3content' => '',
-    ];
-
-    if ($prevresponseurl) {
-        $responsenavigation['col1content'] = html_writer::link($prevresponseurl, get_string('prev'), ['class' => 'prev_response']);
-    }
-
-    if ($nextresponseurl) {
-        $responsenavigation['col3content'] = html_writer::link($nextresponseurl, get_string('next'), ['class' => 'next_response']);
-    }
-
-    echo $OUTPUT->render_from_template('core/columns-1to1to1', $responsenavigation);
-    echo html_writer::end_div();
-
-} else {
-    // Print the list of responses.
-    $courseselectform->display();
-
-    // Show non-anonymous responses (always retrieve them even if current feedback is anonymous).
-    $totalrows = $responsestable->get_total_responses_count();
-    if (!$feedbackstructure->is_anonymous() || $totalrows) {
-        echo $OUTPUT->heading(get_string('non_anonymous_entries', 'feedback', $totalrows), 4);
-        $responsestable->display();
-    }
-
-    // Show anonymous responses (always retrieve them even if current feedback is not anonymous).
-    $feedbackstructure->shuffle_anonym_responses();
-    $totalrows = $anonresponsestable->get_total_responses_count();
-    if ($feedbackstructure->is_anonymous() || $totalrows) {
-        echo $OUTPUT->heading(get_string('anonymous_entries', 'feedback', $totalrows), 4);
-        $anonresponsestable->display();
-    }
-
+// Show anonymous responses (always retrieve them even if current feedback is not anonymous).
+$feedbackstructure->shuffle_anonym_responses();
+$totalrows = $anonresponsestable->get_total_responses_count();
+if ($feedbackstructure->is_anonymous() || $totalrows) {
+    echo $OUTPUT->heading(get_string('anonymous_entries', 'feedback', $totalrows), 4);
+    $anonresponsestable->display();
 }
 
 // Finish the page.

@@ -105,10 +105,10 @@ class response_submitted extends \core\event\base {
      */
     public function get_url() {
         if ($this->anonymous) {
-            return new \moodle_url('/mod/feedback/show_entries.php', array('id' => $this->other['cmid'],
+            return new \moodle_url('/mod/feedback/show_entry.php', array('id' => $this->other['cmid'],
                     'showcompleted' => $this->objectid));
         } else {
-            return new \moodle_url('/mod/feedback/show_entries.php' , array('id' => $this->other['cmid'],
+            return new \moodle_url('/mod/feedback/show_entry.php' , array('id' => $this->other['cmid'],
                     'userid' => $this->userid, 'showcompleted' => $this->objectid));
         }
     }
