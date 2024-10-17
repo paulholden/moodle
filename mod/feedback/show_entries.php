@@ -85,7 +85,7 @@ echo $OUTPUT->heading(get_string('show_entries', 'mod_feedback'), 3);
 // Print the list of responses.
 $courseselectform->display();
 
-$report = system_report_factory::create(responses::class, context_system::instance());
+$report = system_report_factory::create(responses::class, $context);
 echo $report->output();
 
 // Finish the page.
