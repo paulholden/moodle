@@ -90,10 +90,9 @@ class response extends base {
         ))
             ->add_joins($this->get_joins())
             ->set_type(column::TYPE_TIMESTAMP)
-            ->add_field("{$responsealias}.anonymous_response")
+            ->add_fields("{$responsealias}.timemodified, {$responsealias}.anonymous_response")
             ->set_is_sortable(true)
-            ->add_callback([format::class, 'userdate'])
-            ->add_callback(fn($value, $row) => $row->anonymous_response == FEEDBACK_ANONYMOUS_YES ? '' : $value);
+            ->add_callback(fn($value, $row) => $row->anonymous_response == FEEDBACK_ANONYMOUS_YES ? '' : format::userdate($value, $row));
 
         return $columnns;
     }

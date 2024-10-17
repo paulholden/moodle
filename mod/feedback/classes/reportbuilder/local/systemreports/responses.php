@@ -45,6 +45,8 @@ global $CFG;
  */
 class responses extends system_report {
 
+    private array $items;
+
     /** @var int $responseid The ID of the current response row */
     private int $responseid;
 
@@ -53,6 +55,9 @@ class responses extends system_report {
      */
     protected function initialise(): void {
         global $USER;
+
+        [$course, $cm] = get_course_and_cm_from_cmid($this->get_context()->instanceid, 'feedback');
+        $this->items = (new \mod_feedback_structure(null, $cm, $course->id))->get_items(true);
 
         $entityresponse = new response();
         $entityresponsealias = $entityresponse->get_table_alias('feedback_completed');
@@ -72,8 +77,6 @@ class responses extends system_report {
         $this->add_columns();
         $this->add_filters();
         $this->add_actions();
-
-        // $this->set_initial_sort_column('response:timemodified', SORT_ASC);
     }
 
     /**
@@ -96,17 +99,47 @@ class responses extends system_report {
      * @param string $entityservicealias
      */
     public function add_columns(): void {
+        global $DB;
+
+        $entityresponsealias = $this->get_entity('response')->get_table_alias('feedback_completed');
+
         $this->add_columns_from_entities([
+            'user:picture',
             'user:fullnamewithlink',
+            'response:timemodified',
         ]);
 
         // Include all identity field columns.
-        $identitycolumns = $this->get_entity('user')->get_identity_columns($this->get_context());
-        foreach ($identitycolumns as $identitycolumn) {
-            $this->add_column($identitycolumn);
-        }
+ //       $identitycolumns = $this->get_entity('user')->get_identity_columns($this->get_context());
+ //       foreach ($identitycolumns as $identitycolumn) {
+ //           $this->add_column($identitycolumn);
+ //       }
+
+        // You can aggregate the groups entity name column here.
 
         // TODO: Add the rest of the columns, including the ones from the question entity.
+        $this->annotate_entity('test', new lang_string('yes'));
+        foreach ($this->items as $nr => $item) {
+            $alias = database::generate_alias();
+            $param = database::generate_param_name();
+            $this->add_column((new column(
+                "item{$nr}",
+                new lang_string('customfieldcolumn', 'core_reportbuilder', $item->label),
+                'test',
+            ))
+                ->add_join("LEFT JOIN {feedback_value} {$alias} ON {$alias}.completed = {$entityresponsealias}.id
+                    AND {$alias}.item = {$item->id}")
+                ->add_field($DB->sql_cast_to_char("{$alias}.value"), 'value')
+                ->set_is_sortable(true)
+            );
+        }
+
+        // Pseudo columns.
+
+
+
+
+        $this->set_initial_sort_column('user:fullnamewithlink', SORT_ASC);
     }
 
     /**
