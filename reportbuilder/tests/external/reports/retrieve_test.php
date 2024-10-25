@@ -49,11 +49,21 @@ final class retrieve_test extends externallib_advanced_testcase {
         $this->getDataGenerator()->create_user(['firstname' => 'Zoe', 'lastname' => 'Zebra', 'email' => 'u1@example.com']);
         $this->getDataGenerator()->create_user(['firstname' => 'Charlie', 'lastname' => 'Carrot', 'email' => 'u2@example.com']);
 
+        /** @var \core_customfield_generator $cfgenerator */
+        $cfgenerator = self::getDataGenerator()->get_plugin_generator('core_customfield');
+        $params = [
+            'component' => 'core_reportbuilder',
+            'area' => 'report',
+        ];
+        $category = $cfgenerator->create_category($params);
+        $cfgenerator->create_field(['categoryid' => $category->get('id'), 'name' => 'customfield name',
+            'type' => 'text', 'shortname' => 'fld1', ]);
+
         /** @var core_reportbuilder_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
 
         $report = $generator->create_report(['name' => 'My report', 'source' => users::class, 'default' => false,
-            'tags' => ['cat', 'dog']]);
+            'tags' => ['cat', 'dog'], 'customfield_fld1' => 'Hello123', ]);
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'user:fullname', 'sortenabled' => 1]);
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'user:email']);
 
@@ -97,6 +107,8 @@ final class retrieve_test extends externallib_advanced_testcase {
         ], $result['data']['rows']);
         $this->assertEquals(3, $result['data']['totalrowcount']);
         $this->assertEmpty($result['warnings']);
+
+        $this->assertEquals('Hello123', $result['details']['customfields']['datafields'][0]['value']);
     }
 
     /**

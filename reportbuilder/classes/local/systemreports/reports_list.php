@@ -28,7 +28,7 @@ use core_reportbuilder\manager;
 use core_reportbuilder\system_report;
 use core_reportbuilder\local\entities\user;
 use core_reportbuilder\local\filters\{boolean_select, date, tags, text, select};
-use core_reportbuilder\local\helpers\{audience, format};
+use core_reportbuilder\local\helpers\{audience, custom_fields, format};
 use core_reportbuilder\local\report\{action, column, filter};
 use core_reportbuilder\output\report_name_editable;
 use core_reportbuilder\local\models\report;
@@ -288,6 +288,12 @@ class reports_list extends system_report {
         $this->add_filter_from_entity('user:userselect')
             ->set_header(new lang_string('usermodified', 'reportbuilder'))
             ->set_is_available(has_capability('moodle/user:viewalldetails', $this->get_context()));
+
+        // Custom fields filters.
+        $filters = $this->get_custom_fields()->get_filters();
+        foreach ($filters as $filter) {
+            $this->add_filter($filter);
+        }
     }
 
     /**
@@ -385,5 +391,14 @@ class reports_list extends system_report {
      */
     private function report_source_valid(string $source): bool {
         return manager::report_source_exists($source, datasource::class) && manager::report_source_available($source);
+    }
+
+    /**
+     * Get the custom fields helper
+     *
+     * @return custom_fields
+     */
+    protected function get_custom_fields(): custom_fields {
+        return new custom_fields('rb.id', 'report', 'core_reportbuilder', 'report', 0);
     }
 }

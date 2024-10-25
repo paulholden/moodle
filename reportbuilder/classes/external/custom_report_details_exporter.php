@@ -18,11 +18,13 @@ declare(strict_types=1);
 
 namespace core_reportbuilder\external;
 
+use core_customfield\external\data_exporter;
 use core_user;
 use renderer_base;
 use core\external\persistent_exporter;
 use core_reportbuilder\datasource;
 use core_reportbuilder\manager;
+use core_reportbuilder\customfield\report_handler;
 use core_reportbuilder\local\models\report;
 use core_tag\external\{tag_item_exporter, util};
 use core_user\external\user_summary_exporter;
@@ -63,6 +65,10 @@ class custom_report_details_exporter extends persistent_exporter {
                 'type' => tag_item_exporter::read_properties_definition(),
                 'multiple' => true,
             ],
+            'customfields' => [
+                'type' => data_exporter::read_properties_definition(),
+                'optional' => true,
+            ],
             'modifiedby' => ['type' => user_summary_exporter::read_properties_definition()],
         ];
     }
@@ -75,11 +81,13 @@ class custom_report_details_exporter extends persistent_exporter {
      */
     protected function get_other_values(renderer_base $output): array {
         $source = $this->persistent->get('source');
+        $reportid = $this->persistent->get('id');
         $usermodified = core_user::get_user($this->persistent->get('usermodified'));
-
+        $handler = report_handler::create($reportid);
         return [
             'sourcename' => manager::report_source_exists($source, datasource::class) ? $source::get_name() : null,
-            'tags' => util::get_item_tags('core_reportbuilder', 'reportbuilder_report', $this->persistent->get('id')),
+            'tags' => util::get_item_tags('core_reportbuilder', 'reportbuilder_report', $reportid),
+            'customfields' => (new data_exporter($handler, $reportid))->export($output),
             'modifiedby' => (new user_summary_exporter($usermodified))->export($output),
         ];
     }
