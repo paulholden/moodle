@@ -66,8 +66,7 @@ export const init = () => {
         if (footerIsShown && !e.target.closest(SELECTORS.FOOTERCONTAINER)) {
             $(footerButton).popover('hide');
         }
-    },
-    true);
+    }, true);
 
     document.addEventListener('keydown', e => {
         if (footerIsShown && e.key === 'Escape') {
@@ -76,12 +75,11 @@ export const init = () => {
         }
     });
 
-    document.addEventListener('focus', e => {
+    document.addEventListener('focusin', e => {
         if (footerIsShown && !e.target.closest(SELECTORS.FOOTERCONTAINER)) {
             $(footerButton).popover('hide');
         }
-    },
-    true);
+    }, true);
 
     $(footerButton).on('show.bs.popover', () => {
         footerIsShown = true;
