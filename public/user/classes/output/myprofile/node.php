@@ -60,7 +60,7 @@ class node implements \renderable {
     private $url;
 
     /**
-     * @var string Content to display under this node.
+     * @var string|null Content to display under this node.
      */
     private $content;
 

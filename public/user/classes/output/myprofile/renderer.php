@@ -79,7 +79,6 @@ class renderer extends \plugin_renderer_base {
      * @return string
      */
     public function render_node(node $node) {
-        $return = '';
         if (is_object($node->url)) {
             $header = html_writer::link($node->url, $node->title);
         } else {
@@ -91,12 +90,11 @@ class renderer extends \plugin_renderer_base {
         }
         $content = $node->content;
         $classes = $node->classes;
-        if (!empty($content)) {
+        if ((string) $content !== '') {
             if ($header) {
                 // There is some content to display below this make this a header.
                 $return = html_writer::tag('dt', $header);
                 $return .= html_writer::tag('dd', $content);
-
                 $return = html_writer::tag('dl', $return);
             } else {
                 $return = html_writer::span($content);
