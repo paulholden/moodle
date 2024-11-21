@@ -19,12 +19,14 @@ declare(strict_types=1);
 namespace core_reportbuilder\local\helpers;
 
 use advanced_testcase;
+use core_admin\reportbuilder\local\systemreports\users as adminusers;
+use core\context\system;
 use core_reportbuilder_generator;
-use invalid_parameter_exception;
-use core_reportbuilder\datasource;
+use core_reportbuilder\{datasource, system_report_factory};
 use core_reportbuilder\local\models\{audience, column, filter, schedule};
 use core_tag_tag;
 use core_user\reportbuilder\datasource\users;
+use invalid_parameter_exception;
 
 /**
  * Unit tests for the report helper class
@@ -826,5 +828,41 @@ final class report_test extends advanced_testcase {
         $this->expectException(invalid_parameter_exception::class);
         $this->expectExceptionMessage('Invalid filter');
         report::reorder_report_filter($report->get('id'), 42, 1);
+    }
+
+    /**
+     * Test getting row count for a custom report
+     */
+    public function test_get_report_row_count_custom_report(): void {
+        $this->resetAfterTest();
+
+        $this->getDataGenerator()->create_user();
+
+        /** @var core_reportbuilder_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
+
+        $report = $generator->create_report(['name' => 'My report', 'source' => users::class, 'default' => 0]);
+        $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'user:fullname']);
+        $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'cohort:name']);
+        $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'tag:name']);
+
+        // There are two users, the admin plus that we just created.
+        $this->assertEquals(2, report::get_report_row_count($report->get('id')));
+    }
+
+    /**
+     * Test getting row count for a system report
+     */
+    public function test_get_report_row_count_system_report(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $this->getDataGenerator()->create_user();
+
+        $report = system_report_factory::create(adminusers::class, system::instance())
+            ->get_report_persistent();
+
+        // There are two users, the admin plus that we just created.
+        $this->assertEquals(2, report::get_report_row_count($report->get('id'), []));
     }
 }
