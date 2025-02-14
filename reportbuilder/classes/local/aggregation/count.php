@@ -85,7 +85,7 @@ class count extends base {
      * @param int $columntype
      * @return int
      */
-    public static function format_value($value, array $values, array $callbacks, int $columntype): int {
+    public function format_value($value, array $values, array $callbacks, int $columntype): int {
         return (int) reset($values);
     }
 }
