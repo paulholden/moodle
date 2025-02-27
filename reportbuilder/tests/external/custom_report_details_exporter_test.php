@@ -19,7 +19,7 @@ declare(strict_types=1);
 namespace core_reportbuilder\external;
 
 use advanced_testcase;
-use core\context\system;
+use core_customfield_generator;
 use core_reportbuilder_generator;
 use core_user\reportbuilder\datasource\users;
 
@@ -37,25 +37,20 @@ final class custom_report_details_exporter_test extends advanced_testcase {
      * Test exported data structure
      */
     public function test_export(): void {
-        global $PAGE, $DB;
+        global $PAGE;
 
         $this->resetAfterTest();
+        $this->setAdminUser();;
 
-        $user = $this->getDataGenerator()->create_user();
-        $this->setUser($user);
-        $userrole = $DB->get_field('role', 'id', ['shortname' => 'user']);
-        assign_capability('moodle/reportbuilder:edit', CAP_ALLOW, $userrole, system::instance());
-        assign_capability('moodle/reportbuilder:configurecustomfields', CAP_ALLOW, $userrole, system::instance());
-
-        /** @var \core_customfield_generator $cfgenerator */
-        $cfgenerator = self::getDataGenerator()->get_plugin_generator('core_customfield');
-        $params = [
-            'component' => 'core_reportbuilder',
-            'area' => 'report',
-        ];
-        $category = $cfgenerator->create_category($params);
-        $cfgenerator->create_field(['categoryid' => $category->get('id'), 'name' => 'customfield name',
-            'type' => 'text', 'shortname' => 'fld1', ]);
+        /** @var core_customfield_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_customfield');
+        $category = $generator->create_category(['component' => 'core_reportbuilder', 'area' => 'report']);
+        $generator->create_field([
+            'categoryid' => $category->get('id'),
+            'name' => 'My field',
+            'shortname' => 'myfield',
+            'type' => 'number',
+        ]);
 
         /** @var core_reportbuilder_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
@@ -63,7 +58,7 @@ final class custom_report_details_exporter_test extends advanced_testcase {
             'name' => 'My report',
             'source' => users::class,
             'tags' => ['cat', 'dog'],
-            'customfield_fld1' => 'Hello123',
+            'customfield_myfield' => 42,
         ]);
 
         $exporter = new custom_report_details_exporter($report);
@@ -81,14 +76,12 @@ final class custom_report_details_exporter_test extends advanced_testcase {
         $this->assertObjectHasProperty('tags', $export);
         $this->assertEquals(['cat', 'dog'], array_column($export->tags, 'name'));
 
-        // The exporter outputs the customfields.
-        $customfields = $export->customfields->datafields;
-        $this->assertEquals('customfield name', $customfields[0]['name']);
-        $this->assertEquals('fld1', $customfields[0]['shortname']);
-        $this->assertEquals('Hello123', $customfields[0]['value']);
+        // We use the custom field exporter for report custom fields.
+        $this->assertObjectHasProperty('customfields', $export);
+        $this->assertEquals(['42'], array_column($export->customfields->data, 'value'));
 
         // We use the user exporter for the modifier of the report.
         $this->assertObjectHasProperty('modifiedby', $export);
-        $this->assertEquals(fullname($user), $export->modifiedby->fullname);
+        $this->assertEquals('Admin User', $export->modifiedby->fullname);
     }
 }
