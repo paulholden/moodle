@@ -23,6 +23,7 @@
  */
 
 use core_external\external_api;
+use core_text;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -43,6 +44,7 @@ function core_customfield_inplace_editable($itemtype, $itemid, $newvalue) {
             throw new moodle_exception('nopermissionconfigure', 'core_customfield');
         }
         $newvalue = clean_param($newvalue, PARAM_TEXT);
+        $newvalue = core_text::substr($newvalue, 0, 1333);
         $handler->rename_category($category, $newvalue);
         return \core_customfield\api::get_category_inplace_editable($category, true);
     }
