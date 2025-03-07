@@ -28,8 +28,7 @@ use theme_config;
 use core_course_category;
 use core_reportbuilder\local\entities\base;
 use core_reportbuilder\local\filters\{category, select, text};
-use core_reportbuilder\local\report\column;
-use core_reportbuilder\local\report\filter;
+use core_reportbuilder\local\report\{column, filter};
 
 /**
  * Course category entity
@@ -292,8 +291,15 @@ class course_category extends base {
      * @return string
      */
     public function get_context_join(): string {
+
+        // If the context table is already joined, we don't need to do that again.
+        if ($this->has_table_join_alias('context')) {
+            return '';
+        }
+
         $coursecategories = $this->get_table_alias('course_categories');
         $context = $this->get_table_alias('context');
+
         return "LEFT JOIN {context} {$context} ON {$context}.instanceid = {$coursecategories}.id
             AND {$context}.contextlevel = " . CONTEXT_COURSECAT;
     }

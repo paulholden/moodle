@@ -24,15 +24,9 @@ use lang_string;
 use stdClass;
 use theme_config;
 use core_reportbuilder\local\entities\base;
-use core_reportbuilder\local\filters\boolean_select;
-use core_reportbuilder\local\filters\cohort as cohort_filter;
-use core_reportbuilder\local\filters\date;
-use core_reportbuilder\local\filters\select;
-use core_reportbuilder\local\filters\text;
-use core_reportbuilder\local\helpers\custom_fields;
-use core_reportbuilder\local\helpers\format;
-use core_reportbuilder\local\report\column;
-use core_reportbuilder\local\report\filter;
+use core_reportbuilder\local\filters\{boolean_select, cohort as cohort_filter, date, select, text};
+use core_reportbuilder\local\helpers\{custom_fields, format};
+use core_reportbuilder\local\report\{column, filter};
 
 /**
  * Cohort entity
@@ -105,7 +99,7 @@ class cohort extends base {
         $tablealias = $this->get_table_alias('cohort');
         $contextalias = $this->get_table_alias('context');
 
-        // Category/context column.
+        // Context column (Deprecated since Moodle 5.1).
         $columns[] = (new column(
             'context',
             new lang_string('category'),
@@ -116,6 +110,7 @@ class cohort extends base {
             ->set_type(column::TYPE_TEXT)
             ->add_fields("{$tablealias}.contextid, " . context_helper::get_preload_record_columns_sql($contextalias))
             ->set_is_sortable(true)
+            ->set_is_deprecated('See \'context:name\' for replacement')
             ->add_callback(static function($contextid, stdClass $cohort): string {
                 if ($contextid === null) {
                     return '';
@@ -271,7 +266,7 @@ class cohort extends base {
         ))
             ->add_joins($this->get_joins());
 
-        // Context filter.
+        // Context filter (Deprecated since Moodle 5.1).
         $filters[] = (new filter(
             select::class,
             'context',
@@ -280,6 +275,7 @@ class cohort extends base {
             "{$tablealias}.contextid"
         ))
             ->add_joins($this->get_joins())
+            ->set_is_deprecated('See \'context:level\' and \'course_category:name\' for replacement')
             ->set_options_callback(static function(): array {
                 global $DB;
 
@@ -373,7 +369,7 @@ class cohort extends base {
      *
      * @return string
      */
-    private function get_context_join(): string {
+    public function get_context_join(): string {
 
         // If the context table is already joined, we don't need to do that again.
         if ($this->has_table_join_alias('context')) {

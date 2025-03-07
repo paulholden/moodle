@@ -70,11 +70,11 @@ final class cohorts_test extends core_reportbuilder_testcase {
 
         $content = $this->get_custom_report_content($report->get('id'));
 
-        // Default columns are name, context, idnumber, description. Sorted by name.
+        // Default columns are context, name, idnumber, description. Sorted by name.
         $this->assertEquals([
-            [$cohorttwo->name, $contextcategory->get_context_name(false), $cohorttwo->idnumber,
+            [$contextcategory->get_context_name(), $cohorttwo->name, $cohorttwo->idnumber,
                 format_text($cohorttwo->description)],
-            [$cohortone->name, $contextsystem->get_context_name(false), $cohortone->idnumber,
+            [$contextsystem->get_context_name(), $cohortone->name, $cohortone->idnumber,
                 format_text($cohortone->description)],
         ], array_map('array_values', $content));
     }
@@ -95,7 +95,9 @@ final class cohorts_test extends core_reportbuilder_testcase {
         $field = $generator->create_field(['categoryid' => $fieldcategory->get('id'), 'shortname' => 'hi']);
 
         // Test subject.
+        $category = $this->getDataGenerator()->create_category(['name' => 'My category']);
         $cohort = $this->getDataGenerator()->create_cohort([
+            'contextid' => coursecat::instance($category->id)->id,
             'name' => 'Legends',
             'idnumber' => 'C101',
             'description' => 'Cohort for the legends',
@@ -110,19 +112,41 @@ final class cohorts_test extends core_reportbuilder_testcase {
         $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
         $report = $generator->create_report(['name' => 'Cohorts', 'source' => cohorts::class, 'default' => 0]);
 
+        // Cohort.
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'cohort:visible']);
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'cohort:timecreated']);
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'cohort:timemodified']);
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'cohort:component']);
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'cohort:theme']);
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'cohort:customfield_hi']);
+
+        // Cohort member
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'cohort_member:timeadded']);
+
+        // Context.
+        $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'context:level']);
+
+        // Course category.
+        $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'course_category:name']);
+
+        // User.
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'user:fullname']);
 
         $content = $this->get_custom_report_content($report->get('id'));
         $this->assertCount(1, $content);
 
-        [$visible, $timecreated, $timemodified, $component, $theme, $custom, $timeadded, $fullname] = array_values($content[0]);
+        [
+            $visible,
+            $timecreated,
+            $timemodified,
+            $component,
+            $theme,
+            $custom,
+            $timeadded,
+            $contextlevel,
+            $categoryname,
+            $userfullname,
+        ] = array_values($content[0]);
 
         $this->assertEquals('Yes', $visible);
         $this->assertNotEmpty($timecreated);
@@ -131,7 +155,9 @@ final class cohorts_test extends core_reportbuilder_testcase {
         $this->assertEquals('Boost', $theme);
         $this->assertEquals('Hello', $custom);
         $this->assertNotEmpty($timeadded);
-        $this->assertEquals(fullname($user), $fullname);
+        $this->assertEquals('Category', $contextlevel);
+        $this->assertEquals('My category', $categoryname);
+        $this->assertEquals(fullname($user), $userfullname);
     }
 
     /**
@@ -142,16 +168,11 @@ final class cohorts_test extends core_reportbuilder_testcase {
     public static function datasource_filters_provider(): array {
         return [
             // Cohort.
-            'Filter cohort' => ['cohort:cohortselect', [
-                'cohort:cohortselect_values' => [-1],
-            ], false],
-            'Filter context' => ['cohort:context', [
-                'cohort:context_operator' => select::EQUAL_TO,
-                'cohort:context_value' => system::instance()->id,
+            'Filter cohort selection' => ['cohort:cohortselect', [
+                'cohort:cohortselect_values' => '<COHORTID>',
             ], true],
-            'Filter context (no match)' => ['cohort:context', [
-                'cohort:context_operator' => select::NOT_EQUAL_TO,
-                'cohort:context_value' => system::instance()->id,
+            'Filter cohort selection (no match)' => ['cohort:cohortselect', [
+                'cohort:cohortselect_values' => -1,
             ], false],
             'Filter name' => ['cohort:name', [
                 'cohort:name_operator' => text::IS_EQUAL_TO,
@@ -209,6 +230,26 @@ final class cohorts_test extends core_reportbuilder_testcase {
                 'cohort_member:timeadded_to' => 1622502000,
             ], false],
 
+            // Context.
+            'Filter context level' => ['context:level', [
+                'context:level_operator' => select::EQUAL_TO,
+                'context:level_value' => CONTEXT_COURSECAT,
+            ], true],
+            'Filter context level (no match)' => ['context:level', [
+                'context:level_operator' => select::EQUAL_TO,
+                'context:level_value' => CONTEXT_SYSTEM,
+            ], false],
+
+            // Course category.
+            'Filter course category name' => ['course_category:text', [
+                'course_category:text_operator' => text::IS_EQUAL_TO,
+                'course_category:text_value' => 'My category',
+            ], true],
+            'Filter course category name (no match)' => ['course_category:text', [
+                'course_category:text_operator' => text::IS_EQUAL_TO,
+                'course_category:text_value' => 'Not my category',
+            ], false],
+
             // User.
             'Filter user' => ['user:username', [
                 'user:username_operator' => text::IS_EQUAL_TO,
@@ -236,7 +277,9 @@ final class cohorts_test extends core_reportbuilder_testcase {
         set_config('allowcohortthemes', true);
 
         // Test subject.
+        $category = $this->getDataGenerator()->create_category(['name' => 'My category']);
         $cohort = $this->getDataGenerator()->create_cohort([
+            'contextid' => coursecat::instance($category->id)->id,
             'name' => 'Legends',
             'idnumber' => 'C101',
             'description' => 'Cohort for the legends',
@@ -255,7 +298,10 @@ final class cohorts_test extends core_reportbuilder_testcase {
 
         // Add filter, set it's values.
         $generator->create_filter(['reportid' => $report->get('id'), 'uniqueidentifier' => $filtername]);
-        $content = $this->get_custom_report_content($report->get('id'), 0, $filtervalues);
+        $content = $this->get_custom_report_content(
+            reportid: $report->get('id'),
+            filtervalues: str_replace('<COHORTID>', $cohort->id, $filtervalues),
+        );
 
         if ($expectmatch) {
             $this->assertCount(1, $content);

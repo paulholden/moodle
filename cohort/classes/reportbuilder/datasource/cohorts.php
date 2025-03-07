@@ -19,6 +19,8 @@ declare(strict_types=1);
 namespace core_cohort\reportbuilder\datasource;
 
 use core_cohort\reportbuilder\local\entities\{cohort, cohort_member};
+use core_course\reportbuilder\local\entities\course_category;
+use core\reportbuilder\local\entities\context;
 use core_reportbuilder\local\filters\boolean_select;
 use core_reportbuilder\datasource;
 use core_reportbuilder\local\entities\user;
@@ -46,30 +48,43 @@ class cohorts extends datasource {
      */
     protected function initialise(): void {
         $cohortentity = new cohort();
-        $cohorttablealias = $cohortentity->get_table_alias('cohort');
 
-        $this->set_main_table('cohort', $cohorttablealias);
+        [
+            'cohort' => $cohortalias,
+            'context' => $contextalias,
+        ] = $cohortentity->get_table_aliases();
 
+        $this->set_main_table('cohort', $cohortalias);
         $this->add_entity($cohortentity);
 
         // Join the cohort member entity to the cohort entity.
         $cohortmemberentity = new cohort_member();
-        $cohortmembertablealias = $cohortmemberentity->get_table_alias('cohort_members');
-
+        $cohortmemberalias = $cohortmemberentity->get_table_alias('cohort_members');
         $this->add_entity($cohortmemberentity
-            ->add_join("LEFT JOIN {cohort_members} {$cohortmembertablealias}
-                ON {$cohortmembertablealias}.cohortid = {$cohorttablealias}.id")
-        );
+            ->add_join("LEFT JOIN {cohort_members} {$cohortmemberalias} ON {$cohortmemberalias}.cohortid = {$cohortalias}.id"));
+
+        // Join the context entity to the cohort entity.
+        $contextentity = (new context())
+            ->set_table_alias('context', $contextalias);
+        $this->add_entity($contextentity
+            ->add_join($cohortentity->get_context_join()));
+
+        // Join the course category entity to the cohort entity.
+        $coursecategoryentity = (new course_category())
+            ->set_table_join_alias('context', $contextalias);
+        $coursecategoryalias = $coursecategoryentity->get_table_alias('course_categories');
+        $this->add_entity($coursecategoryentity
+            ->add_joins([
+                $cohortentity->get_context_join(),
+                "LEFT JOIN {course_categories} {$coursecategoryalias} ON {$coursecategoryalias}.id = {$contextalias}.instanceid",
+            ]));
 
         // Join the user entity to the cohort member entity.
         $userentity = new user();
-        $usertablealias = $userentity->get_table_alias('user');
-
+        $useralias = $userentity->get_table_alias('user');
         $this->add_entity($userentity
             ->add_joins($cohortmemberentity->get_joins())
-            ->add_join("LEFT JOIN {user} {$usertablealias}
-                ON {$usertablealias}.id = {$cohortmembertablealias}.userid")
-        );
+            ->add_join("LEFT JOIN {user} {$useralias} ON {$useralias}.id = {$cohortmemberalias}.userid"));
 
         // Add all columns/filters/conditions from entities to be available in custom reports.
         $this->add_all_from_entities();
@@ -82,8 +97,8 @@ class cohorts extends datasource {
      */
     public function get_default_columns(): array {
         return [
+            'context:name',
             'cohort:name',
-            'cohort:context',
             'cohort:idnumber',
             'cohort:description',
         ];
@@ -95,7 +110,11 @@ class cohorts extends datasource {
      * @return string[]
      */
     public function get_default_filters(): array {
-        return ['cohort:context', 'cohort:name'];
+        return [
+            'context:level',
+            'course_category:name',
+            'cohort:name',
+        ];
     }
 
     /**

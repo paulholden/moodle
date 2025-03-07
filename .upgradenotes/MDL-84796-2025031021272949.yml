@@ -1,0 +1,13 @@
+issueNumber: MDL-84796
+notes:
+  core_reportbuilder:
+    - message: >-
+        The following report entity elements have been deprecated, with
+        replacements as follows:
+
+
+        - `cohort:context` (column) => `context:name`
+
+        - `cohort:context` (filter) => `context:level` and
+        `course_category:name`
+      type: deprecated
