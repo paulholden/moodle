@@ -455,11 +455,15 @@ abstract class base {
      * @return column[]
      */
     public function get_active_columns(): array {
+        static $columnsdebug = [];
+
         $columns = $this->get_columns();
         foreach ($columns as $column) {
-            if ($column->get_is_deprecated()) {
-                debugging("The column '{$column->get_unique_identifier()}' is deprecated, please do not use it any more." .
-                    " {$column->get_is_deprecated_message()}", DEBUG_DEVELOPER);
+            $columnidentifier = $column->get_unique_identifier();
+            if ($column->get_is_deprecated() && !array_key_exists($columnidentifier, $columnsdebug)) {
+                debugging("The column '{$columnidentifier}' is deprecated, please do not use it any more. " .
+                    $column->get_is_deprecated_message(), DEBUG_DEVELOPER);
+                $columnsdebug[$columnidentifier] = true;
             }
         }
 
@@ -563,11 +567,15 @@ abstract class base {
      * @return filter[]
      */
     public function get_active_conditions(bool $checkavailable = true): array {
+        static $conditionsdebug = [];
+
         $conditions = $this->get_conditions();
         foreach ($conditions as $condition) {
-            if ($condition->get_is_deprecated()) {
-                debugging("The condition '{$condition->get_unique_identifier()}' is deprecated, please do not use it any more." .
-                    " {$condition->get_is_deprecated_message()}", DEBUG_DEVELOPER);
+            $conditionidentifier = $condition->get_unique_identifier();
+            if ($condition->get_is_deprecated() && !array_key_exists($conditionidentifier, $conditionsdebug)) {
+                debugging("The condition '{$conditionidentifier}' is deprecated, please do not use it any more. " .
+                    $condition->get_is_deprecated_message(), DEBUG_DEVELOPER);
+                $conditionsdebug[$conditionidentifier] = true;
             }
         }
 
@@ -753,11 +761,15 @@ abstract class base {
      * @return filter[]
      */
     public function get_active_filters(): array {
+        static $filtersdebug = [];
+
         $filters = $this->get_filters();
         foreach ($filters as $filter) {
-            if ($filter->get_is_deprecated()) {
-                debugging("The filter '{$filter->get_unique_identifier()}' is deprecated, please do not use it any more." .
-                    " {$filter->get_is_deprecated_message()}", DEBUG_DEVELOPER);
+            $filteridentifier = $filter->get_unique_identifier();
+            if ($filter->get_is_deprecated() && !array_key_exists($filteridentifier, $filtersdebug)) {
+                debugging("The filter '{$filteridentifier}' is deprecated, please do not use it any more. " .
+                    $filter->get_is_deprecated_message(), DEBUG_DEVELOPER);
+                $filtersdebug[$filteridentifier] = true;
             }
         }
 
