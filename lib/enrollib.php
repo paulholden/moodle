@@ -3658,9 +3658,9 @@ abstract class enrol_plugin {
         global $DB, $CFG;
         require_once($CFG->dirroot . '/course/lib.php');
 
-        $context = context_course::instance($instance->courseid);
         $user = core_user::get_user($userid);
         $course = get_course($instance->courseid);
+        $context = context_course::instance($course->id);
 
         // Fallback to the instance role ID if parameter not specified.
         $courseroleid = $roleid ?: $instance->roleid;
@@ -3669,13 +3669,8 @@ abstract class enrol_plugin {
         $a = new stdClass();
         $a->coursename = format_string($course->fullname, true, ['context' => $context, 'escape' => false]);
         $a->courselink = course_get_url($course)->out();
-        $a->profileurl = (new moodle_url(
-            url: '/user/view.php',
-            params: [
-                'id' => $user->id,
-                'course' => $instance->courseid,
-            ],
-        ))->out();
+        $a->coursestartdate = userdate($course->startdate, get_string('strftimedatetime', 'core_langconfig'));
+        $a->profileurl = \core\user::get_profile_url($user, $context)->out();
 
         $placeholders = \core_user::get_name_placeholders($user);
         foreach ($placeholders as $field => $value) {
@@ -3686,6 +3681,7 @@ abstract class enrol_plugin {
             $placeholders = [
                 '{$a->coursename}',
                 '{$a->courselink}',
+                '{$a->coursestartdate}',
                 '{$a->profileurl}',
                 '{$a->fullname}',
                 '{$a->email}',
@@ -3696,6 +3692,7 @@ abstract class enrol_plugin {
             $values = [
                 $a->coursename,
                 $a->courselink,
+                $a->coursestartdate,
                 $a->profileurl,
                 fullname($user),
                 $user->email,
