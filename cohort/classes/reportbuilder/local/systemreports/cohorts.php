@@ -17,9 +17,10 @@
 namespace core_cohort\reportbuilder\local\systemreports;
 
 use context;
-use context_coursecat;
+use context_helper;
 use context_system;
 use core_cohort\reportbuilder\local\entities\{cohort, cohort_member};
+use core\reportbuilder\local\entities\context as context_entity;
 use core_reportbuilder\local\helpers\database;
 use core_reportbuilder\local\report\action;
 use core_reportbuilder\local\report\column;
@@ -49,6 +50,13 @@ class cohorts extends system_report {
 
         $this->set_main_table('cohort', $entitymainalias);
         $this->add_entity($cohortentity);
+
+        // Join context entity.
+        $contextentity = (new context_entity())
+            ->set_table_alias('context', $cohortentity->get_table_alias('context'));
+        $this->add_entity($contextentity
+            ->add_join($cohortentity->get_context_join())
+        );
 
         // Join cohort member entity.
         $cohortmemberentity = new cohort_member();
@@ -119,12 +127,14 @@ class cohorts extends system_report {
 
         // Category column. An extra callback is appended in order to extend the current column formatting.
         if ($showall) {
-            $this->add_column_from_entity('cohort:context')
-                ->add_callback(static function(string $value, stdClass $cohort): string {
-                    $context = context::instance_by_id($cohort->contextid);
-                    if ($context instanceof context_coursecat) {
+            $this->add_column_from_entity('context:name')
+                ->set_title(new lang_string('category'))
+                ->set_callback(static function($value, stdClass $context): string {
+                    context_helper::preload_from_record(clone $context);
+                    $value = context::instance_by_id($context->ctxid)->get_context_name(false);
+                    if ((int) $context->ctxlevel === CONTEXT_COURSECAT) {
                         return html_writer::link(new moodle_url('/cohort/index.php',
-                            ['contextid' => $cohort->contextid]), $value);
+                            ['contextid' => $context->ctxid]), $value);
                     }
 
                     return $value;

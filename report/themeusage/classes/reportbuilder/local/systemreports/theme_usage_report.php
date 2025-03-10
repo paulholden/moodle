@@ -16,7 +16,11 @@
 
 namespace report_themeusage\reportbuilder\local\systemreports;
 
+use context;
+use context_helper;
 use context_system;
+use core\lang_string;
+use core\reportbuilder\local\entities\context as context_entity;
 use core_reportbuilder\local\entities\{course, user};
 use core_cohort\reportbuilder\local\entities\cohort;
 use core_course\reportbuilder\local\entities\course_category;
@@ -24,6 +28,7 @@ use core_reportbuilder\local\helpers\database;
 use core_reportbuilder\system_report;
 use core\output\theme_usage;
 use report_themeusage\reportbuilder\local\entities\theme;
+use stdClass;
 
 /**
  * Config changes system report class implementation
@@ -97,12 +102,26 @@ class theme_usage_report extends system_report {
             case theme_usage::THEME_USAGE_TYPE_COHORT:
 
                 $cohortentity = new cohort();
-                $cohortalias = $cohortentity->get_table_alias('cohort');
+
+                [
+                    'cohort' => $cohortalias,
+                    'context' => $contextalias,
+                ] = $cohortentity->get_table_aliases();
 
                 $this->add_entity($cohortentity->add_join(
                     "JOIN {cohort} {$cohortalias}
                        ON $cohortalias.theme = '{$themechoice}'
                       AND {$themealias}.plugin = 'theme_{$themechoice}'"));
+
+                $contextentity = (new context_entity())->set_table_alias('context', $contextalias);
+                $this->add_entity($contextentity->add_join($cohortentity->get_context_join()));
+
+                $coursecategoryentity = (new course_category())->set_table_join_alias('context', $contextalias);
+                $coursecategoryalias = $coursecategoryentity->get_table_alias('course_categories');
+                $this->add_entity($coursecategoryentity->add_joins([
+                    $cohortentity->get_context_join(),
+                    "LEFT JOIN {course_categories} {$coursecategoryalias} ON {$coursecategoryalias}.id={$contextalias}.instanceid",
+                ]));
 
                 $this->add_columns_cohort();
                 $this->add_filters_cohort();
@@ -209,11 +228,18 @@ class theme_usage_report extends system_report {
     protected function add_columns_cohort(): void {
         $columns = [
             'cohort:name',
-            'cohort:context',
+            'context:name',
             'theme:forcetheme',
         ];
 
         $this->add_columns_from_entities($columns);
+        $this->get_column('context:name')
+            ->set_title(new lang_string('category'))
+            ->set_callback(static function($value, stdClass $context): string {
+                context_helper::preload_from_record(clone $context);
+                return context::instance_by_id($context->ctxid)->get_context_name(false);
+            });
+
         $this->set_initial_sort_column('cohort:name', SORT_ASC);
     }
 
@@ -223,7 +249,8 @@ class theme_usage_report extends system_report {
     protected function add_filters_cohort(): void {
         $filters = [
             'cohort:name',
-            'cohort:context',
+            'context:level',
+            'course_category:name',
         ];
 
         $this->add_filters_from_entities($filters);
