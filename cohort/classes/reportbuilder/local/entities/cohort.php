@@ -239,15 +239,14 @@ class cohort extends base {
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())
-            ->set_type(column::TYPE_TEXT)
             ->add_fields("{$tablealias}.theme")
             ->set_is_sortable(true)
             ->add_callback(static function (?string $theme): string {
-                if ((string) $theme === '') {
-                    return '';
-                }
-
-                return get_string('pluginname', "theme_{$theme}");
+                return match ($theme) {
+                    null => '',
+                    '' => get_string('forceno'),
+                    default => get_string('pluginname', "theme_{$theme}"),
+                };
             });
 
         return $columns;
@@ -348,7 +347,7 @@ class cohort extends base {
             "{$tablealias}.theme",
         ))
             ->set_options_callback(static function(): array {
-                return array_map(
+                return ['' => get_string('forceno')] + array_map(
                     fn(theme_config $theme) => $theme->get_theme_name(),
                     get_list_of_themes(),
                 );

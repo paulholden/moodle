@@ -66,11 +66,13 @@ final class categories_test extends core_reportbuilder_testcase {
 
         set_config('allowcategorythemes', true);
 
+        // Update the default category.
+        core_course_category::get_default()->update(['theme' => 'boost']);
         $category = $this->getDataGenerator()->create_category([
             'name' => 'Zoo',
             'idnumber' => 'Z01',
             'description' => 'Animals',
-            'theme' => 'boost',
+            'theme' => '',
         ]);
         $course = $this->getDataGenerator()->create_course(['category' => $category->id, 'fullname' => 'Zebra']);
 
@@ -106,7 +108,7 @@ final class categories_test extends core_reportbuilder_testcase {
         $this->assertStringContainsString(get_string('defaultcategoryname'), $namewithlink);
         $this->assertEquals(get_string('defaultcategoryname'), $path);
         $this->assertEmpty($description);
-        $this->assertEmpty($theme);
+        $this->assertEquals('Boost', $theme);
         $this->assertEmpty($coursename);
         $this->assertEmpty($cohortname);
         $this->assertEmpty($rolename);
@@ -117,7 +119,7 @@ final class categories_test extends core_reportbuilder_testcase {
         $this->assertStringContainsString($category->get_formatted_name(), $namewithlink);
         $this->assertEquals($category->get_nested_name(false), $path);
         $this->assertEquals(format_text($category->description, $category->descriptionformat), $description);
-        $this->assertEquals('Boost', $theme);
+        $this->assertEquals('Do not force', $theme);
         $this->assertEquals($course->fullname, $coursename);
         $this->assertEquals($cohort->name, $cohortname);
         $this->assertEquals('Manager', $rolename);
@@ -164,7 +166,7 @@ final class categories_test extends core_reportbuilder_testcase {
             ], true],
             'Filter category theme (no match)' => ['course_category:theme', [
                 'course_category:theme_operator' => select::EQUAL_TO,
-                'course_category:theme_value' => 'classic',
+                'course_category:theme_value' => '',
             ], false],
 
             // Course.
