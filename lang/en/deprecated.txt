@@ -93,7 +93,6 @@ addinganewto,core
 editinga,core
 updatinga,core
 updatingain,core
-summaryof,core
 gradeitemadvanced,core_grades
 gradeitemadvanced_help,core_grades
 moodleapp,core_admin
