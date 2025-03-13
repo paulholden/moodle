@@ -2181,6 +2181,7 @@ $string['subject'] = 'Subject';
 $string['success'] = 'Success';
 $string['successduration'] = 'Success ({$a} seconds)';
 $string['summary'] = 'Summary';
+$string['summaryof'] = 'Summary of {$a}';
 $string['suspended'] = 'Suspended';
 $string['suspendedusers'] = 'Suspended users';
 $string['switchdevicedefault'] = 'Switch to the standard theme';
