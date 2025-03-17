@@ -161,7 +161,7 @@ class manager {
 
             if (!self::$handler->start()) {
                 // Could not successfully start/recover session.
-                throw new \core\session\exception(get_string('servererror'));
+                throw new \core\session\exception('sessionstarterror', 'error');
             }
 
             if ($requireslock) {
