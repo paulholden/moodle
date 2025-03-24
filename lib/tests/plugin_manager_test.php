@@ -848,8 +848,8 @@ final class plugin_manager_test extends \advanced_testcase {
 
         // Strings are supported for deprecated plugins.
         $this->assertEquals('Fake full featured plugin', $pluginman->plugin_name('fake_fullfeatured'));
-        $this->assertEquals('fake', $pluginman->plugintype_name('fake'));
-        $this->assertEquals('fake', $pluginman->plugintype_name_plural('fake'));
+        $this->assertEquals('[[type_fake]]', $pluginman->plugintype_name('fake'));
+        $this->assertEquals('[[type_fake_plural]]', $pluginman->plugintype_name_plural('fake'));
     }
 
     /**
@@ -980,8 +980,8 @@ final class plugin_manager_test extends \advanced_testcase {
         // Without string support, the type name defaults to the plugin type,
         // while plugin name is set in \core\plugininfo\base::init_is_deprecated().
         $this->assertEquals('fullfeatured', $pluginman->plugin_name('fake_fullfeatured'));
-        $this->assertEquals('fake', $pluginman->plugintype_name('fake'));
-        $this->assertEquals('fake', $pluginman->plugintype_name_plural('fake'));
+        $this->assertEquals('[[type_fake]]', $pluginman->plugintype_name('fake'));
+        $this->assertEquals('[[type_fake_plural]]', $pluginman->plugintype_name_plural('fake'));
     }
 
     /**
@@ -1056,7 +1056,7 @@ final class plugin_manager_test extends \advanced_testcase {
         // Without string support, the type name defaults to the plugin type,
         // while plugin name is set in \core\plugininfo\base::init_is_deprecated().
         $this->assertEquals('demo', $pluginman->plugin_name('fulldeletedsubtype_demo'));
-        $this->assertEquals('fulldeletedsubtype', $pluginman->plugintype_name('fulldeletedsubtype'));
-        $this->assertEquals('fulldeletedsubtype', $pluginman->plugintype_name_plural('fulldeletedsubtype'));
+        $this->assertEquals('[[type_fulldeletedsubtype]]', $pluginman->plugintype_name('fulldeletedsubtype'));
+        $this->assertEquals('[[type_fulldeletedsubtype_plural]]', $pluginman->plugintype_name_plural('fulldeletedsubtype'));
     }
 }
