@@ -31786,6 +31786,15 @@ a.ygtvspacer:hover {
   display: inherit;
 }
 
+.hasstickyfooter .drawer:has(.message-app) {
+  height: calc(100vh - 50px - max(80px, 0.9375rem * 3));
+}
+@media (max-width: 767.98px) {
+  .hasstickyfooter .drawer:has(.message-app) {
+    height: calc(100vh - max(80px, 0.9375rem * 3));
+  }
+}
+
 .message-app {
   display: flex;
   flex-direction: column;

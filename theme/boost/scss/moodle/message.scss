@@ -384,6 +384,15 @@ $message-day-color: color-yiq($message-app-bg) !default;
     }
 }
 
+.hasstickyfooter {
+    .drawer:has(.message-app) {
+        height: calc(100vh - #{$navbar-height} - #{$stickyfooter-height});
+        @include media-breakpoint-down(sm) {
+            height: calc(100vh - #{$stickyfooter-height});
+        }
+    }
+}
+
 .message-app {
     display: flex;
     flex-direction: column;
