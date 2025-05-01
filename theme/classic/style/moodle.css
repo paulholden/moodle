@@ -27715,8 +27715,11 @@ dd:after {
   color: #1d2125;
 }
 
+body:not(.jsenabled) .btn-footer-popover {
+  display: none !important;
+}
+
 .btn-footer-popover {
-  display: none;
   position: fixed;
   bottom: 2rem;
   right: 2rem;
@@ -27759,6 +27762,11 @@ dd:after {
   padding-bottom: 5px;
 }
 
+@media (max-width: 575.98px) {
+  .jsenabled .btn-footer-popover {
+    display: none;
+  }
+}
 @media (min-width: 576px) {
   .jsenabled #page-footer .footer-content-popover {
     display: none;

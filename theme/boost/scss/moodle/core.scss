@@ -2180,8 +2180,13 @@ $footer-link-color: $bg-inverse-link-color !default;
     }
 }
 
+body:not(.jsenabled) {
+    .btn-footer-popover {
+        display: none !important; // stylelint-disable-line declaration-no-important
+    }
+}
+
 .btn-footer-popover {
-    display: none;
     position: fixed;
     bottom: 2rem;
     right: 2rem;
@@ -2228,6 +2233,12 @@ $footer-link-color: $bg-inverse-link-color !default;
 
 .footer-support-link {
     padding-bottom: 5px;
+}
+
+@include media-breakpoint-down(sm) {
+    .jsenabled .btn-footer-popover {
+        display: none;
+    }
 }
 
 @include media-breakpoint-up(sm) {
