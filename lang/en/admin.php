@@ -451,7 +451,7 @@ $string['courserequestnotifyemail'] = '<p>User {$a->user} has requested a new co
 <p>Request details:</p>
 <ul>
 <li>Course full name: {$a->fullname}</li>
-<li>Course short name : {$a->shortname}</li>
+<li>Course short name: {$a->shortname}</li>
 <li>Category: {$a->category}</li>
 <li>Reason for this course request: {$a->reason}</li>
 </ul>
