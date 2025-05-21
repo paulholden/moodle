@@ -14,18 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * myprofile renderer.
- *
- * @package    core_user
- * @copyright  2015 onwards Ankit Agarwal <ankit.agrr@gmail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace core_user\output\myprofile;
-defined('MOODLE_INTERNAL') || die;
+
 /**
- * Report log renderer's for printing reports.
+ * Users' my profile renderer
  *
  * @since      Moodle 2.9
  * @package    core_user
@@ -33,11 +25,11 @@ defined('MOODLE_INTERNAL') || die;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class renderer extends \plugin_renderer_base {
+
     /**
      * Render the whole tree.
      *
      * @param tree $tree
-     *
      * @return string
      */
     public function render_tree(tree $tree) {
@@ -54,20 +46,13 @@ class renderer extends \plugin_renderer_base {
      * Render a category.
      *
      * @param category $category
-     *
      * @return string
      */
     public function render_category(category $category) {
-        $classes = $category->classes;
-        if (empty($classes)) {
-            $return = \html_writer::start_tag('section',
-                array('class' => 'node_category card d-inline-block w-100 mb-3'));
-            $return .= \html_writer::start_tag('div', array('class' => 'card-body'));
-        } else {
-            $return = \html_writer::start_tag('section',
-                array('class' => 'node_category card d-inline-block w-100 mb-3' . $classes));
-            $return .= \html_writer::start_tag('div', array('class' => 'card-body'));
-        }
+        $return = \html_writer::start_tag('section',
+            ['class' => 'node_category card d-inline-block w-100 mb-3 ' . (string) $category->classes]);
+        $return .= \html_writer::start_tag('div', ['class' => 'card-body']);
+
         $return .= \html_writer::tag('h3', $category->title, array('class' => 'lead'));
         $nodes = $category->nodes;
         if (empty($nodes)) {
@@ -88,7 +73,6 @@ class renderer extends \plugin_renderer_base {
      * Render a node.
      *
      * @param node $node
-     *
      * @return string
      */
     public function render_node(node $node) {
