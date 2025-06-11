@@ -422,6 +422,7 @@ class icon_system_fontawesome extends icon_system_font {
             'core:t/life-ring' => 'fa-life-ring',
             'core:t/lock' => 'fa-unlock',
             'core:t/locked' => 'fa-lock',
+            'core:t/log' => 'fa-align-left',
             'core:t/locktime' => 'fa-lock',
             'core:t/markasread' => 'fa-check',
             'core:t/message' => 'fa-message',
