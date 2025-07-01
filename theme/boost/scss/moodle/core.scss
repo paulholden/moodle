@@ -731,9 +731,9 @@ table.mod_index {
 * Tags
 */
 
-#tag-search-box {
-    text-align: center;
-    margin: 10px auto;
+#tag-search-box form {
+    display: grid;
+    gap: map-get($spacers, 2);
 }
 
 span.flagged-tag,

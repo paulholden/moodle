@@ -23730,9 +23730,9 @@ table.mod_index {
 /**
 * Tags
 */
-#tag-search-box {
-  text-align: center;
-  margin: 10px auto;
+#tag-search-box form {
+  display: grid;
+  gap: 0.5rem;
 }
 
 span.flagged-tag,
