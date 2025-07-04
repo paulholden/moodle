@@ -29,7 +29,13 @@
         "preview": "<table></table>"
     }
 }}
-<div id="qbank_columnsortorder-{{uniqid}}" class="container">
-    <a class="btn btn-primary" href="{{backurl}}">{{#str}} back {{/str}}</a>
-    {{{preview}}}
+<div id="qbank_columnsortorder-{{uniqid}}" class="d-flex pb-3">
+    <h2>
+        {{#str}} qbankcolumnsortorder , qbank_columnsortorder {{/str}}
+    </h2>
+    <div class="ms-auto">
+        <a class="btn btn-primary" href="{{backurl}}">{{#str}} back {{/str}}</a>
+    </div>
 </div>
+
+{{{preview}}}
