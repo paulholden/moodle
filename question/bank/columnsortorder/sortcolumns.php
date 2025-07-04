@@ -32,7 +32,7 @@ admin_externalpage_setup('qbank_columnsortorder', '', ['section' => 'columnsorto
 $preview = optional_param('preview', false, PARAM_BOOL);
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(new lang_string('qbankcolumnsortorder', 'qbank_columnsortorder'));
+
 if ($preview) {
     $columnmanager = new \qbank_columnsortorder\column_manager(true);
     $preview = $columnmanager->get_questionbank()->get_preview();
