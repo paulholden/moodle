@@ -2940,9 +2940,13 @@ body.dragging {
     }
 }
 
-.drawers {
+.page-mycourses {
     .block_myoverview {
         border: 0;
+        .block-cards {
+            border-top: 1px solid $border-color;
+            padding-top: map-get($spacers, 2);
+        }
         & > .card-body {
             padding-top: 0 !important; /* stylelint-disable-line declaration-no-important */
             padding-left: 0 !important; /* stylelint-disable-line declaration-no-important */
