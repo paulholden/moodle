@@ -1349,7 +1349,7 @@ function scorm_get_attempt_status($user, $scorm, $cm='') {
             $DB->record_exists('scorm_attempt', ['userid' => $user->id, 'scormid' => $scorm->id])) {
             // Check to see if any data is stored for this user.
             $deleteurl = new moodle_url($PAGE->url, array('action' => 'delete', 'sesskey' => sesskey()));
-            $result .= $OUTPUT->single_button($deleteurl, get_string('deleteallattempts', 'scorm'));
+            $result .= $OUTPUT->single_button($deleteurl, get_string('deleteuserattempt', 'scorm'));
         }
     }
 
