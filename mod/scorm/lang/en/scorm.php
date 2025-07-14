@@ -109,6 +109,7 @@ $string['defaultothersettings'] = 'Other default settings';
 $string['deleteattemptcheck'] = 'Are you absolutely sure you want to completely delete these attempts?';
 $string['deleteallattempts'] = 'All SCORM attempts';
 $string['deleteselected'] = 'Delete selected attempts';
+$string['deleteuserattempt'] = 'Delete all SCORM attempts';
 $string['deleteuserattemptcheck'] = 'Are you absolutely sure you want to completely delete all your attempts?';
 $string['details'] = 'Track details';
 $string['directories'] = 'Show the directory links';
