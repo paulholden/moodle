@@ -452,7 +452,10 @@ class roles {
         });
         $coursesforselect = [];
         foreach ($courses as $course) {
-            $coursesforselect[$course->id] = $course->fullname . " (" . $course->shortname . ")";
+            $coursesforselect[$course->id] = format_string(
+                get_course_display_name_for_list($course),
+                options: ['context' => context_course::instance($course->id)],
+            );
         }
         return $coursesforselect;
     }
