@@ -1954,8 +1954,7 @@ class core_renderer extends renderer_base {
             $newwindowicon = $this->pix_icon(
                 'i/externallink',
                 get_string('opensinnewwindow'),
-                'moodle',
-                ['class' => 'fa fa-externallink fa-fw']
+                attributes: ['class' => 'ms-1'],
             );
         }
 
