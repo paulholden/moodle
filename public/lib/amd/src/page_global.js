@@ -58,6 +58,10 @@ function(
     var initActionOptionDropdownHandler = function() {
         var body = $('body');
 
+        body.find('.dropdown-menu').each(function() {
+            $(this).find('[aria-current="true"]').addClass('active');
+        });
+
         CustomEvents.define(body, [CustomEvents.events.activate]);
         body.on(CustomEvents.events.activate, '[data-show-active-item]', function(e) {
             // The dropdown item that the user clicked on.
