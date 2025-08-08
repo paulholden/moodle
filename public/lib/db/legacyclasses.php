@@ -33,6 +33,7 @@ $legacyclasses = [
     \bootstrap_renderer::class => 'output/bootstrap_renderer.php',
 
     // Core API.
+    \core_xml_parser::class => 'xml_parser.php',
     \emoticon_manager::class => 'emoticon_manager.php',
     \lang_string::class => 'lang_string.php',
     \moodle_url::class => 'url.php',
@@ -49,6 +50,7 @@ $legacyclasses = [
     \require_login_session_timeout_exception::class => 'exception/require_login_session_timeout_exception.php',
     \required_capability_exception::class => 'exception/required_capability_exception.php',
     \webservice_parameter_exception::class => 'exception/webservice_parameter_exception.php',
+    \xml_format_exception::class => 'exception/xml_format_exception.php',
 
     // Cache API.
     \cache::class => [
