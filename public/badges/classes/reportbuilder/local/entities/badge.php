@@ -18,10 +18,11 @@ declare(strict_types=1);
 
 namespace core_badges\reportbuilder\local\entities;
 
+use core_collator;
 use core\{context, context_helper};
 use core\context\system;
+use core\lang_string;
 use html_writer;
-use lang_string;
 use moodle_url;
 use stdClass;
 use core_reportbuilder\local\entities\base;
@@ -51,6 +52,7 @@ class badge extends base {
     protected function get_default_tables(): array {
         return [
             'badge',
+            'badge_criteria',
             'context',
             'tag_instance',
             'tag',
@@ -275,7 +277,10 @@ class badge extends base {
      * @return filter[]
      */
     protected function get_available_filters(): array {
-        $badgealias = $this->get_table_alias('badge');
+        [
+            'badge' => $badgealias,
+            'badge_criteria' => $criteriaalias,
+        ] = $this->get_table_aliases();
 
         // Name.
         $filters[] = (new filter(
@@ -286,6 +291,29 @@ class badge extends base {
             "{$badgealias}.name"
         ))
             ->add_joins($this->get_joins());
+
+        // Criteria.
+        $filters[] = (new filter(
+            select::class,
+            'criteria',
+            new lang_string('bcriteria', 'core_badges'),
+            $this->get_entity_name(),
+            "{$criteriaalias}.criteriatype",
+        ))
+            ->add_joins($this->get_joins())
+            ->add_join("LEFT JOIN {badge_criteria} {$criteriaalias} ON {$criteriaalias}.badgeid = {$badgealias}.id
+                AND {$criteriaalias}.criteriatype <> " . BADGE_CRITERIA_TYPE_OVERALL)
+            ->set_options_callback(static function (): array {
+                $options = [];
+                foreach (badges_list_criteria() as $index => $criteria) {
+                    if ($index !== BADGE_CRITERIA_TYPE_OVERALL) {
+                        $options[$index] = new lang_string("criteria_{$index}", 'core_badges');
+                    }
+                }
+
+                core_collator::asort($options);
+                return $options;
+            });
 
         // Language.
         $filters[] = (new filter(
