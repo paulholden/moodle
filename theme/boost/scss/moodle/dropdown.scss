@@ -23,12 +23,11 @@
         position: relative;
         display: flex;
         align-items: center;
-        &:before {
+        &:not(.dropdown-toggle):before {
             font: var(--fa-font-solid);
             content: fa-content($fa-var-check);
             position: absolute;
             left: 0.4rem;
-            font-size: 0.7rem;
         }
     }
 }

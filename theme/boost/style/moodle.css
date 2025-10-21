@@ -28663,27 +28663,6 @@ body.behat-site .action-menu .dropdown-subpanel-content.show {
   display: none;
 }
 
-.dropdown-item a {
-  display: block;
-  width: 100%;
-  color: #1d2125;
-}
-.dropdown-item.active a, .dropdown-item:active a, .dropdown-item:hover a, .dropdown-item:focus a, .dropdown-item:focus-within a {
-  color: #fff;
-}
-.dropdown-item[aria-current=true], .dropdown-item[aria-selected=true] {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-.dropdown-item[aria-current=true]:before, .dropdown-item[aria-selected=true]:before {
-  font: var(--fa-font-solid);
-  content: "\f00c";
-  position: absolute;
-  left: 0.4rem;
-  font-size: 0.7rem;
-}
-
 .dropdown-item-outline:focus, .dropdown-item-outline:focus-within {
   outline: solid #0f6cbf;
 }
@@ -39809,12 +39788,6 @@ div.editor_atto_toolbar button .icon {
   width: 20px;
   margin: 0;
 }
-.navbar.fixed-top .usermenu .dropdown-menu .submenu .items .dropdown-item[aria-current=true]::before {
-  font: var(--fa-font-solid);
-  content: "\f00c";
-  font-size: 0.75rem;
-  padding-left: 0.25rem;
-}
 .navbar.fixed-top .usermenu .login {
   display: flex;
   align-items: center;
@@ -40608,11 +40581,6 @@ div.editor_atto_toolbar button .icon {
 .moremenu .dropdown-item.active:hover a {
   color: #fff;
 }
-.moremenu .dropdown-item[aria-current=true]:before,
-.moremenu .dropdown-item.active:before {
-  font: var(--fa-font-solid);
-  content: "\f00c";
-}
 
 .primary-navigation .navigation {
   height: 60px;
@@ -40872,12 +40840,11 @@ div.editor_atto_toolbar button .icon {
   display: flex;
   align-items: center;
 }
-.dropdown-item[aria-current=true]:before, .dropdown-item[aria-selected=true]:before {
+.dropdown-item[aria-current=true]:not(.dropdown-toggle):before, .dropdown-item[aria-selected=true]:not(.dropdown-toggle):before {
   font: var(--fa-font-solid);
   content: "\f00c";
   position: absolute;
   left: 0.4rem;
-  font-size: 0.7rem;
 }
 
 .dropdown-menu {
