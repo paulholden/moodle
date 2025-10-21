@@ -81,16 +81,6 @@
                         margin: 0;
                     }
                 }
-                .items {
-                    .dropdown-item {
-                        &[aria-current="true"]::before {
-                            font: var(--fa-font-solid);
-                            content: fa-content($fa-var-check);
-                            font-size: 0.75rem;
-                            padding-left: .25rem;
-                        }
-                    }
-                }
             }
         }
         .login {

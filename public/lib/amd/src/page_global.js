@@ -60,7 +60,7 @@ function(
 
         // Ensure on load that the "current" item is always marked to ensure we make space for active item indicator.
         body.find('.dropdown-menu').each(function() {
-            $(this).find('[aria-current="true"]').addClass('dropdown-item-active');
+            $(this).find('[aria-current="true"]:not(.dropdown-toggle)').addClass('dropdown-item-active');
         });
 
         CustomEvents.define(body, [CustomEvents.events.activate]);
