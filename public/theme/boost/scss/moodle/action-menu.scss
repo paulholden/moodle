@@ -76,40 +76,6 @@
     }
 }
 
-// Make links in a menu clickable anywhere in the row.
-.dropdown-item {
-    a {
-        display: block;
-        width: 100%;
-        color: $body-color;
-    }
-
-    &.active,
-    &:active,
-    &:hover,
-    &:focus,
-    &:focus-within {
-        a {
-            color: $dropdown-link-active-color;
-        }
-    }
-
-    &[aria-current="true"],
-    &[aria-selected="true"] {
-        position: relative;
-        display: flex;
-        align-items: center;
-
-        &:before {
-            font: var(--fa-font-solid);
-            content: fa-content($fa-var-check);
-            position: absolute;
-            left: 0.4rem;
-            font-size: 0.7rem;
-        }
-    }
-}
-
 .dropdown-item-outline {
 
     &:focus,

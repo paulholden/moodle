@@ -101,9 +101,5 @@
                 color: $dropdown-link-active-color;
             }
         }
-        &:before {
-            font: var(--fa-font-solid);
-            content: fa-content($fa-var-check);
-        }
     }
 }
