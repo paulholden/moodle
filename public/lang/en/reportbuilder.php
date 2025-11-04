@@ -290,6 +290,7 @@ $string['timenextsend'] = 'Time next send';
 $string['uniquerows'] = 'Remove any duplicate rows';
 $string['uniquerows_help'] = 'If the report source contains duplicate rows, should these be removed from this report? This setting has no effect if report columns are aggregated.';
 $string['userany'] = 'Any user';
+$string['usercreated'] = 'Created by';
 $string['usercurrent'] = 'Current user';
 $string['userfullnamewithlink'] = 'Full name with link';
 $string['userfullnamewithpicture'] = 'Full name with picture';
