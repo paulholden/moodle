@@ -178,7 +178,7 @@ Feature: Manage custom reports
       | Report source | Users    |
       | Tags          | Cat      |
 
-  Scenario: Filter custom reports by user
+  Scenario Outline: Filter custom reports by user
     Given the following "users" exist:
       | username  | firstname | lastname |
       | user1     | User      | 1        |
@@ -188,15 +188,19 @@ Feature: Manage custom reports
     And I log in as "admin"
     When I navigate to "Reports > Report builder > Custom reports" in site administration
     And I click on "Filters" "button"
-    And I set the following fields in the "Modified by" "core_reportbuilder > Filter" to these values:
-      | Modified by operator | Select     |
-      | Modified by value    | Admin User |
+    And I set the following fields in the "<filter>" "core_reportbuilder > Filter" to these values:
+      | <filter> operator | Select     |
+      | <filter> value    | Admin User |
     And I click on "Apply" "button" in the "[data-region='report-filters']" "css_element"
     Then I should see "My report" in the "Reports list" "table"
-    And I set the field "Modified by value" in the "Modified by" "core_reportbuilder > Filter" to "User 1"
+    And I set the field "<filter> value" in the "<filter>" "core_reportbuilder > Filter" to "User 1"
     And I click on "Apply" "button" in the "[data-region='report-filters']" "css_element"
     And I should see "Nothing to display"
     And "Reports list" "table" should not exist
+    Examples:
+      | filter      |
+      | Created by  |
+      | Modified by |
 
   Scenario Outline: Filter custom reports by date
     Given the following "core_reportbuilder > Report" exists:
