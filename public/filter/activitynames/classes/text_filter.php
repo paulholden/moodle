@@ -21,6 +21,7 @@ use cache_store;
 use core\output\html_writer;
 use core_collator;
 use filterobject;
+use filter_manager;
 
 /**
  * This filter provides automatic linking to
@@ -125,11 +126,19 @@ class text_filter extends \core_filters\text_filter {
             foreach ($modinfo->cms as $cm) {
                 // Use normal access control and visibility, but exclude labels and hidden activities.
                 if ($cm->visible && $cm->has_view() && $cm->uservisible) {
+
+                    // Run filters on the text, excluding the current filter to avoid recursion.
+                    $cmname = filter_manager::instance()->filter_text(
+                        $cm->name,
+                        $cm->context,
+                        skipfilters: ['activitynames'],
+                    );
+
                     $sortedactivities[] = (object)[
-                        'name' => $cm->name,
+                        'name' => $cmname,
                         'url' => $cm->url,
                         'id' => $cm->id,
-                        'namelen' => -strlen($cm->name), // Negative value for reverse sorting.
+                        'namelen' => -strlen($cmname), // Negative value for reverse sorting.
                     ];
                 }
             }
@@ -137,7 +146,7 @@ class text_filter extends \core_filters\text_filter {
             core_collator::asort_objects_by_property($sortedactivities, 'namelen', core_collator::SORT_NUMERIC);
 
             foreach ($sortedactivities as $cm) {
-                $title = s(trim(strip_tags($cm->name)));
+                $title = s(trim($cm->name));
                 $currentname = trim($cm->name);
                 // Normalize whitespace in activity names to handle double spaces and non-breaking spaces.
                 // This ensures that activities with multiple consecutive spaces can still be matched
