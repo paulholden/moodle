@@ -190,14 +190,19 @@ class autosave_manager {
             return $stale;
         }
 
-        $fs = get_file_storage();
-        $files = $fs->get_directory_files($record->contextid, 'user', 'draft', $record->draftid, '/', true, true);
+        // If we have a draftid, check in the users own draft area.
+        $usercontext = \core\context\user::instance($this->user->id);
+        $files = get_file_storage()->get_directory_files($usercontext->id, 'user', 'draft', $record->draftid, '/', true);
 
-        $lastfilemodified = 0;
-        foreach ($files as $file) {
-            if ($record->timemodified < $file->get_timemodified()) {
-                $stale = true;
-                break;
+        // If the draft area is empty, it's stale.
+        if (count($files) === 0) {
+            $stale = true;
+        } else {
+            foreach ($files as $file) {
+                if ($record->timemodified < $file->get_timemodified()) {
+                    $stale = true;
+                    break;
+                }
             }
         }
 
@@ -217,7 +222,7 @@ class autosave_manager {
         require_once("{$CFG->libdir}/filelib.php");
 
         // Copy all draft files from the old draft area.
-        $usercontext = \context_user::instance($this->user->id);
+        $usercontext = \core\context\user::instance($this->user->id);
 
         // This function copies all the files in one draft area, to another area (in this case it's
         // another draft area). It also rewrites the text to @@PLUGINFILE@@ links.
