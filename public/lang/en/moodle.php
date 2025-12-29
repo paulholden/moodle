@@ -1369,8 +1369,6 @@ $string['missingteacher'] = 'Must choose something';
 $string['missingurl'] = 'Missing URL';
 $string['missingusername'] = 'Missing username';
 $string['moddoesnotsupporttype'] = 'Module {$a->modname} does not support uploads of type {$a->type}';
-$string['modhidden'] = 'Availability';
-$string['modhidden_help'] = '* Hide on course page: Not available to students. This module cannot be shown to students.';
 $string['modhide'] = 'Hide';
 $string['modshow'] = 'Show';
 $string['modvisible'] = 'Availability';
@@ -2511,3 +2509,7 @@ $string['activities_help'] = 'Activities, such as forums, quizzes and wikis, ena
 $string['hiddensections_help'] = 'Hidden sections can be displayed to students as \'not available\' on the course page, or kept completely hidden.';
 $string['maxsectionslimit'] = 'Cannot create new section as it would exceed the maximum number of sections allowed for this course ({$a}).';
 $string['resources_help'] = 'Resource types enable almost any kind of web content to be inserted into the course.';
+
+// Deprecated since Moodle 5.2.
+$string['modhidden'] = 'Availability';
+$string['modhidden_help'] = '* Hide on course page: Not available to students. This module cannot be shown to students.';

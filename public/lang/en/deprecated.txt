@@ -96,3 +96,5 @@ sitename,core_hub
 sitename_help,core_hub
 defaultissuerpassword_help,core_badges
 invalidfiletype,core_repository
+modhidden,core
+modhidden_help,core
