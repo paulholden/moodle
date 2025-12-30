@@ -1953,6 +1953,11 @@ body.lockscroll {
     display: inline-block;
 }
 
+.yui3-calendar-weekday {
+    max-width: 40px;
+    @include text-truncate();
+}
+
 dd:before,
 dd:after {
     display: block;
