@@ -35,7 +35,7 @@
 }}
 
 <div class="form-check form-switch {{$extraclasses}}{{extraclasses}}{{/extraclasses}}">
-    <input type="checkbox" class="form-check-input" id="{{$id}}{{id}}{{/id}}"
+    <input type="checkbox" class="form-check-input" id="{{$id}}{{id}}{{/id}}" autocomplete="off"
         {{$attributes}}
             {{#dataattributes}}data-{{name}}="{{value}}" {{/dataattributes}}
             {{#checked}}checked{{/checked}}
