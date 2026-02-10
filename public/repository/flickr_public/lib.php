@@ -412,6 +412,9 @@ class repository_flickr_public extends repository {
 
                 // Perform a HEAD request to the image to obtain it's Content-Length.
                 $curl = new curl();
+                $curl->setopt([
+                    'CURLOPT_USERAGENT' => flickr_client::user_agent(),
+                ]);
                 $curl->head($this->get_link($p['id']));
 
                 // The photo sizes are statically cached, so we can retrieve image dimensions without another API call.
@@ -497,7 +500,7 @@ class repository_flickr_public extends repository {
      * @global object $CFG
      * @param string $photoid
      * @param string $file
-     * @return string
+     * @return array
      */
     public function get_file($photoid, $file = '') {
         global $CFG;
@@ -510,10 +513,6 @@ class repository_flickr_public extends repository {
         } else {
             $source = $this->build_photo_url($photoid);
         }
-        // Make sure the source image exists.
-        if (!@getimagesize($source)) {
-            throw new moodle_exception('cannotdownload', 'repository');
-        }
 
         if ($info['owner']['realname']) {
             $author = $info['owner']['realname'];
@@ -522,8 +521,20 @@ class repository_flickr_public extends repository {
         }
         $copyright = get_string('author', 'repository') . ': ' . $author;
 
-        $result = parent::get_file($source, $file);
-        $path = $result['path'];
+        $path = $this->prepare_file($file);
+        $curl = new curl();
+        $curl->setopt([
+            'CURLOPT_USERAGENT' => flickr_client::user_agent(),
+        ]);
+
+        $result = $curl->download_one($source, null, [
+            'filepath' => $path,
+            'timeout' => $CFG->repositorygetfiletimeout,
+        ]);
+
+        if ($result !== true) {
+            throw new moodle_exception('errorwhiledownload', 'repository', '', $result);
+        }
 
         if (!empty($this->usewatermarks)) {
             $img = new moodle_image($path);
