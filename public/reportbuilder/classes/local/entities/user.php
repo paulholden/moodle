@@ -20,12 +20,11 @@ namespace core_reportbuilder\local\entities;
 
 use core\{context, context_helper};
 use core\context\system;
+use core\lang_string;
+use core\output\html_writer;
+use core\user as core_user;
 use core_component;
 use core_date;
-use core_user;
-use html_writer;
-use lang_string;
-use moodle_url;
 use stdClass;
 use theme_config;
 use core_user\fields;
@@ -231,17 +230,20 @@ class user extends base {
                     }
 
                     if ($fullnamefield === 'fullnamewithlink') {
-                        return html_writer::link(new moodle_url('/user/profile.php', ['id' => $row->id]),
-                            fullname($row, $viewfullnames));
+                        return html_writer::link(
+                            core_user::get_profile_url($row),
+                            fullname($row, $viewfullnames),
+                        );
                     }
                     if ($fullnamefield === 'fullnamewithpicture') {
                         return $OUTPUT->user_picture($row, ['link' => false, 'alttext' => false]) .
                             fullname($row, $viewfullnames);
                     }
                     if ($fullnamefield === 'fullnamewithpicturelink') {
-                        return html_writer::link(new moodle_url('/user/profile.php', ['id' => $row->id]),
-                            $OUTPUT->user_picture($row, ['link' => false, 'alttext' => false]) .
-                            fullname($row, $viewfullnames));
+                        return html_writer::link(
+                            core_user::get_profile_url($row),
+                            $OUTPUT->user_picture($row, ['link' => false, 'alttext' => false]) . fullname($row, $viewfullnames),
+                        );
                     }
 
                     return (string) $value;
@@ -254,6 +256,22 @@ class user extends base {
 
             $columns[] = $column;
         }
+
+        // Profile URL.
+        $columns[] = (new column(
+            'url',
+            new lang_string('profileurl', 'core_user'),
+            $this->get_entity_name(),
+        ))
+            ->add_joins($this->get_joins())
+            ->add_fields("{$usertablealias}.id")
+            ->add_callback(static function (?string $userid, stdClass $user): string {
+                if ($userid === null) {
+                    return '';
+                }
+
+                return (string) core_user::get_profile_url($user);
+            });
 
         // Picture column.
         $columns[] = (new column(

@@ -21,6 +21,7 @@ namespace core_user\reportbuilder\datasource;
 use core_reportbuilder_generator;
 use core_reportbuilder\local\filters\{boolean_select, date, select, tags, text, user as user_filter};
 use core_reportbuilder\tests\core_reportbuilder_testcase;
+use core\user as core_user;
 
 /**
  * Unit tests for users datasource
@@ -62,6 +63,7 @@ final class users_test extends core_reportbuilder_testcase {
     public function test_datasource_non_default_columns(): void {
         $this->resetAfterTest();
 
+        $admin = get_admin();
         $user = $this->getDataGenerator()->create_user([
             'firstname' => 'Zoe',
             'idnumber' => 'U0001',
@@ -85,6 +87,7 @@ final class users_test extends core_reportbuilder_testcase {
             'sortenabled' => 1]);
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'user:fullnamewithpicture']);
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'user:fullnamewithpicturelink']);
+        $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'user:url']);
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'user:picture']);
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'user:firstname']);
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'user:lastname']);
@@ -127,18 +130,21 @@ final class users_test extends core_reportbuilder_testcase {
             $fullnamewithlink,
             $fullnamewithpicture,
             $fullnamewithpicturelink,
+            $profileurl,
             $picture,
             $firstname,
             $lastname,
             $theme,
         ] = array_values($content[0]);
 
-        $this->assertStringContainsString('Admin User', $fullnamewithlink);
-        $this->assertStringContainsString('Admin User', $fullnamewithpicture);
-        $this->assertStringContainsString('Admin User', $fullnamewithpicturelink);
+        $expectedprofileurl = (string) core_user::get_profile_url($admin);
+        $this->assertEquals("<a href=\"{$expectedprofileurl}\">" . fullname($admin) . "</a>", $fullnamewithlink);
+        $this->assertStringContainsString(fullname($admin), $fullnamewithpicture);
+        $this->assertStringContainsString(fullname($admin), $fullnamewithpicturelink);
+        $this->assertEquals($expectedprofileurl, $profileurl);
         $this->assertNotEmpty($picture);
-        $this->assertEquals('Admin', $firstname);
-        $this->assertEquals('User', $lastname);
+        $this->assertEquals($admin->firstname, $firstname);
+        $this->assertEquals($admin->lastname, $lastname);
         $this->assertEquals('Default', $theme);
 
         // User row.
@@ -146,6 +152,7 @@ final class users_test extends core_reportbuilder_testcase {
             $fullnamewithlink,
             $fullnamewithpicture,
             $fullnamewithpicturelink,
+            $profileurl,
             $picture,
             $firstname,
             $lastname,
@@ -177,9 +184,11 @@ final class users_test extends core_reportbuilder_testcase {
             $cohortname,
         ] = array_values($content[1]);
 
-        $this->assertStringContainsString(fullname($user), $fullnamewithlink);
+        $expectedprofileurl = (string) core_user::get_profile_url($user);
+        $this->assertEquals("<a href=\"{$expectedprofileurl}\">" . fullname($user) . "</a>", $fullnamewithlink);
         $this->assertStringContainsString(fullname($user), $fullnamewithpicture);
         $this->assertStringContainsString(fullname($user), $fullnamewithpicturelink);
+        $this->assertEquals($expectedprofileurl, $profileurl);
         $this->assertNotEmpty($picture);
         $this->assertEquals($user->firstname, $firstname);
         $this->assertEquals($user->lastname, $lastname);

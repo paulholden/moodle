@@ -128,6 +128,7 @@ $string['privacy:passwordresetpath'] = 'Password resets';
 $string['privacy:profileimagespath'] = 'Profile images';
 $string['privacy:privatefilespath'] = 'Private files';
 $string['privacy:sessionpath'] = 'Session data';
+$string['profileurl'] = 'Profile URL';
 $string['filterbykeyword'] = 'Keyword';
 $string['supportmessagesent'] = 'Your message has been sent.';
 $string['supportmessagesentforloggedoutuser'] = 'Be careful with this message. The sender was not logged in, so their identity has not been confirmed.';
