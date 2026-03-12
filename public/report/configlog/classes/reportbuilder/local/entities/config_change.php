@@ -27,14 +27,11 @@ use core_reportbuilder\local\filters\text;
 /**
  * Config change entity class implementation
  *
- * Defines all the columns and filters that can be added to reports that use this entity.
- *
  * @package    report_configlog
  * @copyright  2020 Paul Holden <paulh@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class config_change extends base {
-
     /**
      * Database tables that this entity uses
      *
@@ -85,7 +82,7 @@ class config_change extends base {
             ->set_type(column::TYPE_TEXT)
             ->add_field("{$tablealias}.plugin")
             ->set_is_sortable(true)
-            ->add_callback(static function(?string $plugin): string {
+            ->add_callback(static function (?string $plugin): string {
                 return $plugin ?? 'core';
             });
 
@@ -110,7 +107,7 @@ class config_change extends base {
             ->set_type(column::TYPE_TEXT)
             ->add_field("{$tablealias}.value")
             ->set_is_sortable(true)
-            ->add_callback(static function(?string $value): string {
+            ->add_callback(static function (?string $value): string {
                 return format_text($value, FORMAT_PLAIN);
             });
 
@@ -124,7 +121,7 @@ class config_change extends base {
             ->set_type(column::TYPE_TEXT)
             ->add_field("{$tablealias}.oldvalue")
             ->set_is_sortable(true)
-            ->add_callback(static function(?string $oldvalue): string {
+            ->add_callback(static function (?string $oldvalue): string {
                 return format_text($oldvalue, FORMAT_PLAIN);
             });
 

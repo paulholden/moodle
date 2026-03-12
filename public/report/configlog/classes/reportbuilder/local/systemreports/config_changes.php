@@ -16,11 +16,10 @@
 
 namespace report_configlog\reportbuilder\local\systemreports;
 
-use context_system;
-use report_configlog\reportbuilder\local\entities\config_change;
+use core\context\system;
 use core_reportbuilder\system_report;
 use core_reportbuilder\local\entities\user;
-use stdClass;
+use report_configlog\reportbuilder\local\entities\config_change;
 
 /**
  * Config changes system report class implementation
@@ -30,24 +29,21 @@ use stdClass;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class config_changes extends system_report {
-
     /**
      * Initialise report, we need to set the main table, load our entities and set columns/filters
      */
     protected function initialise(): void {
-        // Our main entity, it contains all of the column definitions that we need.
         $entitymain = new config_change();
         $entitymainalias = $entitymain->get_table_alias('config_log');
 
         $this->set_main_table('config_log', $entitymainalias);
         $this->add_entity($entitymain);
 
-        // We can join the "user" entity to our "main" entity using standard SQL JOIN.
+        // Join the user entity.
         $entityuser = new user();
         $entityuseralias = $entityuser->get_table_alias('user');
         $this->add_entity($entityuser
-            ->add_join("LEFT JOIN {user} {$entityuseralias} ON {$entityuseralias}.id = {$entitymainalias}.userid")
-        );
+            ->add_join("LEFT JOIN {user} {$entityuseralias} ON {$entityuseralias}.id = {$entitymainalias}.userid"));
 
         // Now we can call our helper methods to add the content we want to include in the report.
         $this->add_columns();
@@ -63,7 +59,7 @@ class config_changes extends system_report {
      * @return bool
      */
     protected function can_view(): bool {
-        return has_capability('moodle/site:config', context_system::instance());
+        return has_capability('moodle/site:config', system::instance());
     }
 
     /**
@@ -89,7 +85,7 @@ class config_changes extends system_report {
 
         // Custom callback to show 'CLI or install' in fullname column when there is no user.
         if ($column = $this->get_column('user:fullnamewithlink')) {
-            $column->add_callback(static function(string $fullname, stdClass $row): string {
+            $column->add_callback(static function (string $fullname): string {
                 return $fullname ?: get_string('usernone', 'report_configlog');
             });
         }

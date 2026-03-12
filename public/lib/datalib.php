@@ -1550,7 +1550,7 @@ function add_to_config_log($name, $oldvalue, $value, $plugin) {
     $log = new stdClass();
     // Use 0 as user id during install.
     $log->userid       = during_initial_install() ? 0 : $USER->id;
-    $log->timemodified = time();
+    $log->timemodified = \core\di::get(\core\clock::class)->time();
     $log->name         = $name;
     $log->oldvalue  = $oldvalue;
     $log->value     = $value;
