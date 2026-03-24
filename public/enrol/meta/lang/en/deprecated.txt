@@ -1,0 +1,2 @@
+coursesort,enrol_meta
+coursesort_help,enrol_meta

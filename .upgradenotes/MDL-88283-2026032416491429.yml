@@ -1,0 +1,10 @@
+issueNumber: MDL-88283
+notes:
+  enrol_meta:
+    - message: >-
+        The plugin class method `get_course_options(...)` has been formally
+        deprecated, as it has been unused for some time
+
+
+        The related `coursesort` plugin configuration has also been removed
+      type: deprecated

@@ -15,15 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Meta link enrolment plugin version specification.
+ * Plugin upgrade code
  *
  * @package    enrol_meta
- * @copyright  2010 Petr Skoda {@link http://skodak.org}
+ * @copyright  2026 Paul Holden <paulh@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+/**
+ * Method to perform upgrade steps between versions
+ *
+ * @param int $oldversion
+ * @return bool
+ */
+function xmldb_enrol_meta_upgrade(int $oldversion): bool {
+    if ($oldversion < 2026050100) {
+        unset_config('coursesort', 'enrol_meta');
+        upgrade_plugin_savepoint(true, 2026050100, 'enrol', 'meta');
+    }
 
-$plugin->version   = 2026050100;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2026041000;        // Requires this Moodle version.
-$plugin->component = 'enrol_meta';      // Full name of the plugin (used for diagnostics)
+    return true;
+}

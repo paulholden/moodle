@@ -241,9 +241,14 @@ class enrol_meta_plugin extends enrol_plugin {
      * @param stdClass $instance
      * @param context $coursecontext
      * @return array
+     *
+     * @deprecated since Moodle 5.3 - please do not use this function any more
      */
+    #[\core\attribute\deprecated(reason: 'It is no longer used', mdl: 'MDL-88283', since: '5.3')]
     protected function get_course_options($instance, $coursecontext) {
         global $DB;
+
+        \core\deprecation::emit_deprecation([self::class, __FUNCTION__]);
 
         if ($instance->id) {
             $where = 'WHERE c.id = :courseid';
@@ -260,10 +265,7 @@ class enrol_meta_plugin extends enrol_plugin {
         $courses = array();
         $select = ', ' . context_helper::get_preload_record_columns_sql('ctx');
         $join = "LEFT JOIN {context} ctx ON (ctx.instanceid = c.id AND ctx.contextlevel = :contextlevel)";
-
-        $sortorder = 'c.' . $this->get_config('coursesort', 'sortorder') . ' ASC';
-
-        $sql = "SELECT c.id, c.fullname, c.shortname, c.visible $select FROM {course} c $join $where ORDER BY $sortorder";
+        $sql = "SELECT c.id, c.fullname, c.shortname, c.visible $select FROM {course} c $join $where ORDER BY c.sortorder";
         $rs = $DB->get_recordset_sql($sql, array('contextlevel' => CONTEXT_COURSE) + $params);
         foreach ($rs as $c) {
             if ($c->id == SITEID or $c->id == $instance->courseid or isset($existing[$c->id])) {

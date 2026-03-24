@@ -23,8 +23,6 @@
  */
 
 $string['addgroup'] = 'Add to group';
-$string['coursesort'] = 'Source course list order';
-$string['coursesort_help'] = 'When linking the source course to the target course, how should source courses be ordered?';
 $string['creategroup'] = 'Create new group';
 $string['defaultgroupnametext'] = '{$a->name} course {$a->increment}';
 $string['enrolmetasynctask'] = 'Meta enrolment sync task';
@@ -45,3 +43,7 @@ $string['wscannotcreategroup'] = 'No permission to create group in linked course
 $string['wsinvalidcourse'] = 'Course ID = {$a} doesn\'t exist or you don\'t have permission to add a course meta link.';
 $string['wsinvalidmetacourse'] = 'Meta course ID = {$a} doesn\'t exist or you don\'t have permission to add an enrolment instance.';
 $string['wsnoinstancesspecified'] = 'No instances specified';
+
+// Deprecated since 5.3.
+$string['coursesort'] = 'Source course list order';
+$string['coursesort_help'] = 'When linking the source course to the target course, how should source courses be ordered?';
