@@ -20,6 +20,7 @@ use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
+use core_external\util;
 use invalid_parameter_exception;
 
 defined('MOODLE_INTERNAL') || die;
@@ -89,7 +90,14 @@ class get_feedback extends external_api {
         $extrafields = \core_user\fields::get_identity_fields($context);
 
         return [
-            'feedbacktext' => $grade->feedback,
+            'feedbacktext' => util::format_text(
+                $grade->feedback,
+                $grade->feedbackformat,
+                $grade->get_context(),
+                GRADE_FILE_COMPONENT,
+                GRADE_FEEDBACK_FILEAREA,
+                $grade->id,
+            )[0],
             'title' => $gradeitem->get_name(true),
             'fullname' => fullname($user),
             'picture' => $OUTPUT->user_picture($user, ['size' => 50, 'link' => false]),
