@@ -25,9 +25,9 @@ use html_writer;
 use moodle_exception;
 use stdClass;
 use core_reportbuilder\{manager, system_report};
-use core_reportbuilder\local\helpers\report_fields_dedup;
 use core_reportbuilder\local\models\report;
 use core_reportbuilder\local\report\column;
+use core_reportbuilder\local\report\report_select;
 
 /**
  * System report dynamic table class
@@ -106,9 +106,20 @@ class system_report_table extends base_report_table {
         // If we are aggregating any columns, we should group by the remaining ones.
         $aggregatedcolumns = array_filter($columns, fn(column $column): bool => !empty($column->get_aggregation()));
         $hasaggregatedcolumns = !empty($aggregatedcolumns);
-        if ($hasaggregatedcolumns) {
-            $groupby = $fields;
-        }
+
+        // Derive the deduplicated SELECT fields (and per-column GROUP BY fragments) from the active
+        // columns. The resulting alias map is captured on the table so ORDER BY (in
+        // {@see base_report_table::get_sql_sort}) and fetched rows (in {@see format_row}) can
+        // rewrite/rehydrate using the canonical aliases that actually appear in the SELECT.
+        $this->reportselect = report_select::for_columns($columns);
+
+        // When aggregating, GROUP BY must include the report's base fields (so non-aggregated rows
+        // collapse correctly) plus the per-column GROUP BY fragments derived above.
+        $groupby = $hasaggregatedcolumns
+            ? array_merge($fields, $this->reportselect->get_groupby_fields())
+            : [];
+
+        $fields = array_merge($fields, $this->reportselect->get_select_fields());
 
         $columnheaders = $columnattributes = $columnicons = [];
 
@@ -126,13 +137,8 @@ class system_report_table extends base_report_table {
                 $this->userfullnamecolumns[] = $column->get_column_alias();
             }
 
-            // We need to determine for each column whether we should group by its fields, to support aggregation.
-            $columnaggregation = $column->get_aggregation();
-            if ($hasaggregatedcolumns && (empty($columnaggregation) || $columnaggregation::column_groupby())) {
-                $groupby = array_merge($groupby, $column->get_groupby_sql());
-            }
-
-            // Add each columns joins and params to our report (fields are deduplicated below).
+            // Add each columns joins and params to our report (fields and group-by come from
+            // {@see report_select} above).
             $joins = array_merge($joins, $column->get_joins());
             $params = array_merge($params, $column->get_params());
 
@@ -145,15 +151,6 @@ class system_report_table extends base_report_table {
             $columnattributes[$column->get_column_alias()] = $column->get_attributes();
             $columnicons[] = $column->get_help_icon();
         }
-
-        // Deduplicate identical field SELECT expressions across columns. Sort and group-by fragments
-        // are rewritten to reference the canonical aliases that appear in the SELECT, and rows fetched
-        // by the table are rehydrated in {@see format_row} so columns continue to read their own aliases.
-        ['fields' => $columnfields, 'aliasmap' => $aliasmap] = report_fields_dedup::get_unique_fields($columns);
-        $this->set_field_alias_map($aliasmap);
-        $fields = array_merge($fields, $columnfields);
-        $groupby = array_map(static fn(string $fragment): string =>
-            report_fields_dedup::rewrite_aliases($fragment, $aliasmap), $groupby);
 
         // If the report has any actions then append appropriate column, note that actions are excluded during download.
         if ($this->report->has_actions() && !$this->is_downloading()) {
@@ -232,7 +229,7 @@ class system_report_table extends base_report_table {
 
         // Rehydrate any column aliases collapsed during SELECT deduplication so columns can read
         // their own per-column aliases unchanged, and so the row callback sees the full alias set.
-        $row = report_fields_dedup::rehydrate_row((array) $row, $this->get_field_alias_map());
+        $row = $this->reportselect?->rehydrate((array) $row) ?? (array) $row;
 
         $this->report->row_callback((object) $row);
 

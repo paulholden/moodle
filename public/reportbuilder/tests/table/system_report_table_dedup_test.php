@@ -31,6 +31,7 @@ use core_reportbuilder\external\system_report_data_exporter;
  * @package     core_reportbuilder
  * @covers      \core_reportbuilder\table\system_report_table
  * @covers      \core_reportbuilder\external\system_report_data_exporter
+ * @covers      \core_reportbuilder\local\report\report_select
  * @copyright   2026 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

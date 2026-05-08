@@ -24,9 +24,9 @@ use moodle_exception;
 use moodle_url;
 use stdClass;
 use core_reportbuilder\{datasource, manager};
-use core_reportbuilder\local\helpers\report_fields_dedup;
 use core_reportbuilder\local\models\report;
 use core_reportbuilder\local\report\column;
+use core_reportbuilder\local\report\report_select;
 use core_reportbuilder\output\column_aggregation_editable;
 use core_reportbuilder\output\column_heading_editable;
 
@@ -72,7 +72,6 @@ class custom_report_table extends base_report_table {
         $this->persistent = new report($matches['id']);
         $this->report = manager::get_report_from_persistent($this->persistent);
 
-        $groupby = [];
         $maintablesql = $this->report->get_main_table_sql();
         $maintablealias = $this->report->get_main_table_alias();
         $joins = $this->report->get_joins();
@@ -105,13 +104,8 @@ class custom_report_table extends base_report_table {
             $columnheading = $column->get_persistent()->get_formatted_heading($this->report->get_context());
             $columnheaders[$column->get_column_alias()] = $columnheading !== '' ? $columnheading : $column->get_title();
 
-            // We need to determine for each column whether we should group by its fields, to support aggregation.
-            $columnaggregation = $column->get_aggregation();
-            if ($showuniquerows || ($hasaggregatedcolumns && (empty($columnaggregation) || $columnaggregation::column_groupby()))) {
-                $groupby = array_merge($groupby, $column->get_groupby_sql());
-            }
-
-            // Add each columns joins and params to our report (fields are deduplicated below).
+            // Add each columns joins and params to our report (fields and group-by come from
+            // {@see report_select} below).
             $joins = array_merge($joins, $column->get_joins());
             $params = array_merge($params, $column->get_params());
 
@@ -135,14 +129,13 @@ class custom_report_table extends base_report_table {
             $columnsattributes[$column->get_column_alias()] = $column->get_attributes();
         }
 
-        // Deduplicate identical field SELECT expressions across columns. Sort and group-by fragments
-        // are rewritten so they reference the canonical aliases that actually appear in the SELECT,
-        // and rows fetched by the table are rehydrated in {@see format_row} so that columns continue
-        // to read their own per-column aliases unchanged.
-        ['fields' => $fields, 'aliasmap' => $aliasmap] = report_fields_dedup::get_unique_fields($columns);
-        $this->set_field_alias_map($aliasmap);
-        $groupby = array_map(static fn(string $fragment): string =>
-            report_fields_dedup::rewrite_aliases($fragment, $aliasmap), $groupby);
+        // Derive deduplicated SELECT fields and rewritten GROUP BY fragments from the columns. The
+        // resulting alias map is captured on the table so ORDER BY (in {@see base_report_table::get_sql_sort})
+        // and fetched rows (in {@see format_row}) can rewrite/rehydrate using the canonical aliases
+        // that actually appear in the SELECT.
+        $this->reportselect = report_select::for_columns($columns, forcegroupby: $showuniquerows);
+        $fields = $this->reportselect->get_select_fields();
+        $groupby = $this->reportselect->get_groupby_fields();
 
         $this->define_columns(array_keys($columnheaders));
         $this->define_headers(array_values($columnheaders));
@@ -210,7 +203,7 @@ class custom_report_table extends base_report_table {
         $columns = $this->get_active_columns();
 
         // Rehydrate any column aliases collapsed during SELECT deduplication.
-        $row = report_fields_dedup::rehydrate_row((array) $row, $this->get_field_alias_map());
+        $row = $this->reportselect?->rehydrate((array) $row) ?? (array) $row;
 
         $formattedrow = [];
         foreach ($columns as $column) {

@@ -25,10 +25,10 @@ use table_sql;
 use html_writer;
 use core_table\dynamic;
 use core_reportbuilder\local\helpers\database;
-use core_reportbuilder\local\helpers\report_fields_dedup;
 use core_reportbuilder\local\filters\base;
 use core_reportbuilder\local\models\report;
 use core_reportbuilder\local\report\base as base_report;
+use core_reportbuilder\local\report\report_select;
 use core_reportbuilder\local\report\filter;
 use core\output\notification;
 
@@ -54,8 +54,8 @@ abstract class base_report_table extends table_sql implements dynamic, renderabl
     /** @var string $groupbysql */
     protected $groupbysql = '';
 
-    /** @var array<string, string> Map of duplicate column alias to canonical alias, populated when field SELECTs are deduplicated */
-    protected array $fieldaliasmap = [];
+    /** @var ?report_select Describes the SELECT/GROUP BY shape derived from the report's columns */
+    protected ?report_select $reportselect = null;
 
     /** @var bool $editing */
     protected $editing = false;
@@ -130,26 +130,6 @@ abstract class base_report_table extends table_sql implements dynamic, renderabl
      */
     public function set_report_editing(bool $editing): void {
         $this->editing = $editing;
-    }
-
-    /**
-     * Set the map of duplicate column alias to canonical alias, produced by the field deduplication
-     * helper {@see report_fields_dedup}. Used when rewriting ORDER BY/GROUP BY fragments and when
-     * rehydrating fetched rows.
-     *
-     * @param array<string, string> $aliasmap
-     */
-    protected function set_field_alias_map(array $aliasmap): void {
-        $this->fieldaliasmap = $aliasmap;
-    }
-
-    /**
-     * Return the field deduplication alias map currently in effect.
-     *
-     * @return array<string, string>
-     */
-    protected function get_field_alias_map(): array {
-        return $this->fieldaliasmap;
     }
 
     /**
@@ -294,11 +274,10 @@ abstract class base_report_table extends table_sql implements dynamic, renderabl
 
         // Rewrite any duplicate aliases that were collapsed during SELECT deduplication, so the
         // ORDER BY refers to the canonical alias actually present in the SELECT clause.
-        $aliasmap = $this->get_field_alias_map();
-        if (!empty($aliasmap)) {
+        if ($this->reportselect !== null) {
             $rewritten = [];
             foreach ($columnsortby as $field => $order) {
-                $rewritten[report_fields_dedup::rewrite_aliases($field, $aliasmap)] = $order;
+                $rewritten[$this->reportselect->rewrite($field)] = $order;
             }
             $columnsortby = $rewritten;
         }

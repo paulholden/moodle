@@ -30,6 +30,7 @@ use core_user\reportbuilder\datasource\users;
  * @package     core_reportbuilder
  * @covers      \core_reportbuilder\table\custom_report_table
  * @covers      \core_reportbuilder\table\base_report_table
+ * @covers      \core_reportbuilder\local\report\report_select
  * @copyright   2026 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
