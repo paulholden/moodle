@@ -25,6 +25,7 @@ use html_writer;
 use moodle_exception;
 use stdClass;
 use core_reportbuilder\{manager, system_report};
+use core_reportbuilder\local\helpers\report_fields_dedup;
 use core_reportbuilder\local\models\report;
 use core_reportbuilder\local\report\column;
 
@@ -131,8 +132,7 @@ class system_report_table extends base_report_table {
                 $groupby = array_merge($groupby, $column->get_groupby_sql());
             }
 
-            // Add each columns fields, joins and params to our report.
-            $fields = array_merge($fields, $column->get_fields());
+            // Add each columns joins and params to our report (fields are deduplicated below).
             $joins = array_merge($joins, $column->get_joins());
             $params = array_merge($params, $column->get_params());
 
@@ -145,6 +145,15 @@ class system_report_table extends base_report_table {
             $columnattributes[$column->get_column_alias()] = $column->get_attributes();
             $columnicons[] = $column->get_help_icon();
         }
+
+        // Deduplicate identical field SELECT expressions across columns. Sort and group-by fragments
+        // are rewritten to reference the canonical aliases that appear in the SELECT, and rows fetched
+        // by the table are rehydrated in {@see format_row} so columns continue to read their own aliases.
+        ['fields' => $columnfields, 'aliasmap' => $aliasmap] = report_fields_dedup::get_unique_fields($columns);
+        $this->set_field_alias_map($aliasmap);
+        $fields = array_merge($fields, $columnfields);
+        $groupby = array_map(static fn(string $fragment): string =>
+            report_fields_dedup::rewrite_aliases($fragment, $aliasmap), $groupby);
 
         // If the report has any actions then append appropriate column, note that actions are excluded during download.
         if ($this->report->has_actions() && !$this->is_downloading()) {
@@ -221,11 +230,14 @@ class system_report_table extends base_report_table {
     public function format_row($row) {
         global $PAGE;
 
+        // Rehydrate any column aliases collapsed during SELECT deduplication so columns can read
+        // their own per-column aliases unchanged, and so the row callback sees the full alias set.
+        $row = report_fields_dedup::rehydrate_row((array) $row, $this->get_field_alias_map());
+
         $this->report->row_callback((object) $row);
 
         // Walk over the row, and for any key that matches one of our column aliases, call that columns format method.
         $columnsbyalias = $this->report->get_active_columns_by_alias();
-        $row = (array) $row;
         array_walk($row, static function(&$value, $key) use ($columnsbyalias, $row): void {
             if (array_key_exists($key, $columnsbyalias)) {
                 $value = $columnsbyalias[$key]->format_value($row);
