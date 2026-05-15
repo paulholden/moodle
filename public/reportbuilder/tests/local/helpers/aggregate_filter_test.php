@@ -23,9 +23,15 @@ use core_reportbuilder\manager;
 use core_reportbuilder\local\aggregation\avg;
 use core_reportbuilder\local\aggregation\count;
 use core_reportbuilder\local\aggregation\countdistinct;
+use core_reportbuilder\local\aggregation\groupconcat;
+use core_reportbuilder\local\aggregation\groupconcatdistinct;
+use core_reportbuilder\local\aggregation\max;
+use core_reportbuilder\local\aggregation\min;
 use core_reportbuilder\local\aggregation\percent;
 use core_reportbuilder\local\aggregation\sum;
+use core_reportbuilder\local\filters\date;
 use core_reportbuilder\local\filters\number;
+use core_reportbuilder\local\filters\text;
 use core_reportbuilder\local\models\filter as filter_model;
 use core_reportbuilder\local\report\column;
 use core_reportbuilder\tests\core_reportbuilder_testcase;
@@ -723,6 +729,271 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
             $this->assertStringContainsString('(', $header,
                 "Label for {$col->get_unique_identifier()} should contain aggregation name");
             $this->assertStringContainsString(')', $header);
+        }
+    }
+
+    /**
+     * Test MIN aggregate condition on timestamp column (date filter)
+     */
+    public function test_min_timestamp_aggregate_condition(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        // Two cohorts with members added at different times.
+        $cohort1 = $this->getDataGenerator()->create_cohort(['name' => 'Old']);
+        $cohort2 = $this->getDataGenerator()->create_cohort(['name' => 'Recent']);
+        $user1 = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+
+        // Add members — timeadded is set automatically.
+        cohort_add_member($cohort1->id, $user1->id);
+        cohort_add_member($cohort2->id, $user2->id);
+
+        /** @var core_reportbuilder_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
+
+        $report = $generator->create_report([
+            'name' => 'Min time test',
+            'source' => \core_cohort\reportbuilder\datasource\cohorts::class,
+            'default' => 0,
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'cohort:name',
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'cohort_member:timeadded',
+            'aggregation' => min::get_class_name(),
+        ]);
+
+        // Verify that create_aggregate_filter returns a date filter for MIN on timestamp.
+        $instance = manager::get_report_from_persistent($report);
+        $activecolumns = $instance->get_active_columns();
+        foreach ($activecolumns as $col) {
+            if ($col->get_aggregation() !== null) {
+                $filter = aggregate_filter::create_aggregate_filter($col);
+                $this->assertNotNull($filter);
+                $this->assertEquals(
+                    \core_reportbuilder\local\filters\date::class,
+                    $filter->get_filter_class(),
+                );
+            }
+        }
+
+        // Add aggregate condition: MIN(timeadded) > 0 (has members).
+        report::add_report_aggregate_condition(
+            $report->get('id'),
+            'cohort_member:timeadded:min',
+        );
+
+        // Set date condition: after epoch 0 (effectively "has any member").
+        $instance = manager::get_report_from_persistent($report);
+        $instance->set_condition_values([
+            'cohort_member:timeadded:min_operator' => date::DATE_RANGE,
+            'cohort_member:timeadded:min_from' => 1,
+        ]);
+
+        $content = $this->get_custom_report_content($report->get('id'));
+        $this->assertCount(2, $content);
+    }
+
+    /**
+     * Test MAX aggregate condition generates correct filter type for timestamps
+     */
+    public function test_max_timestamp_filter_type(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        /** @var core_reportbuilder_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
+
+        $report = $generator->create_report([
+            'name' => 'Max time test',
+            'source' => \core_cohort\reportbuilder\datasource\cohorts::class,
+            'default' => 0,
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'cohort:name',
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'cohort_member:timeadded',
+            'aggregation' => max::get_class_name(),
+        ]);
+
+        // Verify MAX on timestamp produces a date filter.
+        $instance = manager::get_report_from_persistent($report);
+        $activecolumns = $instance->get_active_columns();
+        foreach ($activecolumns as $col) {
+            if ($col->get_aggregation() !== null) {
+                $filter = aggregate_filter::create_aggregate_filter($col);
+                $this->assertNotNull($filter);
+                $this->assertEquals(
+                    \core_reportbuilder\local\filters\date::class,
+                    $filter->get_filter_class(),
+                );
+            }
+        }
+    }
+
+    /**
+     * Test MIN/MAX on numeric column generates number filter
+     */
+    public function test_min_max_numeric_filter_type(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        /** @var core_reportbuilder_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
+
+        $report = $generator->create_report([
+            'name' => 'Min numeric test',
+            'source' => \core_cohort\reportbuilder\datasource\cohorts::class,
+            'default' => 0,
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'cohort:name',
+        ]);
+
+        // MIN on boolean (numeric) column.
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'user:suspended',
+            'aggregation' => min::get_class_name(),
+        ]);
+
+        $instance = manager::get_report_from_persistent($report);
+        $activecolumns = $instance->get_active_columns();
+        foreach ($activecolumns as $col) {
+            if ($col->get_aggregation() !== null) {
+                $filter = aggregate_filter::create_aggregate_filter($col);
+                $this->assertNotNull($filter);
+                // Boolean is preserved by MIN, mapped to boolean_select filter.
+                $this->assertEquals(
+                    \core_reportbuilder\local\filters\boolean_select::class,
+                    $filter->get_filter_class(),
+                );
+            }
+        }
+    }
+
+    /**
+     * Test GROUP_CONCAT aggregate condition with text filter
+     */
+    public function test_groupconcat_aggregate_condition(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $cohort1 = $this->getDataGenerator()->create_cohort(['name' => 'TestCohort']);
+        $user1 = $this->getDataGenerator()->create_user(['username' => 'alice']);
+        $user2 = $this->getDataGenerator()->create_user(['username' => 'bob']);
+        cohort_add_member($cohort1->id, $user1->id);
+        cohort_add_member($cohort1->id, $user2->id);
+
+        // Create a second cohort with a different member.
+        $cohort2 = $this->getDataGenerator()->create_cohort(['name' => 'OtherCohort']);
+        $user3 = $this->getDataGenerator()->create_user(['username' => 'charlie']);
+        cohort_add_member($cohort2->id, $user3->id);
+
+        /** @var core_reportbuilder_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
+
+        $report = $generator->create_report([
+            'name' => 'Group concat test',
+            'source' => \core_cohort\reportbuilder\datasource\cohorts::class,
+            'default' => 0,
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'cohort:name',
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'user:username',
+            'aggregation' => groupconcat::get_class_name(),
+        ]);
+
+        // Verify GROUP_CONCAT produces a text filter.
+        $instance = manager::get_report_from_persistent($report);
+        $activecolumns = $instance->get_active_columns();
+        foreach ($activecolumns as $col) {
+            if ($col->get_aggregation() !== null) {
+                $filter = aggregate_filter::create_aggregate_filter($col);
+                $this->assertNotNull($filter);
+                $this->assertEquals(
+                    \core_reportbuilder\local\filters\text::class,
+                    $filter->get_filter_class(),
+                );
+            }
+        }
+
+        // Add text condition: GROUP_CONCAT(username) contains 'alice'.
+        report::add_report_aggregate_condition(
+            $report->get('id'),
+            'user:username:groupconcat',
+        );
+
+        $instance = manager::get_report_from_persistent($report);
+        $instance->set_condition_values([
+            'user:username:groupconcat_operator' => text::CONTAINS,
+            'user:username:groupconcat_value' => 'alice',
+        ]);
+
+        $content = $this->get_custom_report_content($report->get('id'));
+        $this->assertCount(1, $content);
+
+        $values = array_values(reset($content));
+        $this->assertEquals('TestCohort', $values[0]);
+    }
+
+    /**
+     * Test GROUP_CONCAT DISTINCT generates text filter
+     */
+    public function test_groupconcatdistinct_filter_type(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        /** @var core_reportbuilder_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
+
+        $report = $generator->create_report([
+            'name' => 'Group concat distinct test',
+            'source' => \core_cohort\reportbuilder\datasource\cohorts::class,
+            'default' => 0,
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'cohort:name',
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'user:username',
+            'aggregation' => groupconcatdistinct::get_class_name(),
+        ]);
+
+        $instance = manager::get_report_from_persistent($report);
+        $activecolumns = $instance->get_active_columns();
+        foreach ($activecolumns as $col) {
+            if ($col->get_aggregation() !== null) {
+                $filter = aggregate_filter::create_aggregate_filter($col);
+                $this->assertNotNull($filter);
+                $this->assertEquals(
+                    \core_reportbuilder\local\filters\text::class,
+                    $filter->get_filter_class(),
+                );
+            }
         }
     }
 }
