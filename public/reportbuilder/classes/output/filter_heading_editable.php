@@ -22,6 +22,7 @@ use core\output\inplace_editable;
 use core_external\external_api;
 use core_reportbuilder\manager;
 use core_reportbuilder\permission;
+use core_reportbuilder\local\helpers\aggregate_filter;
 use core_reportbuilder\local\models\filter;
 
 /**
@@ -47,8 +48,17 @@ class filter_heading_editable extends inplace_editable {
         $report = $filter->get_report();
         $editable = permission::can_edit_report($report);
 
-        $filterinstance = manager::get_report_from_persistent($report)
-            ->get_filter($filter->get('uniqueidentifier'));
+        $reportinstance = manager::get_report_from_persistent($report);
+        $uniqueidentifier = $filter->get('uniqueidentifier');
+        $filterinstance = $reportinstance->get_filter($uniqueidentifier);
+
+        // For aggregate filters, resolve dynamically from active columns.
+        if ($filterinstance === null && aggregate_filter::is_aggregate_identifier($uniqueidentifier)) {
+            $filterinstance = aggregate_filter::resolve_aggregate_filter(
+                $uniqueidentifier,
+                $reportinstance->get_active_columns(),
+            );
+        }
 
         // Use filter defined header if custom heading not set.
         if ('' !== $value = (string) $filter->get('heading')) {
