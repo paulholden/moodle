@@ -20,7 +20,11 @@ namespace core_reportbuilder\local\helpers;
 
 use core_reportbuilder_generator;
 use core_reportbuilder\manager;
+use core_reportbuilder\local\aggregation\avg;
 use core_reportbuilder\local\aggregation\count;
+use core_reportbuilder\local\aggregation\countdistinct;
+use core_reportbuilder\local\aggregation\percent;
+use core_reportbuilder\local\aggregation\sum;
 use core_reportbuilder\local\filters\number;
 use core_reportbuilder\local\models\filter as filter_model;
 use core_reportbuilder\local\report\column;
@@ -367,5 +371,358 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         $header = $filter->get_header();
         $this->assertStringContainsString('(', $header);
         $this->assertStringContainsString(')', $header);
+    }
+
+    /**
+     * Test COUNT DISTINCT aggregate condition
+     */
+    public function test_count_distinct_aggregate_condition(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        // Two cohorts: one with 2 distinct members, one with 1.
+        $cohort1 = $this->getDataGenerator()->create_cohort(['name' => 'Big']);
+        $cohort2 = $this->getDataGenerator()->create_cohort(['name' => 'Small']);
+        $user1 = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+        cohort_add_member($cohort1->id, $user1->id);
+        cohort_add_member($cohort1->id, $user2->id);
+        cohort_add_member($cohort2->id, $user1->id);
+
+        /** @var core_reportbuilder_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
+
+        $report = $generator->create_report([
+            'name' => 'Cohort members',
+            'source' => \core_cohort\reportbuilder\datasource\cohorts::class,
+            'default' => 0,
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'cohort:name',
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'user:username',
+            'aggregation' => countdistinct::get_class_name(),
+        ]);
+
+        // Add aggregate condition: COUNT DISTINCT(username) > 1.
+        report::add_report_aggregate_condition(
+            $report->get('id'),
+            'user:username:countdistinct',
+        );
+
+        $instance = manager::get_report_from_persistent($report);
+        $instance->set_condition_values([
+            'user:username:countdistinct_operator' => number::GREATER_THAN,
+            'user:username:countdistinct_value1' => 1,
+        ]);
+
+        $content = $this->get_custom_report_content($report->get('id'));
+        $this->assertCount(1, $content);
+
+        $values = array_values(reset($content));
+        $this->assertEquals('Big', $values[0]);
+    }
+
+    /**
+     * Test SUM aggregate condition on boolean column
+     */
+    public function test_sum_aggregate_condition(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        // Two cohorts: one with a suspended user, one without.
+        $cohort1 = $this->getDataGenerator()->create_cohort(['name' => 'Has Suspended']);
+        $cohort2 = $this->getDataGenerator()->create_cohort(['name' => 'No Suspended']);
+        $user1 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user2 = $this->getDataGenerator()->create_user(['suspended' => 0]);
+        cohort_add_member($cohort1->id, $user1->id);
+        cohort_add_member($cohort2->id, $user2->id);
+
+        /** @var core_reportbuilder_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
+
+        $report = $generator->create_report([
+            'name' => 'Cohort suspended',
+            'source' => \core_cohort\reportbuilder\datasource\cohorts::class,
+            'default' => 0,
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'cohort:name',
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'user:suspended',
+            'aggregation' => sum::get_class_name(),
+        ]);
+
+        // Add aggregate condition: SUM(suspended) > 0 (cohorts with suspended users).
+        report::add_report_aggregate_condition(
+            $report->get('id'),
+            'user:suspended:sum',
+        );
+
+        $instance = manager::get_report_from_persistent($report);
+        $instance->set_condition_values([
+            'user:suspended:sum_operator' => number::GREATER_THAN,
+            'user:suspended:sum_value1' => 0,
+        ]);
+
+        $content = $this->get_custom_report_content($report->get('id'));
+        $this->assertCount(1, $content);
+
+        $values = array_values(reset($content));
+        $this->assertEquals('Has Suspended', $values[0]);
+    }
+
+    /**
+     * Test AVG aggregate condition
+     */
+    public function test_avg_aggregate_condition(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        // Two cohorts with different suspended ratios.
+        $cohort1 = $this->getDataGenerator()->create_cohort(['name' => 'All Suspended']);
+        $cohort2 = $this->getDataGenerator()->create_cohort(['name' => 'None Suspended']);
+        $user1 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user2 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user3 = $this->getDataGenerator()->create_user(['suspended' => 0]);
+        cohort_add_member($cohort1->id, $user1->id);
+        cohort_add_member($cohort1->id, $user2->id);
+        cohort_add_member($cohort2->id, $user3->id);
+
+        /** @var core_reportbuilder_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
+
+        $report = $generator->create_report([
+            'name' => 'Cohort avg',
+            'source' => \core_cohort\reportbuilder\datasource\cohorts::class,
+            'default' => 0,
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'cohort:name',
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'user:suspended',
+            'aggregation' => avg::get_class_name(),
+        ]);
+
+        // Add aggregate condition: AVG(suspended) = 0 (cohorts where no one is suspended).
+        report::add_report_aggregate_condition(
+            $report->get('id'),
+            'user:suspended:avg',
+        );
+
+        $instance = manager::get_report_from_persistent($report);
+        $instance->set_condition_values([
+            'user:suspended:avg_operator' => number::EQUAL_TO,
+            'user:suspended:avg_value1' => 0,
+        ]);
+
+        $content = $this->get_custom_report_content($report->get('id'));
+        $this->assertCount(1, $content);
+
+        $values = array_values(reset($content));
+        $this->assertEquals('None Suspended', $values[0]);
+    }
+
+    /**
+     * Test PERCENT aggregate condition
+     */
+    public function test_percent_aggregate_condition(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        // Two cohorts: one with 100% suspended, one with 0%.
+        $cohort1 = $this->getDataGenerator()->create_cohort(['name' => 'Full Suspended']);
+        $cohort2 = $this->getDataGenerator()->create_cohort(['name' => 'No Suspended']);
+        $user1 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user2 = $this->getDataGenerator()->create_user(['suspended' => 0]);
+        cohort_add_member($cohort1->id, $user1->id);
+        cohort_add_member($cohort2->id, $user2->id);
+
+        /** @var core_reportbuilder_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
+
+        $report = $generator->create_report([
+            'name' => 'Cohort percent',
+            'source' => \core_cohort\reportbuilder\datasource\cohorts::class,
+            'default' => 0,
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'cohort:name',
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'user:suspended',
+            'aggregation' => percent::get_class_name(),
+        ]);
+
+        // Add aggregate condition: PERCENT(suspended) > 50 (majority suspended).
+        report::add_report_aggregate_condition(
+            $report->get('id'),
+            'user:suspended:percent',
+        );
+
+        $instance = manager::get_report_from_persistent($report);
+        $instance->set_condition_values([
+            'user:suspended:percent_operator' => number::GREATER_THAN,
+            'user:suspended:percent_value1' => 50,
+        ]);
+
+        $content = $this->get_custom_report_content($report->get('id'));
+        $this->assertCount(1, $content);
+
+        $values = array_values(reset($content));
+        $this->assertEquals('Full Suspended', $values[0]);
+    }
+
+    /**
+     * Test multiple aggregate conditions combine with AND in HAVING
+     */
+    public function test_multiple_aggregate_conditions_and(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        // Three cohorts with different member counts and suspended ratios.
+        $cohort1 = $this->getDataGenerator()->create_cohort(['name' => 'Large Active']);
+        $cohort2 = $this->getDataGenerator()->create_cohort(['name' => 'Large Mixed']);
+        $cohort3 = $this->getDataGenerator()->create_cohort(['name' => 'Small Active']);
+
+        $user1 = $this->getDataGenerator()->create_user(['suspended' => 0]);
+        $user2 = $this->getDataGenerator()->create_user(['suspended' => 0]);
+        $user3 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user4 = $this->getDataGenerator()->create_user(['suspended' => 0]);
+
+        // Large Active: 2 active users.
+        cohort_add_member($cohort1->id, $user1->id);
+        cohort_add_member($cohort1->id, $user2->id);
+        // Large Mixed: 1 active + 1 suspended.
+        cohort_add_member($cohort2->id, $user2->id);
+        cohort_add_member($cohort2->id, $user3->id);
+        // Small Active: 1 active user.
+        cohort_add_member($cohort3->id, $user4->id);
+
+        /** @var core_reportbuilder_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
+
+        $report = $generator->create_report([
+            'name' => 'Multi aggregate',
+            'source' => \core_cohort\reportbuilder\datasource\cohorts::class,
+            'default' => 0,
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'cohort:name',
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'user:username',
+            'aggregation' => count::get_class_name(),
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'user:suspended',
+            'aggregation' => sum::get_class_name(),
+        ]);
+
+        // Condition 1: COUNT(username) > 1 (at least 2 members).
+        report::add_report_aggregate_condition(
+            $report->get('id'),
+            'user:username:count',
+        );
+
+        // Condition 2: SUM(suspended) = 0 (no suspended users).
+        report::add_report_aggregate_condition(
+            $report->get('id'),
+            'user:suspended:sum',
+        );
+
+        $instance = manager::get_report_from_persistent($report);
+        $instance->set_condition_values([
+            'user:username:count_operator' => number::GREATER_THAN,
+            'user:username:count_value1' => 1,
+            'user:suspended:sum_operator' => number::EQUAL_TO,
+            'user:suspended:sum_value1' => 0,
+        ]);
+
+        // Only "Large Active" has 2+ members AND 0 suspended.
+        $content = $this->get_custom_report_content($report->get('id'));
+        $this->assertCount(1, $content);
+
+        $values = array_values(reset($content));
+        $this->assertEquals('Large Active', $values[0]);
+    }
+
+    /**
+     * Test default labels for different numeric aggregation types
+     */
+    public function test_numeric_aggregation_default_labels(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        /** @var core_reportbuilder_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
+
+        $report = $generator->create_report([
+            'name' => 'Label test',
+            'source' => \core_cohort\reportbuilder\datasource\cohorts::class,
+            'default' => 0,
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'cohort:name',
+        ]);
+
+        // Create columns with different numeric aggregations.
+        $aggregationtypes = [
+            'user:username' => count::class,
+            'user:suspended' => sum::class,
+        ];
+
+        foreach ($aggregationtypes as $columnid => $aggregationclass) {
+            $generator->create_column([
+                'reportid' => $report->get('id'),
+                'uniqueidentifier' => $columnid,
+                'aggregation' => $aggregationclass::get_class_name(),
+            ]);
+        }
+
+        $instance = manager::get_report_from_persistent($report);
+        $activecolumns = $instance->get_active_columns();
+
+        foreach ($activecolumns as $col) {
+            if ($col->get_aggregation() === null) {
+                continue;
+            }
+
+            $filter = aggregate_filter::create_aggregate_filter($col);
+            $this->assertNotNull($filter);
+
+            $header = $filter->get_header();
+            // All labels should contain parentheses indicating aggregation name.
+            $this->assertStringContainsString('(', $header,
+                "Label for {$col->get_unique_identifier()} should contain aggregation name");
+            $this->assertStringContainsString(')', $header);
+        }
     }
 }
