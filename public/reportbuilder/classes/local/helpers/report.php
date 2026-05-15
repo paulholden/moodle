@@ -372,6 +372,43 @@ class report {
     }
 
     /**
+     * Add an aggregate condition to a report targeting an aggregated column
+     *
+     * @param int $reportid
+     * @param string $uniqueidentifier Three-part identifier (entity:column:aggregation)
+     * @return filter
+     * @throws invalid_parameter_exception
+     */
+    public static function add_report_aggregate_condition(int $reportid, string $uniqueidentifier): filter {
+        if (!aggregate_filter::is_aggregate_identifier($uniqueidentifier)) {
+            throw new invalid_parameter_exception('Invalid aggregate condition identifier');
+        }
+
+        $report = manager::get_report_from_id($reportid);
+
+        // Validate that the aggregate filter can be resolved against active columns.
+        $activecolumns = $report->get_active_columns();
+        $instance = aggregate_filter::resolve_aggregate_filter($uniqueidentifier, $activecolumns);
+        if ($instance === null) {
+            throw new invalid_parameter_exception('Invalid aggregate condition');
+        }
+
+        // Ensure the aggregate condition wasn't already added.
+        if (array_key_exists($uniqueidentifier, $report->get_active_conditions())) {
+            throw new invalid_parameter_exception('Duplicate aggregate condition');
+        }
+
+        $condition = new filter(0, (object) [
+            'reportid' => $reportid,
+            'uniqueidentifier' => $uniqueidentifier,
+            'iscondition' => true,
+            'filterorder' => filter::get_max_filterorder($reportid, true) + 1,
+        ]);
+
+        return $condition->create();
+    }
+
+    /**
      * Delete given condition from report
      *
      * @param int $reportid

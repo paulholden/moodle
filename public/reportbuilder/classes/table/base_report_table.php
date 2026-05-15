@@ -24,7 +24,7 @@ use renderable;
 use table_sql;
 use html_writer;
 use core_table\dynamic;
-use core_reportbuilder\local\helpers\database;
+use core_reportbuilder\local\helpers\{aggregate_filter, database};
 use core_reportbuilder\local\filters\base;
 use core_reportbuilder\local\models\report;
 use core_reportbuilder\local\report\base as base_report;
@@ -53,6 +53,12 @@ abstract class base_report_table extends table_sql implements dynamic, renderabl
     /** @var string $groupbysql */
     protected $groupbysql = '';
 
+    /** @var string $havingsql */
+    protected string $havingsql = '';
+
+    /** @var array $havingparams */
+    protected array $havingparams = [];
+
     /** @var bool $editing */
     protected $editing = false;
 
@@ -74,6 +80,9 @@ abstract class base_report_table extends table_sql implements dynamic, renderabl
             $wheres[] = $where;
         }
 
+        $havings = [];
+        $havingparams = [];
+
         // Track the index of conditions/filters as we iterate over them.
         $conditionindex = $filterindex = 0;
 
@@ -83,8 +92,15 @@ abstract class base_report_table extends table_sql implements dynamic, renderabl
             [$conditionsql, $conditionparams] = $this->get_filter_sql($condition, $conditionvalues, 'c' . $conditionindex++);
             if ($conditionsql !== '') {
                 $joins = array_merge($joins, $condition->get_joins());
-                $wheres[] = "({$conditionsql})";
-                $params = array_merge($params, $conditionparams);
+
+                // Route aggregate conditions to HAVING, regular conditions to WHERE.
+                if (aggregate_filter::is_aggregate_identifier($condition->get_unique_identifier())) {
+                    $havings[] = "({$conditionsql})";
+                    $havingparams = array_merge($havingparams, $conditionparams);
+                } else {
+                    $wheres[] = "({$conditionsql})";
+                    $params = array_merge($params, $conditionparams);
+                }
             }
         }
 
@@ -95,8 +111,15 @@ abstract class base_report_table extends table_sql implements dynamic, renderabl
                 [$filtersql, $filterparams] = $this->get_filter_sql($filter, $filtervalues, 'f' . $filterindex++);
                 if ($filtersql !== '') {
                     $joins = array_merge($joins, $filter->get_joins());
-                    $wheres[] = "({$filtersql})";
-                    $params = array_merge($params, $filterparams);
+
+                    // Route aggregate filters to HAVING, regular filters to WHERE.
+                    if (aggregate_filter::is_aggregate_identifier($filter->get_unique_identifier())) {
+                        $havings[] = "({$filtersql})";
+                        $havingparams = array_merge($havingparams, $filterparams);
+                    } else {
+                        $wheres[] = "({$filtersql})";
+                        $params = array_merge($params, $filterparams);
+                    }
                 }
             }
         }
@@ -112,10 +135,16 @@ abstract class base_report_table extends table_sql implements dynamic, renderabl
             $this->groupbysql = 'GROUP BY ' . implode(', ', $groupby);
         }
 
+        // Build the HAVING clause from aggregate filters.
+        if (!empty($havings)) {
+            $this->havingsql = 'HAVING ' . implode(' AND ', $havings);
+            $this->havingparams = $havingparams;
+        }
+
         // Add unique table joins.
         $from .= ' ' . implode(' ', array_unique($joins));
 
-        $this->set_sql($fields, $from, $wheresql, $params);
+        $this->set_sql($fields, $from, $wheresql, array_merge($params, $havingparams));
     }
 
     /**
@@ -160,7 +189,8 @@ abstract class base_report_table extends table_sql implements dynamic, renderabl
      * @return string
      */
     protected function get_table_sql(bool $includesort = true): string {
-        $sql = "SELECT {$this->sql->fields} FROM {$this->sql->from} WHERE {$this->sql->where} {$this->groupbysql}";
+        $sql = "SELECT {$this->sql->fields} FROM {$this->sql->from} WHERE {$this->sql->where} {$this->groupbysql}" .
+            " {$this->havingsql}";
 
         if ($includesort && ($sort = $this->get_sql_sort())) {
             $sql .= " ORDER BY {$sort}";

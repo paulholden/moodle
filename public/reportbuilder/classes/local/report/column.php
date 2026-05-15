@@ -398,6 +398,21 @@ final class column {
     }
 
     /**
+     * Return the aggregation SQL expression for this column, suitable for use in HAVING clauses
+     *
+     * @return string
+     * @throws coding_exception If column has no aggregation or no fields
+     */
+    public function get_aggregation_sql_expression(): string {
+        if ($this->aggregation === null) {
+            throw new coding_exception('Column aggregation is undefined');
+        }
+
+        $fieldsaliassql = array_column($this->get_fields_sql_alias(), 'sql');
+        return $this->get_field_aggregation_sql($fieldsaliassql);
+    }
+
+    /**
      * Return aggregated field SQL for the column
      *
      * @param string[] $sqlfields

@@ -39,6 +39,7 @@ $string['aggregationmin'] = 'Minimum';
 $string['aggregationnone'] = 'No aggregation';
 $string['aggregationpercent'] = 'Percentage';
 $string['aggregationsum'] = 'Sum';
+$string['aggregatefilterheader'] = '{$a->column} ({$a->aggregation})';
 $string['allsiteusers'] = 'All site users';
 $string['allusers'] = 'All users';
 $string['apply'] = 'Apply';
