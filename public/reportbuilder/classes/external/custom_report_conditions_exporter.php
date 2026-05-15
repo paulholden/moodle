@@ -22,6 +22,7 @@ use renderer_base;
 use core\external\exporter;
 use core_reportbuilder\datasource;
 use core_reportbuilder\form\condition;
+use core_reportbuilder\local\helpers\aggregate_filter;
 use core_reportbuilder\local\report\filter;
 
 /**
@@ -126,6 +127,40 @@ class custom_report_conditions_exporter extends exporter {
             $availableconditions[$entityname]['optiongroup']['values'][] = [
                 'value' => $condition->get_unique_identifier(),
                 'visiblename' => $condition->get_header(),
+            ];
+        }
+
+        // Populate available aggregate conditions from aggregated columns.
+        $activecolumns = $report->get_active_columns();
+        foreach ($activecolumns as $column) {
+            if ($column->get_aggregation() === null) {
+                continue;
+            }
+
+            $aggregatefilter = aggregate_filter::create_aggregate_filter($column);
+            if ($aggregatefilter === null) {
+                continue;
+            }
+
+            $identifier = $aggregatefilter->get_unique_identifier();
+
+            // Skip if already added as an active condition.
+            if (in_array($identifier, $conditionidentifiers)) {
+                continue;
+            }
+
+            if (!array_key_exists('_aggregated', $availableconditions)) {
+                $availableconditions['_aggregated'] = [
+                    'optiongroup' => [
+                        'text' => get_string('aggregatedcolumns', 'core_reportbuilder'),
+                        'values' => [],
+                    ],
+                ];
+            }
+
+            $availableconditions['_aggregated']['optiongroup']['values'][] = [
+                'value' => $identifier,
+                'visiblename' => $aggregatefilter->get_header(),
             ];
         }
 

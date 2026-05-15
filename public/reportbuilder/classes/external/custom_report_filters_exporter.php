@@ -21,6 +21,7 @@ namespace core_reportbuilder\external;
 use renderer_base;
 use core\external\exporter;
 use core_reportbuilder\datasource;
+use core_reportbuilder\local\helpers\aggregate_filter;
 use core_reportbuilder\local\report\filter;
 use core_reportbuilder\output\filter_heading_editable;
 
@@ -130,6 +131,40 @@ class custom_report_filters_exporter extends exporter {
             $availablefilters[$entityname]['optiongroup']['values'][] = [
                 'value' => $filter->get_unique_identifier(),
                 'visiblename' => $filter->get_header(),
+            ];
+        }
+
+        // Populate available aggregate filters from aggregated columns.
+        $activecolumns = $report->get_active_columns();
+        foreach ($activecolumns as $column) {
+            if ($column->get_aggregation() === null) {
+                continue;
+            }
+
+            $aggregatefilter = aggregate_filter::create_aggregate_filter($column);
+            if ($aggregatefilter === null) {
+                continue;
+            }
+
+            $identifier = $aggregatefilter->get_unique_identifier();
+
+            // Skip if already added as an active filter.
+            if (in_array($identifier, $filteridentifiers)) {
+                continue;
+            }
+
+            if (!array_key_exists('_aggregated', $availablefilters)) {
+                $availablefilters['_aggregated'] = [
+                    'optiongroup' => [
+                        'text' => get_string('aggregatedcolumns', 'core_reportbuilder'),
+                        'values' => [],
+                    ],
+                ];
+            }
+
+            $availablefilters['_aggregated']['optiongroup']['values'][] = [
+                'value' => $identifier,
+                'visiblename' => $aggregatefilter->get_header(),
             ];
         }
 
