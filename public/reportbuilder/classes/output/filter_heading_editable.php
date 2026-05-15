@@ -24,6 +24,7 @@ use core_reportbuilder\manager;
 use core_reportbuilder\permission;
 use core_reportbuilder\local\helpers\aggregate_filter;
 use core_reportbuilder\local\models\filter;
+use core_reportbuilder\local\report\filter as report_filter;
 
 /**
  * Filter heading editable component
@@ -39,8 +40,9 @@ class filter_heading_editable extends inplace_editable {
      *
      * @param int $filterid
      * @param filter|null $filter
+     * @param report_filter|null $filterinstance Pre-resolved filter instance (avoids redundant resolution)
      */
-    public function __construct(int $filterid, ?filter $filter = null) {
+    public function __construct(int $filterid, ?filter $filter = null, ?report_filter $filterinstance = null) {
         if ($filter === null) {
             $filter = new filter($filterid);
         }
@@ -48,16 +50,19 @@ class filter_heading_editable extends inplace_editable {
         $report = $filter->get_report();
         $editable = permission::can_edit_report($report);
 
-        $reportinstance = manager::get_report_from_persistent($report);
-        $uniqueidentifier = $filter->get('uniqueidentifier');
-        $filterinstance = $reportinstance->get_filter($uniqueidentifier);
+        // Use pre-resolved instance if provided, otherwise resolve from report.
+        if ($filterinstance === null) {
+            $reportinstance = manager::get_report_from_persistent($report);
+            $uniqueidentifier = $filter->get('uniqueidentifier');
+            $filterinstance = $reportinstance->get_filter($uniqueidentifier);
 
-        // For aggregate filters, resolve dynamically from active columns.
-        if ($filterinstance === null && aggregate_filter::is_aggregate_identifier($uniqueidentifier)) {
-            $filterinstance = aggregate_filter::resolve_aggregate_filter(
-                $uniqueidentifier,
-                $reportinstance->get_active_columns(),
-            );
+            // For aggregate filters, resolve dynamically from active columns.
+            if ($filterinstance === null && aggregate_filter::is_aggregate_identifier($uniqueidentifier)) {
+                $filterinstance = aggregate_filter::resolve_aggregate_filter(
+                    $uniqueidentifier,
+                    $reportinstance->get_active_columns(),
+                );
+            }
         }
 
         // Use filter defined header if custom heading not set.

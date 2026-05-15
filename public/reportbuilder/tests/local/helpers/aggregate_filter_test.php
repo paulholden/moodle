@@ -142,7 +142,7 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         $this->assertCount(2, $content);
 
         // Add aggregate condition: COUNT(username) > 0 (show only non-empty cohorts).
-        $condition = report::add_report_aggregate_condition(
+        $condition = report::add_report_condition(
             $report->get('id'),
             'user:username:count',
         );
@@ -196,7 +196,7 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         ]);
 
         // Add aggregate condition: COUNT(fullname) = 0 (empty cohorts only).
-        report::add_report_aggregate_condition(
+        report::add_report_condition(
             $report->get('id'),
             'user:username:count',
         );
@@ -261,7 +261,7 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         ]);
 
         // Add aggregate condition: COUNT > 0.
-        report::add_report_aggregate_condition(
+        report::add_report_condition(
             $report->get('id'),
             'user:username:count',
         );
@@ -314,7 +314,7 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         ]);
 
         // Add aggregate condition.
-        report::add_report_aggregate_condition(
+        report::add_report_condition(
             $report->get('id'),
             'user:username:count',
         );
@@ -416,7 +416,7 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         ]);
 
         // Add aggregate condition: COUNT DISTINCT(username) > 1.
-        report::add_report_aggregate_condition(
+        report::add_report_condition(
             $report->get('id'),
             'user:username:countdistinct',
         );
@@ -470,7 +470,7 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         ]);
 
         // Add aggregate condition: SUM(suspended) > 0 (cohorts with suspended users).
-        report::add_report_aggregate_condition(
+        report::add_report_condition(
             $report->get('id'),
             'user:suspended:sum',
         );
@@ -526,7 +526,7 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         ]);
 
         // Add aggregate condition: AVG(suspended) = 0 (cohorts where no one is suspended).
-        report::add_report_aggregate_condition(
+        report::add_report_condition(
             $report->get('id'),
             'user:suspended:avg',
         );
@@ -580,7 +580,7 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         ]);
 
         // Add aggregate condition: PERCENT(suspended) > 50 (majority suspended).
-        report::add_report_aggregate_condition(
+        report::add_report_condition(
             $report->get('id'),
             'user:suspended:percent',
         );
@@ -651,13 +651,13 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         ]);
 
         // Condition 1: COUNT(username) > 1 (at least 2 members).
-        report::add_report_aggregate_condition(
+        report::add_report_condition(
             $report->get('id'),
             'user:username:count',
         );
 
         // Condition 2: SUM(suspended) = 0 (no suspended users).
-        report::add_report_aggregate_condition(
+        report::add_report_condition(
             $report->get('id'),
             'user:suspended:sum',
         );
@@ -784,7 +784,7 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         }
 
         // Add aggregate condition: MIN(timeadded) > 0 (has members).
-        report::add_report_aggregate_condition(
+        report::add_report_condition(
             $report->get('id'),
             'cohort_member:timeadded:min',
         );
@@ -938,7 +938,7 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         }
 
         // Add text condition: GROUP_CONCAT(username) contains 'alice'.
-        report::add_report_aggregate_condition(
+        report::add_report_condition(
             $report->get('id'),
             'user:username:groupconcat',
         );
@@ -1033,7 +1033,7 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         ]);
 
         // Add aggregate filter (not condition).
-        report::add_report_aggregate_filter(
+        report::add_report_filter(
             $report->get('id'),
             'user:username:count',
         );
@@ -1107,7 +1107,7 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         ]);
 
         // Condition (always-on): COUNT(username) > 1 — excludes Solo.
-        report::add_report_aggregate_condition(
+        report::add_report_condition(
             $report->get('id'),
             'user:username:count',
         );
@@ -1119,7 +1119,7 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         ]);
 
         // Filter (viewer-facing): SUM(suspended) = 0 — only fully active cohorts.
-        report::add_report_aggregate_filter(
+        report::add_report_filter(
             $report->get('id'),
             'user:suspended:sum',
         );
@@ -1168,7 +1168,7 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         ]);
 
         // Add a COUNT aggregate condition.
-        report::add_report_aggregate_condition(
+        report::add_report_condition(
             $report->get('id'),
             'user:username:count',
         );
@@ -1227,7 +1227,7 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         ]);
 
         // Add aggregate condition.
-        report::add_report_aggregate_condition(
+        report::add_report_condition(
             $report->get('id'),
             'user:username:count',
         );

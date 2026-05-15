@@ -24,7 +24,7 @@ use renderable;
 use table_sql;
 use html_writer;
 use core_table\dynamic;
-use core_reportbuilder\local\helpers\{aggregate_filter, database};
+use core_reportbuilder\local\helpers\database;
 use core_reportbuilder\local\filters\base;
 use core_reportbuilder\local\models\report;
 use core_reportbuilder\local\report\base as base_report;
@@ -94,7 +94,7 @@ abstract class base_report_table extends table_sql implements dynamic, renderabl
                 $joins = array_merge($joins, $condition->get_joins());
 
                 // Route aggregate conditions to HAVING, regular conditions to WHERE.
-                if (aggregate_filter::is_aggregate_identifier($condition->get_unique_identifier())) {
+                if ($condition->is_aggregate()) {
                     $havings[] = "({$conditionsql})";
                     $havingparams = array_merge($havingparams, $conditionparams);
                 } else {
@@ -113,7 +113,7 @@ abstract class base_report_table extends table_sql implements dynamic, renderabl
                     $joins = array_merge($joins, $filter->get_joins());
 
                     // Route aggregate filters to HAVING, regular filters to WHERE.
-                    if (aggregate_filter::is_aggregate_identifier($filter->get_unique_identifier())) {
+                    if ($filter->is_aggregate()) {
                         $havings[] = "({$filtersql})";
                         $havingparams = array_merge($havingparams, $filterparams);
                     } else {

@@ -170,12 +170,16 @@ class custom_report_filters_exporter extends exporter {
 
         // Populate active filters.
         $filterinstances = $report->get_filter_instances();
-        foreach ($filterinstances as $filterinstance) {
+        $activefilterreports = $report->get_active_filters();
+        foreach ($filterinstances as $identifier => $filterinstance) {
             $persistent = $filterinstance->get_filter_persistent();
 
             $entityname = $filterinstance->get_entity_name();
             $displayvalue = $filterinstance->get_header();
-            $editable = new filter_heading_editable(0, $persistent);
+
+            // Pass the already-resolved report filter to avoid redundant resolution.
+            $resolvedfilter = $activefilterreports[$identifier] ?? null;
+            $editable = new filter_heading_editable(0, $persistent, $resolvedfilter);
 
             $activefilters[] = [
                 'id' => $persistent->get('id'),

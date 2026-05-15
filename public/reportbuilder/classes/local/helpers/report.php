@@ -343,6 +343,9 @@ class report {
     /**
      * Add given condition to report
      *
+     * Handles both regular conditions (two-part identifier) and aggregate conditions (three-part identifier
+     * targeting an aggregated column)
+     *
      * @param int $reportid
      * @param string $uniqueidentifier
      * @return filter
@@ -351,51 +354,23 @@ class report {
     public static function add_report_condition(int $reportid, string $uniqueidentifier): filter {
         $report = manager::get_report_from_id($reportid);
 
-        // Ensure condition is available.
-        if (!array_key_exists($uniqueidentifier, $report->get_conditions())) {
-            throw new invalid_parameter_exception('Invalid condition');
+        // Determine whether this is an aggregate or regular condition.
+        if (aggregate_filter::is_aggregate_identifier($uniqueidentifier)) {
+            // Validate the aggregate filter can be resolved against active columns.
+            $instance = aggregate_filter::resolve_aggregate_filter($uniqueidentifier, $report->get_active_columns());
+            if ($instance === null) {
+                throw new invalid_parameter_exception('Invalid condition');
+            }
+        } else {
+            // Ensure regular condition is available.
+            if (!array_key_exists($uniqueidentifier, $report->get_conditions())) {
+                throw new invalid_parameter_exception('Invalid condition');
+            }
         }
 
         // Ensure condition wasn't already added.
         if (array_key_exists($uniqueidentifier, $report->get_active_conditions())) {
             throw new invalid_parameter_exception('Duplicate condition');
-        }
-
-        $condition = new filter(0, (object) [
-            'reportid' => $reportid,
-            'uniqueidentifier' => $uniqueidentifier,
-            'iscondition' => true,
-            'filterorder' => filter::get_max_filterorder($reportid, true) + 1,
-        ]);
-
-        return $condition->create();
-    }
-
-    /**
-     * Add an aggregate condition to a report targeting an aggregated column
-     *
-     * @param int $reportid
-     * @param string $uniqueidentifier Three-part identifier (entity:column:aggregation)
-     * @return filter
-     * @throws invalid_parameter_exception
-     */
-    public static function add_report_aggregate_condition(int $reportid, string $uniqueidentifier): filter {
-        if (!aggregate_filter::is_aggregate_identifier($uniqueidentifier)) {
-            throw new invalid_parameter_exception('Invalid aggregate condition identifier');
-        }
-
-        $report = manager::get_report_from_id($reportid);
-
-        // Validate that the aggregate filter can be resolved against active columns.
-        $activecolumns = $report->get_active_columns();
-        $instance = aggregate_filter::resolve_aggregate_filter($uniqueidentifier, $activecolumns);
-        if ($instance === null) {
-            throw new invalid_parameter_exception('Invalid aggregate condition');
-        }
-
-        // Ensure the aggregate condition wasn't already added.
-        if (array_key_exists($uniqueidentifier, $report->get_active_conditions())) {
-            throw new invalid_parameter_exception('Duplicate aggregate condition');
         }
 
         $condition = new filter(0, (object) [
@@ -466,6 +441,9 @@ class report {
     /**
      * Add given filter to report
      *
+     * Handles both regular filters (two-part identifier) and aggregate filters (three-part identifier
+     * targeting an aggregated column)
+     *
      * @param int $reportid
      * @param string $uniqueidentifier
      * @return filter
@@ -474,50 +452,23 @@ class report {
     public static function add_report_filter(int $reportid, string $uniqueidentifier): filter {
         $report = manager::get_report_from_id($reportid);
 
-        // Ensure filter is available.
-        if (!array_key_exists($uniqueidentifier, $report->get_filters())) {
-            throw new invalid_parameter_exception('Invalid filter');
+        // Determine whether this is an aggregate or regular filter.
+        if (aggregate_filter::is_aggregate_identifier($uniqueidentifier)) {
+            // Validate the aggregate filter can be resolved against active columns.
+            $instance = aggregate_filter::resolve_aggregate_filter($uniqueidentifier, $report->get_active_columns());
+            if ($instance === null) {
+                throw new invalid_parameter_exception('Invalid filter');
+            }
+        } else {
+            // Ensure regular filter is available.
+            if (!array_key_exists($uniqueidentifier, $report->get_filters())) {
+                throw new invalid_parameter_exception('Invalid filter');
+            }
         }
 
         // Ensure filter wasn't already added.
         if (array_key_exists($uniqueidentifier, $report->get_active_filters())) {
             throw new invalid_parameter_exception('Duplicate filter');
-        }
-
-        $filter = new filter(0, (object) [
-            'reportid' => $reportid,
-            'uniqueidentifier' => $uniqueidentifier,
-            'filterorder' => filter::get_max_filterorder($reportid) + 1,
-        ]);
-
-        return $filter->create();
-    }
-
-    /**
-     * Add an aggregate filter to a report targeting an aggregated column
-     *
-     * @param int $reportid
-     * @param string $uniqueidentifier Three-part identifier (entity:column:aggregation)
-     * @return filter
-     * @throws invalid_parameter_exception
-     */
-    public static function add_report_aggregate_filter(int $reportid, string $uniqueidentifier): filter {
-        if (!aggregate_filter::is_aggregate_identifier($uniqueidentifier)) {
-            throw new invalid_parameter_exception('Invalid aggregate filter identifier');
-        }
-
-        $report = manager::get_report_from_id($reportid);
-
-        // Validate that the aggregate filter can be resolved against active columns.
-        $activecolumns = $report->get_active_columns();
-        $instance = aggregate_filter::resolve_aggregate_filter($uniqueidentifier, $activecolumns);
-        if ($instance === null) {
-            throw new invalid_parameter_exception('Invalid aggregate filter');
-        }
-
-        // Ensure the aggregate filter wasn't already added.
-        if (array_key_exists($uniqueidentifier, $report->get_active_filters())) {
-            throw new invalid_parameter_exception('Duplicate aggregate filter');
         }
 
         $filter = new filter(0, (object) [

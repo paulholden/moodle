@@ -25,7 +25,6 @@ use core_external\external_function_parameters;
 use core_reportbuilder\manager;
 use core_reportbuilder\permission;
 use core_reportbuilder\external\custom_report_conditions_exporter;
-use core_reportbuilder\local\helpers\aggregate_filter;
 use core_reportbuilder\local\helpers\report;
 
 /**
@@ -72,12 +71,7 @@ class add extends external_api {
         self::validate_context($report->get_context());
         permission::require_can_edit_report($report->get_report_persistent());
 
-        // Use aggregate condition handler for 3-part identifiers.
-        if (aggregate_filter::is_aggregate_identifier($uniqueidentifier)) {
-            report::add_report_aggregate_condition($reportid, $uniqueidentifier);
-        } else {
-            report::add_report_condition($reportid, $uniqueidentifier);
-        }
+        report::add_report_condition($reportid, $uniqueidentifier);
 
         // Set current URL and force bootstrap_renderer to initiate moodle page.
         $PAGE->set_url('/');

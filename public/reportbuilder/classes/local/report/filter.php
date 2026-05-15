@@ -56,6 +56,9 @@ final class filter {
     /** @var array $limitoperators */
     private $limitoperators = [];
 
+    /** @var bool $aggregate Whether this filter targets an aggregated column (routes to HAVING not WHERE) */
+    private bool $aggregate = false;
+
     /** @var filter_model $persistent */
     private $persistent;
 
@@ -243,6 +246,26 @@ final class filter {
     public function set_is_deprecated(string $deprecatedmessage = ''): self {
         $this->deprecated = true;
         $this->deprecatedmessage = $deprecatedmessage;
+        return $this;
+    }
+
+    /**
+     * Return whether this filter targets an aggregated column and should route to HAVING rather than WHERE
+     *
+     * @return bool
+     */
+    public function is_aggregate(): bool {
+        return $this->aggregate;
+    }
+
+    /**
+     * Mark this filter as targeting an aggregated column
+     *
+     * @param bool $aggregate
+     * @return self
+     */
+    public function set_is_aggregate(bool $aggregate = true): self {
+        $this->aggregate = $aggregate;
         return $this;
     }
 

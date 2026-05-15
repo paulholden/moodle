@@ -25,7 +25,6 @@ use core_external\external_function_parameters;
 use core_reportbuilder\manager;
 use core_reportbuilder\permission;
 use core_reportbuilder\external\custom_report_filters_exporter;
-use core_reportbuilder\local\helpers\aggregate_filter;
 use core_reportbuilder\local\helpers\report;
 
 /**
@@ -72,12 +71,7 @@ class add extends external_api {
         self::validate_context($report->get_context());
         permission::require_can_edit_report($report->get_report_persistent());
 
-        // Use aggregate filter handler for 3-part identifiers.
-        if (aggregate_filter::is_aggregate_identifier($uniqueidentifier)) {
-            report::add_report_aggregate_filter($reportid, $uniqueidentifier);
-        } else {
-            report::add_report_filter($reportid, $uniqueidentifier);
-        }
+        report::add_report_filter($reportid, $uniqueidentifier);
 
         $exporter = new custom_report_filters_exporter(null, [
             'report' => $report,

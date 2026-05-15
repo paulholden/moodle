@@ -136,6 +136,9 @@ class aggregate_filter {
             $filter->add_join($join);
         }
 
+        // Mark this filter as targeting an aggregated column.
+        $filter->set_is_aggregate();
+
         return $filter;
     }
 
