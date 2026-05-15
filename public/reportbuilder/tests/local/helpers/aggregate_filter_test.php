@@ -1135,4 +1135,115 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
         $values = array_values(reset($content));
         $this->assertEquals('AllActive', $values[0]);
     }
+
+    /**
+     * Test aggregate condition is ignored when aggregation type changes
+     */
+    public function test_aggregate_condition_ignored_on_aggregation_change(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $cohort1 = $this->getDataGenerator()->create_cohort(['name' => 'Test']);
+        $user1 = $this->getDataGenerator()->create_user();
+        cohort_add_member($cohort1->id, $user1->id);
+
+        /** @var core_reportbuilder_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
+
+        $report = $generator->create_report([
+            'name' => 'Lifecycle test',
+            'source' => \core_cohort\reportbuilder\datasource\cohorts::class,
+            'default' => 0,
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'cohort:name',
+        ]);
+
+        $usernamecolumn = $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'user:username',
+            'aggregation' => count::get_class_name(),
+        ]);
+
+        // Add a COUNT aggregate condition.
+        report::add_report_aggregate_condition(
+            $report->get('id'),
+            'user:username:count',
+        );
+
+        $instance = manager::get_report_from_persistent($report);
+        $instance->set_condition_values([
+            'user:username:count_operator' => number::GREATER_THAN,
+            'user:username:count_value1' => 0,
+        ]);
+
+        // Verify it works with COUNT.
+        $content = $this->get_custom_report_content($report->get('id'));
+        $this->assertCount(1, $content);
+
+        // Change aggregation from COUNT to COUNT DISTINCT.
+        $usernamecolumn->set('aggregation', countdistinct::get_class_name())->update();
+        manager::reset_caches();
+
+        // The old COUNT condition should be silently ignored (aggregation mismatch).
+        $content = $this->get_custom_report_content($report->get('id'));
+        $this->assertIsArray($content);
+
+        // Verify the condition record still exists in the database.
+        $conditions = filter_model::get_condition_records($report->get('id'));
+        $identifiers = array_map(fn($c) => $c->get('uniqueidentifier'), $conditions);
+        $this->assertContains('user:username:count', $identifiers);
+    }
+
+    /**
+     * Test aggregate condition is ignored when column is removed entirely
+     */
+    public function test_aggregate_condition_ignored_on_column_removal(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $cohort1 = $this->getDataGenerator()->create_cohort(['name' => 'Test']);
+
+        /** @var core_reportbuilder_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
+
+        $report = $generator->create_report([
+            'name' => 'Column removal test',
+            'source' => \core_cohort\reportbuilder\datasource\cohorts::class,
+            'default' => 0,
+        ]);
+
+        $namecolumn = $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'cohort:name',
+        ]);
+
+        $usernamecolumn = $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'user:username',
+            'aggregation' => count::get_class_name(),
+        ]);
+
+        // Add aggregate condition.
+        report::add_report_aggregate_condition(
+            $report->get('id'),
+            'user:username:count',
+        );
+
+        // Remove the aggregated column entirely.
+        $usernamecolumn->delete();
+        manager::reset_caches();
+
+        // Report should still work — the aggregate condition is silently ignored.
+        // Note: without the aggregated column, there's no GROUP BY, so results are unfiltered.
+        $content = $this->get_custom_report_content($report->get('id'));
+        $this->assertIsArray($content);
+
+        // Verify the condition record still exists.
+        $conditions = filter_model::get_condition_records($report->get('id'));
+        $identifiers = array_map(fn($c) => $c->get('uniqueidentifier'), $conditions);
+        $this->assertContains('user:username:count', $identifiers);
+    }
 }
