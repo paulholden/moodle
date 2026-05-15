@@ -996,4 +996,143 @@ final class aggregate_filter_test extends core_reportbuilder_testcase {
             }
         }
     }
+
+    /**
+     * Test aggregate filter (viewer-facing) routes to HAVING
+     */
+    public function test_aggregate_filter_viewer(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $cohort1 = $this->getDataGenerator()->create_cohort(['name' => 'Big']);
+        $cohort2 = $this->getDataGenerator()->create_cohort(['name' => 'Small']);
+        $user1 = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+        cohort_add_member($cohort1->id, $user1->id);
+        cohort_add_member($cohort1->id, $user2->id);
+        cohort_add_member($cohort2->id, $user1->id);
+
+        /** @var core_reportbuilder_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
+
+        $report = $generator->create_report([
+            'name' => 'Filter test',
+            'source' => \core_cohort\reportbuilder\datasource\cohorts::class,
+            'default' => 0,
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'cohort:name',
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'user:username',
+            'aggregation' => count::get_class_name(),
+        ]);
+
+        // Add aggregate filter (not condition).
+        report::add_report_aggregate_filter(
+            $report->get('id'),
+            'user:username:count',
+        );
+
+        // Without setting filter values, should show all cohorts (default = "Any value").
+        $content = $this->get_custom_report_content($report->get('id'));
+        $this->assertCount(2, $content);
+
+        // Set filter value: COUNT > 1.
+        $content = $this->get_custom_report_content($report->get('id'), 30, [
+            'user:username:count_operator' => number::GREATER_THAN,
+            'user:username:count_value1' => 1,
+        ]);
+
+        $this->assertCount(1, $content);
+
+        $values = array_values(reset($content));
+        $this->assertEquals('Big', $values[0]);
+    }
+
+    /**
+     * Test aggregate filters and conditions coexist on the same report
+     */
+    public function test_aggregate_filter_and_condition_coexist(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        // Three cohorts with different member counts and suspended users.
+        $cohort1 = $this->getDataGenerator()->create_cohort(['name' => 'AllActive']);
+        $cohort2 = $this->getDataGenerator()->create_cohort(['name' => 'Mixed']);
+        $cohort3 = $this->getDataGenerator()->create_cohort(['name' => 'Solo']);
+
+        $user1 = $this->getDataGenerator()->create_user(['suspended' => 0]);
+        $user2 = $this->getDataGenerator()->create_user(['suspended' => 0]);
+        $user3 = $this->getDataGenerator()->create_user(['suspended' => 1]);
+        $user4 = $this->getDataGenerator()->create_user(['suspended' => 0]);
+
+        // AllActive: 2 active users.
+        cohort_add_member($cohort1->id, $user1->id);
+        cohort_add_member($cohort1->id, $user2->id);
+        // Mixed: 1 active + 1 suspended.
+        cohort_add_member($cohort2->id, $user2->id);
+        cohort_add_member($cohort2->id, $user3->id);
+        // Solo: 1 active user.
+        cohort_add_member($cohort3->id, $user4->id);
+
+        /** @var core_reportbuilder_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
+
+        $report = $generator->create_report([
+            'name' => 'Coexist test',
+            'source' => \core_cohort\reportbuilder\datasource\cohorts::class,
+            'default' => 0,
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'cohort:name',
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'user:username',
+            'aggregation' => count::get_class_name(),
+        ]);
+
+        $generator->create_column([
+            'reportid' => $report->get('id'),
+            'uniqueidentifier' => 'user:suspended',
+            'aggregation' => sum::get_class_name(),
+        ]);
+
+        // Condition (always-on): COUNT(username) > 1 — excludes Solo.
+        report::add_report_aggregate_condition(
+            $report->get('id'),
+            'user:username:count',
+        );
+
+        $instance = manager::get_report_from_persistent($report);
+        $instance->set_condition_values([
+            'user:username:count_operator' => number::GREATER_THAN,
+            'user:username:count_value1' => 1,
+        ]);
+
+        // Filter (viewer-facing): SUM(suspended) = 0 — only fully active cohorts.
+        report::add_report_aggregate_filter(
+            $report->get('id'),
+            'user:suspended:sum',
+        );
+
+        // Only AllActive: has 2+ members AND 0 suspended.
+        $content = $this->get_custom_report_content($report->get('id'), 30, [
+            'user:suspended:sum_operator' => number::EQUAL_TO,
+            'user:suspended:sum_value1' => 0,
+        ]);
+
+        $this->assertCount(1, $content);
+
+        $values = array_values(reset($content));
+        $this->assertEquals('AllActive', $values[0]);
+    }
 }

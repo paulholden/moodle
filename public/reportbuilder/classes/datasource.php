@@ -187,7 +187,13 @@ abstract class datasource extends base {
 
         $activefilters = filter_model::get_filter_records($reportid, 'filterorder');
         foreach ($activefilters as $filter) {
-            $instance = $this->get_filter($filter->get('uniqueidentifier'));
+            $uniqueidentifier = $filter->get('uniqueidentifier');
+            $instance = $this->get_filter($uniqueidentifier);
+
+            // If not found as a regular filter, try to resolve as an aggregate filter.
+            if ($instance === null && aggregate_filter::is_aggregate_identifier($uniqueidentifier)) {
+                $instance = aggregate_filter::resolve_aggregate_filter($uniqueidentifier, $this->get_active_columns());
+            }
 
             // Ensure the filter is still present and available.
             if ($instance !== null && $instance->get_is_available()) {
