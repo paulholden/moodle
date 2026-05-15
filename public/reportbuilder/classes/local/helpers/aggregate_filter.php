@@ -182,4 +182,35 @@ class aggregate_filter {
 
         return null;
     }
+
+    /**
+     * Return aggregate filter instances for all aggregated columns, excluding those already active
+     *
+     * @param column[] $activecolumns Active columns with their aggregations set
+     * @param string[] $existingidentifiers Identifiers of already-active conditions/filters to exclude
+     * @return filter[] Aggregate filter instances keyed by unique identifier
+     */
+    public static function get_aggregate_filters(array $activecolumns, array $existingidentifiers = []): array {
+        $filters = [];
+
+        foreach ($activecolumns as $column) {
+            if ($column->get_aggregation() === null) {
+                continue;
+            }
+
+            $filter = self::create_aggregate_filter($column);
+            if ($filter === null) {
+                continue;
+            }
+
+            $identifier = $filter->get_unique_identifier();
+            if (in_array($identifier, $existingidentifiers)) {
+                continue;
+            }
+
+            $filters[$identifier] = $filter;
+        }
+
+        return $filters;
+    }
 }

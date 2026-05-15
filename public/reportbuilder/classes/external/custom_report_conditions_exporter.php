@@ -106,6 +106,26 @@ class custom_report_conditions_exporter extends exporter {
 
         $availableconditions = [];
 
+        // Populate available aggregate conditions from aggregated columns (shown first).
+        $aggregatefilters = aggregate_filter::get_aggregate_filters(
+            $report->get_active_columns(),
+            $conditionidentifiers,
+        );
+        if (!empty($aggregatefilters)) {
+            $availableconditions['_aggregated'] = [
+                'optiongroup' => [
+                    'text' => get_string('aggregatedcolumns', 'core_reportbuilder'),
+                    'values' => [],
+                ],
+            ];
+            foreach ($aggregatefilters as $identifier => $aggregatefilter) {
+                $availableconditions['_aggregated']['optiongroup']['values'][] = [
+                    'value' => $identifier,
+                    'visiblename' => $aggregatefilter->get_header(),
+                ];
+            }
+        }
+
         // Populate available conditions.
         foreach ($report->get_conditions() as $condition) {
 
@@ -127,40 +147,6 @@ class custom_report_conditions_exporter extends exporter {
             $availableconditions[$entityname]['optiongroup']['values'][] = [
                 'value' => $condition->get_unique_identifier(),
                 'visiblename' => $condition->get_header(),
-            ];
-        }
-
-        // Populate available aggregate conditions from aggregated columns.
-        $activecolumns = $report->get_active_columns();
-        foreach ($activecolumns as $column) {
-            if ($column->get_aggregation() === null) {
-                continue;
-            }
-
-            $aggregatefilter = aggregate_filter::create_aggregate_filter($column);
-            if ($aggregatefilter === null) {
-                continue;
-            }
-
-            $identifier = $aggregatefilter->get_unique_identifier();
-
-            // Skip if already added as an active condition.
-            if (in_array($identifier, $conditionidentifiers)) {
-                continue;
-            }
-
-            if (!array_key_exists('_aggregated', $availableconditions)) {
-                $availableconditions['_aggregated'] = [
-                    'optiongroup' => [
-                        'text' => get_string('aggregatedcolumns', 'core_reportbuilder'),
-                        'values' => [],
-                    ],
-                ];
-            }
-
-            $availableconditions['_aggregated']['optiongroup']['values'][] = [
-                'value' => $identifier,
-                'visiblename' => $aggregatefilter->get_header(),
             ];
         }
 
