@@ -24,6 +24,21 @@
 import Ajax from 'core/ajax';
 
 /**
+ * Retrieve all filters for given report
+ *
+ * @param {Number} reportId
+ * @return {Promise}
+ */
+export const getFilters = (reportId) => {
+    const request = {
+        methodname: 'core_reportbuilder_filters_get',
+        args: {reportid: reportId}
+    };
+
+    return Ajax.call([request])[0];
+};
+
+/**
  * Reset all filters for given report
  *
  * @method

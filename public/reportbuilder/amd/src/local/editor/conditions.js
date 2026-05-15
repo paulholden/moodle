@@ -30,6 +30,7 @@ import 'core/inplace_editable';
 import Notification from 'core/notification';
 import Pending from 'core/pending';
 import {prefetchStrings} from 'core/prefetch';
+import {subscribe} from 'core/pubsub';
 import SortableList from 'core/sortable_list';
 import {getString} from 'core/str';
 import Templates from 'core/templates';
@@ -37,7 +38,8 @@ import {add as addToast} from 'core/toast';
 import DynamicForm from 'core_form/dynamicform';
 import * as reportEvents from 'core_reportbuilder/local/events';
 import * as reportSelectors from 'core_reportbuilder/local/selectors';
-import {addCondition, deleteCondition, reorderCondition, resetConditions} from 'core_reportbuilder/local/repository/conditions';
+import {getConditions, addCondition, deleteCondition, reorderCondition, resetConditions}
+    from 'core_reportbuilder/local/repository/conditions';
 
 /**
  * Reload conditions settings region
@@ -150,6 +152,16 @@ export const init = initialized => {
     if (initialized) {
         return;
     }
+
+    // Reload conditions region when report columns are updated (aggregation may have changed).
+    subscribe(reportEvents.publish.reportColumnsUpdated, () => {
+        const reportElement = document.querySelector(reportSelectors.regions.report);
+        if (reportElement) {
+            getConditions(reportElement.dataset.reportId)
+                .then(data => reloadSettingsConditionsRegion(reportElement, data))
+                .catch(Notification.exception);
+        }
+    });
 
     // Add condition to report.
     document.addEventListener('change', event => {

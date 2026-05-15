@@ -24,6 +24,21 @@
 import Ajax from 'core/ajax';
 
 /**
+ * Retrieve all conditions for given report
+ *
+ * @param {Number} reportId
+ * @return {Promise}
+ */
+export const getConditions = reportId => {
+    const request = {
+        methodname: 'core_reportbuilder_conditions_get',
+        args: {reportid: reportId}
+    };
+
+    return Ajax.call([request])[0];
+};
+
+/**
  * Reset all conditions for given report
  *
  * @param {Number} reportId

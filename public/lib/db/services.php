@@ -3163,6 +3163,12 @@ $functions = array(
         'type'        => 'write',
         'ajax'        => true,
     ],
+    'core_reportbuilder_conditions_get' => [
+        'classname'   => 'core_reportbuilder\external\conditions\get',
+        'description' => 'Retrieve conditions for report',
+        'type'        => 'read',
+        'ajax'        => true,
+    ],
     'core_reportbuilder_conditions_add' => [
         'classname'   => 'core_reportbuilder\external\conditions\add',
         'description' => 'Add condition to report',
@@ -3185,6 +3191,12 @@ $functions = array(
         'classname'   => 'core_reportbuilder\external\conditions\reset',
         'description' => 'Reset conditions for given report',
         'type'        => 'write',
+        'ajax'        => true,
+    ],
+    'core_reportbuilder_filters_get' => [
+        'classname'   => 'core_reportbuilder\external\filters\get',
+        'description' => 'Retrieve filters for report',
+        'type'        => 'read',
         'ajax'        => true,
     ],
     'core_reportbuilder_filters_add' => [
