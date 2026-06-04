@@ -29,6 +29,11 @@ use core_reportbuilder\local\helpers\database;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class autocomplete extends base {
+    /** @var int Equal to */
+    public const EQUAL_TO = 1;
+
+    /** @var int Not equal to */
+    public const NOT_EQUAL_TO = 2;
 
     /**
      * Return the options for the filter as an array, to be used to populate the select input field
@@ -45,12 +50,22 @@ class autocomplete extends base {
      * @param MoodleQuickForm $mform
      */
     public function setup_form(MoodleQuickForm $mform): void {
-        $operatorlabel = get_string('filterfieldvalue', 'core_reportbuilder', $this->get_header());
-        $values = [0 => ''] + $this->get_select_options();
-        $options = ['multiple' => true];
+        $mform->addElement(
+            'autocomplete',
+            "{$this->name}_value",
+            get_string('filterfieldvalue', 'core_reportbuilder', $this->get_header()),
+            [0 => ''] + $this->get_select_options(),
+            ['multiple' => true],
+        )->setHiddenLabel(true);
 
-        $mform->addElement('autocomplete', $this->name . '_values', $operatorlabel, $values, $options)
-            ->setHiddenLabel(true);
+        $mform->addElement(
+            'advcheckbox',
+            "{$this->name}_operator",
+            get_string('filterisnotequalto', 'core_reportbuilder'),
+            null,
+            null,
+            [self::EQUAL_TO, self::NOT_EQUAL_TO],
+        );
     }
 
     /**
@@ -65,12 +80,26 @@ class autocomplete extends base {
         $fieldsql = $this->filter->get_field_sql();
         $params = $this->filter->get_field_params();
 
-        $invalues = $values["{$this->name}_values"] ?? [];
+        $operator = (int) ($values["{$this->name}_operator"] ?? self::EQUAL_TO);
+
+        // Ensure all filter values are valid options.
+        $options = $this->get_select_options();
+        $invalues = array_filter(
+            (array) ($values["{$this->name}_value"] ?? []),
+            fn(string $value): bool => array_key_exists($value, $options),
+        );
+
+        // Validate filter form values.
         if (empty($invalues)) {
             return ['', []];
         }
 
-        [$insql, $inparams] = $DB->get_in_or_equal($invalues, SQL_PARAMS_NAMED, database::generate_param_name('_'));
+        [$insql, $inparams] = $DB->get_in_or_equal(
+            $invalues,
+            SQL_PARAMS_NAMED,
+            database::generate_param_name('_'),
+            $operator === self::EQUAL_TO,
+        );
 
         return ["{$fieldsql} $insql", array_merge($params, $inparams)];
     }
@@ -82,7 +111,7 @@ class autocomplete extends base {
      */
     public function get_sample_values(): array {
         return [
-            "{$this->name}_values" => [1],
+            "{$this->name}_value" => [1],
         ];
     }
 }

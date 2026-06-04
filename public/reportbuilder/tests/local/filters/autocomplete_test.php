@@ -19,19 +19,18 @@ declare(strict_types=1);
 namespace core_reportbuilder\local\filters;
 
 use advanced_testcase;
+use core\lang_string;
 use core_reportbuilder\local\report\filter;
 
 /**
  * Unit tests for course selector filter
  *
  * @package     core_reportbuilder
- * @covers      \core_reportbuilder\local\filters\base
  * @covers      \core_reportbuilder\local\filters\autocomplete
  * @copyright   2022 Nathan Nguyen <nathannguyen@catalyst-au.net>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class autocomplete_test extends advanced_testcase {
-
     /**
      * Data provider for {@see test_get_sql_filter}
      *
@@ -39,21 +38,39 @@ final class autocomplete_test extends advanced_testcase {
      */
     public static function get_sql_filter_provider(): array {
         return [
-            [[], ["Course 1 full name", "Course 2 full name", "Course 3 full name", "PHPUnit test site"]],
-            [["course1", "course3"], ["Course 1 full name", "Course 3 full name"]],
-            [["course1"], ["Course 1 full name"]],
+            [
+                autocomplete::EQUAL_TO,
+                [],
+                ["Course 1 full name", "Course 2 full name", "Course 3 full name", "PHPUnit test site"],
+            ],
+            [
+                autocomplete::EQUAL_TO,
+                ["course1", "course3"],
+                ["Course 1 full name", "Course 3 full name"],
+            ],
+            [
+                autocomplete::EQUAL_TO,
+                'course1',
+                ["Course 1 full name"],
+            ],
+            [
+                autocomplete::NOT_EQUAL_TO,
+                ['course1', 'course2'],
+                ['Course 3 full name', 'PHPUnit test site'],
+            ],
         ];
     }
 
     /**
      * Test getting filter SQL
      *
-     * @param array $shortnames list of course short name
+     * @param int $operator
+     * @param string|string[] $shortnames list of course short name
      * @param array $expected list of course full name
      *
      * @dataProvider get_sql_filter_provider
      */
-    public function test_get_sql_filter(array $shortnames, array $expected): void {
+    public function test_get_sql_filter(int $operator, string|array $shortnames, array $expected): void {
         global $DB;
 
         $this->resetAfterTest();
@@ -77,7 +94,7 @@ final class autocomplete_test extends advanced_testcase {
         $filter = (new filter(
             autocomplete::class,
             'test',
-            new \lang_string('course'),
+            new lang_string('course'),
             'testentity',
             'shortname'
         ))->set_options([
@@ -87,10 +104,10 @@ final class autocomplete_test extends advanced_testcase {
         ]);
 
         [$select, $params] = text::create($filter)->get_sql_filter([
-            $filter->get_unique_identifier() . '_values' => $shortnames,
+            $filter->get_unique_identifier() . '_operator' => $operator,
+            $filter->get_unique_identifier() . '_value' => $shortnames,
         ]);
         $fullnames = $DB->get_fieldset_select('course', 'fullname', $select, $params);
         $this->assertEqualsCanonicalizing($expected, $fullnames);
-
     }
 }

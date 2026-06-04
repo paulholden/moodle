@@ -1,0 +1,14 @@
+issueNumber: MDL-88246
+notes:
+  core_reportbuilder:
+    - message: >-
+        The `autocomplete` filter now has a "Not equal to" operator to invert
+        the current selection. It's primary "value" field has also been renamed
+        from "values" in order to ease transition for entities from the `select`
+        filter
+      type: changed
+    - message: >-
+        The `autocomplete` filter type is now stricter in it's filtering, in
+        that it will now discard values that aren't present in available filter
+        options
+      type: changed

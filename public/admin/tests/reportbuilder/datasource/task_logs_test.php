@@ -108,10 +108,10 @@ final class task_logs_test extends core_reportbuilder_testcase {
     public static function datasource_filters_provider(): array {
         return [
             'Filter name' => ['task_log:name', [
-                'task_log:name_values' => [send_schedules::class],
+                'task_log:name_value' => [send_schedules::class],
             ], true],
             'Filter name (no match)' => ['task_log:name', [
-                'task_log:name_values' => ['invalid'],
+                'task_log:name_value' => ['invalid'],
             ], false],
             'Filter component' => ['task_log:component', [
                 'task_log:component_operator' => select::EQUAL_TO,
