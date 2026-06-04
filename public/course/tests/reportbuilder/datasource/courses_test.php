@@ -20,7 +20,7 @@ namespace core_course\reportbuilder\datasource;
 
 use core\context\course;
 use core_reportbuilder_generator;
-use core_reportbuilder\local\filters\{boolean_select, date, select, tags, text};
+use core_reportbuilder\local\filters\{boolean_select, date, tags, text};
 use core_reportbuilder\tests\core_reportbuilder_testcase;
 
 /**
@@ -273,11 +273,9 @@ final class courses_test extends core_reportbuilder_testcase {
                 'course:summary_value' => 'Fiat',
             ], false],
             'Filter course format' => ['course:format', [
-                'course:format_operator' => select::EQUAL_TO,
                 'course:format_value' => 'topics',
             ], true],
             'Filter course format (no match)' => ['course:format', [
-                'course:format_operator' => select::EQUAL_TO,
                 'course:format_value' => 'weeks',
             ], false],
             'Filter course startdate' => ['course:startdate', [
@@ -301,11 +299,9 @@ final class courses_test extends core_reportbuilder_testcase {
                 'course:visible_operator' => boolean_select::NOT_CHECKED,
             ], false],
             'Filter course groupmode' => ['course:groupmode', [
-                'course:groupmode_operator' => select::EQUAL_TO,
                 'course:groupmode_value' => 0, // No groups.
             ], true],
             'Filter course groupmode (no match)' => ['course:groupmode', [
-                'course:groupmode_operator' => select::EQUAL_TO,
                 'course:groupmode_value' => 1, // Separate groups.
             ], false],
             'Filter course groupmodeforce' => ['course:groupmodeforce', [
@@ -315,27 +311,21 @@ final class courses_test extends core_reportbuilder_testcase {
                 'course:groupmodeforce_operator' => boolean_select::CHECKED,
             ], false],
             'Filter course lang' => ['course:lang', [
-                'course:lang_operator' => select::EQUAL_TO,
                 'course:lang_value' => 'en',
             ], true],
             'Filter course lang (no match)' => ['course:lang', [
-                'course:lang_operator' => select::EQUAL_TO,
                 'course:lang_value' => '',
             ], false],
             'Filter course calendartype' => ['course:calendartype', [
-                'course:calendartype_operator' => select::EQUAL_TO,
                 'course:calendartype_value' => 'gregorian',
             ], true],
             'Filter course calendartype (no match)' => ['course:calendartype', [
-                'course:calendartype_operator' => select::EQUAL_TO,
                 'course:calendartype_value' => '',
             ], false],
             'Filter course theme' => ['course:theme', [
-                'course:theme_operator' => select::EQUAL_TO,
                 'course:theme_value' => 'boost',
             ], true],
             'Filter course theme (no match)' => ['course:theme', [
-                'course:theme_operator' => select::EQUAL_TO,
                 'course:theme_value' => 'classic',
             ], false],
             'Filter course enablecompletion' => ['course:enablecompletion', [

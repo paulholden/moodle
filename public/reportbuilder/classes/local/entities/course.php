@@ -19,11 +19,7 @@ declare(strict_types=1);
 namespace core_reportbuilder\local\entities;
 
 use core\{context, context_helper};
-use core_reportbuilder\local\filters\boolean_select;
-use core_reportbuilder\local\filters\course_selector;
-use core_reportbuilder\local\filters\date;
-use core_reportbuilder\local\filters\select;
-use core_reportbuilder\local\filters\text;
+use core_reportbuilder\local\filters\{autocomplete, boolean_select, course_selector, date, text};
 use core_reportbuilder\local\helpers\custom_fields;
 use core_reportbuilder\local\helpers\format;
 use core_reportbuilder\local\report\column;
@@ -278,7 +274,7 @@ class course extends base {
         foreach ($fields as $field => $name) {
             $optionscallback = [static::class, 'get_options_for_' . $field];
             if (is_callable($optionscallback)) {
-                $filterclass = select::class;
+                $filterclass = autocomplete::class;
             } else if ($this->get_course_field_type($field) === column::TYPE_BOOLEAN) {
                 $filterclass = boolean_select::class;
             } else if ($this->get_course_field_type($field) === column::TYPE_TIMESTAMP) {

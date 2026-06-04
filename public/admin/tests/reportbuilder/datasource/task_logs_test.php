@@ -20,7 +20,7 @@ namespace core_admin\reportbuilder\datasource;
 
 use core\task\database_logger;
 use core_reportbuilder_generator;
-use core_reportbuilder\local\filters\{date, duration, number, select, text};
+use core_reportbuilder\local\filters\{autocomplete, date, duration, number, select, text};
 use core_reportbuilder\task\send_schedules;
 use core_reportbuilder\tests\core_reportbuilder_testcase;
 
@@ -111,7 +111,8 @@ final class task_logs_test extends core_reportbuilder_testcase {
                 'task_log:name_value' => [send_schedules::class],
             ], true],
             'Filter name (no match)' => ['task_log:name', [
-                'task_log:name_value' => ['invalid'],
+                'task_log:name_operator' => autocomplete::NOT_EQUAL_TO,
+                'task_log:name_value' => [send_schedules::class],
             ], false],
             'Filter component' => ['task_log:component', [
                 'task_log:component_operator' => select::EQUAL_TO,

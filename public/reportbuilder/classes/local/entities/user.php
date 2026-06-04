@@ -29,11 +29,7 @@ use moodle_url;
 use stdClass;
 use theme_config;
 use core_user\fields;
-use core_reportbuilder\local\filters\boolean_select;
-use core_reportbuilder\local\filters\date;
-use core_reportbuilder\local\filters\select;
-use core_reportbuilder\local\filters\text;
-use core_reportbuilder\local\filters\user as user_filter;
+use core_reportbuilder\local\filters\{autocomplete, boolean_select, date, text, user as user_filter};
 use core_reportbuilder\local\helpers\user_profile_fields;
 use core_reportbuilder\local\helpers\format;
 use core_reportbuilder\local\report\column;
@@ -476,7 +472,7 @@ class user extends base {
         foreach ($fields as $field => $name) {
             $optionscallback = [static::class, 'get_options_for_' . $field];
             if (is_callable($optionscallback)) {
-                $classname = select::class;
+                $classname = autocomplete::class;
             } else if ($this->get_user_field_type($field) === column::TYPE_BOOLEAN) {
                 $classname = boolean_select::class;
             } else if ($this->get_user_field_type($field) === column::TYPE_TIMESTAMP) {

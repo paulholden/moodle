@@ -70,7 +70,6 @@ Feature: An administrator can filter user accounts by role, cohort and other pro
     And I should not see "User Three" in the "reportbuilder-table" "table"
     And I should see "User Four" in the "reportbuilder-table" "table"
     And I set the following fields in the "Authentication" "core_reportbuilder > Filter" to these values:
-      | Authentication operator | Is equal to     |
       | Authentication value    | Manual accounts |
     And I click on "Apply" "button" in the "[data-region='report-filters']" "css_element"
     And I should see "User One" in the "reportbuilder-table" "table"

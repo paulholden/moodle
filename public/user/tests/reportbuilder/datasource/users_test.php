@@ -19,7 +19,7 @@ declare(strict_types=1);
 namespace core_user\reportbuilder\datasource;
 
 use core_reportbuilder_generator;
-use core_reportbuilder\local\filters\{boolean_select, date, select, tags, text, user as user_filter};
+use core_reportbuilder\local\filters\{autocomplete, boolean_select, date, tags, text, user as user_filter};
 use core_reportbuilder\tests\core_reportbuilder_testcase;
 
 /**
@@ -376,35 +376,28 @@ final class users_test extends core_reportbuilder_testcase {
                 'user:city_value' => 'Perth',
             ], false],
             'Filter country' => ['user:country', [
-                'user:country_operator' => select::EQUAL_TO,
                 'user:country_value' => 'ES',
             ], true],
             'Filter country (no match)' => ['user:country', [
-                'user:country_operator' => select::EQUAL_TO,
                 'user:country_value' => 'AU',
             ], false],
             'Filter lang' => ['user:lang', [
-                'user:lang_operator' => select::EQUAL_TO,
                 'user:lang_value' => 'en',
             ], true],
             'Filter lang (no match)' => ['user:lang', [
-                'user:lang_operator' => select::NOT_EQUAL_TO,
+                'user:lang_operator' => autocomplete::NOT_EQUAL_TO,
                 'user:lang_value' => 'en',
             ], false],
             'Filter timezone' => ['user:timezone', [
-                'user:timezone_operator' => select::EQUAL_TO,
                 'user:timezone_value' => 'Europe/Barcelona',
             ], true],
             'Filter timezone (no match)' => ['user:timezone', [
-                'user:timezone_operator' => select::EQUAL_TO,
                 'user:timezone_value' => 'Australia/Perth',
             ], false],
             'Filter theme' => ['user:theme', [
-                'user:theme_operator' => select::EQUAL_TO,
                 'user:theme_value' => 'boost',
             ], true],
             'Filter theme (no match)' => ['user:theme', [
-                'user:theme_operator' => select::EQUAL_TO,
                 'user:theme_value' => '',
             ], false],
             'Filter description' => ['user:description', [
@@ -416,11 +409,9 @@ final class users_test extends core_reportbuilder_testcase {
                 'user:description_value' => 'Goodbye',
             ], false],
             'Filter auth' => ['user:auth', [
-                'user:auth_operator' => select::EQUAL_TO,
                 'user:auth_value' => 'manual',
             ], true],
             'Filter auth (no match)' => ['user:auth', [
-                'user:auth_operator' => select::EQUAL_TO,
                 'user:auth_value' => 'ldap',
             ], false],
             'Filter username' => ['user:username', [
