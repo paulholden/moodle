@@ -30,17 +30,18 @@ use core_user\reportbuilder\datasource\users;
  * Unit tests for the audience model
  *
  * @package     core_reportbuilder
- * @covers      \core_reportbuilder\local\models\audience
  * @copyright   2021 David Matamoros <davidmc@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(audience::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(audience_created::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(audience_updated::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(audience_deleted::class)]
 final class audience_test extends advanced_testcase {
     /**
      * Tests for audience_created event
      *
      * @return persistent[]
-     *
-     * @covers \core_reportbuilder\event\audience_created
      */
     public function test_audience_created_event(): array {
         $this->resetAfterTest();
@@ -80,10 +81,8 @@ final class audience_test extends advanced_testcase {
      *
      * @param persistent[] $persistents
      * @return persistent[]
-     *
-     * @depends test_audience_created_event
-     * @covers \core_reportbuilder\event\audience_updated
      */
+    #[\PHPUnit\Framework\Attributes\Depends('test_audience_created_event')]
     public function test_audience_updated_event(array $persistents): array {
         global $DB;
 
@@ -118,10 +117,8 @@ final class audience_test extends advanced_testcase {
      * Tests for audience_deleted event
      *
      * @param persistent[] $persistents
-     *
-     * @depends test_audience_updated_event
-     * @covers \core_reportbuilder\event\audience_deleted
      */
+    #[\PHPUnit\Framework\Attributes\Depends('test_audience_updated_event')]
     public function test_audience_deleted_event(array $persistents): void {
         global $DB;
 

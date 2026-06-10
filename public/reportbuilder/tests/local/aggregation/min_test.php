@@ -29,11 +29,10 @@ use stdClass;
  * Unit tests for min aggregation
  *
  * @package     core_reportbuilder
- * @covers      \core_reportbuilder\local\aggregation\base
- * @covers      \core_reportbuilder\local\aggregation\min
  * @copyright   2021 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(min::class)]
 final class min_test extends core_reportbuilder_testcase {
     /**
      * Test aggregation when applied to column
@@ -97,9 +96,8 @@ final class min_test extends core_reportbuilder_testcase {
      *
      * @param int $columntype
      * @param string[] $expected
-     *
-     * @dataProvider column_aggregation_with_callback_provider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('column_aggregation_with_callback_provider')]
     public function test_column_aggregation_with_callback(int $columntype, array $expected): void {
         $this->resetAfterTest();
 

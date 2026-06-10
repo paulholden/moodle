@@ -26,11 +26,10 @@ use core_reportbuilder\local\report\filter;
  * Unit tests for user report filter
  *
  * @package     core_reportbuilder
- * @covers      \core_reportbuilder\local\filters\base
- * @covers      \core_reportbuilder\local\filters\user
  * @copyright   2021 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(user::class)]
 final class user_test extends advanced_testcase {
     /**
      * Data provider for {@see test_get_sql_filter}
@@ -49,9 +48,8 @@ final class user_test extends advanced_testcase {
      *
      * @param int $operator
      * @param string[] $expectedusernames
-     *
-     * @dataProvider get_sql_filter_simple
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('get_sql_filter_simple')]
     public function test_get_sql_filter(int $operator, array $expectedusernames): void {
         global $DB;
 

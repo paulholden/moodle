@@ -18,21 +18,22 @@ declare(strict_types=1);
 
 namespace core_reportbuilder\external\columns;
 
-use core_reportbuilder_generator;
 use core_external\external_api;
+use core_external\tests\externallib_testcase;
 use core_reportbuilder\exception\report_access_exception;
 use core_reportbuilder\local\models\column;
+use core_reportbuilder_generator;
 use core_user\reportbuilder\datasource\users;
 
 /**
  * Unit tests of external class for re-ordering report columns
  *
  * @package     core_reportbuilder
- * @covers      \core_reportbuilder\external\columns\reorder
  * @copyright   2021 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class reorder_test extends \core_external\tests\externallib_testcase {
+#[\PHPUnit\Framework\Attributes\CoversClass(reorder::class)]
+final class reorder_test extends externallib_testcase {
     /**
      * Text execute method
      */

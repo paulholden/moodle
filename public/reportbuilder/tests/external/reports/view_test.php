@@ -18,22 +18,23 @@ declare(strict_types=1);
 
 namespace core_reportbuilder\external\reports;
 
-use core_reportbuilder_generator;
 use core_external\external_api;
+use core_external\tests\externallib_testcase;
 use core_reportbuilder\event\report_viewed;
 use core_reportbuilder\exception\report_access_exception;
 use core_reportbuilder\local\models\report;
+use core_reportbuilder_generator;
 use core_user\reportbuilder\datasource\users;
 
 /**
  * Unit tests of external class for viewing reports
  *
  * @package     core_reportbuilder
- * @covers      \core_reportbuilder\external\reports\view
  * @copyright   2022 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class view_test extends \core_external\tests\externallib_testcase {
+#[\PHPUnit\Framework\Attributes\CoversClass(view::class)]
+final class view_test extends externallib_testcase {
     /**
      * Text execute method
      */

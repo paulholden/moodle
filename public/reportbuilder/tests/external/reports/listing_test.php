@@ -20,20 +20,21 @@ namespace core_reportbuilder\external\reports;
 
 use context_system;
 use core_customfield_generator;
-use core_reportbuilder_generator;
 use core_external\external_api;
+use core_external\tests\externallib_testcase;
 use core_reportbuilder\exception\report_access_exception;
+use core_reportbuilder_generator;
 use core_user\reportbuilder\datasource\users;
 
 /**
  * Unit tests of external class for listing reports
  *
  * @package     core_reportbuilder
- * @covers      \core_reportbuilder\external\reports\listing
  * @copyright   2022 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class listing_test extends \core_external\tests\externallib_testcase {
+#[\PHPUnit\Framework\Attributes\CoversClass(listing::class)]
+final class listing_test extends externallib_testcase {
     /**
      * Text execute method
      */

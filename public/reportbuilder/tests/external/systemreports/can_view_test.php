@@ -20,17 +20,18 @@ namespace core_reportbuilder\external\systemreports;
 
 use core\context\system;
 use core_external\external_api;
+use core_external\tests\externallib_testcase;
 use core_reportbuilder\local\systemreports\reports_list;
 
 /**
  * Unit tests of external class for validating access to a system report
  *
  * @package     core_reportbuilder
- * @covers      \core_reportbuilder\external\systemreports\can_view
  * @copyright   2023 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-final class can_view_test extends \core_external\tests\externallib_testcase {
+#[\PHPUnit\Framework\Attributes\CoversClass(can_view::class)]
+final class can_view_test extends externallib_testcase {
     /**
      * Text execute method
      */
