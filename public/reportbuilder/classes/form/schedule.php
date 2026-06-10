@@ -38,7 +38,6 @@ use core_reportbuilder\local\report\base as report_base;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class schedule extends dynamic_form {
-
     /**
      * Return schedule instance
      *
@@ -118,24 +117,32 @@ class schedule extends dynamic_form {
         $mform->addElement('date_time_selector', 'timescheduled', get_string('startingfrom'), ['optional' => false]);
         $mform->setType('timescheduled', PARAM_INT);
 
-        $mform->addElement('select', 'recurrence', get_string('recurrence', 'core_reportbuilder'),
-            helper::get_recurrence_options());
+        $mform->addElement(
+            'select',
+            'recurrence',
+            get_string('recurrence', 'core_reportbuilder'),
+            helper::get_recurrence_options(),
+        );
         $mform->setType('recurrence', PARAM_INT);
 
         // View report data as.
         $context = $this->get_context_for_dynamic_submission();
         if (has_capability('moodle/reportbuilder:scheduleviewas', $context)) {
-            $mform->addElement('select', 'userviewas', get_string('scheduleviewas', 'core_reportbuilder'),
-                helper::get_viewas_options());
+            $mform->addElement(
+                'select',
+                'userviewas',
+                get_string('scheduleviewas', 'core_reportbuilder'),
+                helper::get_viewas_options(),
+            );
             $mform->setType('userviewas', PARAM_INT);
 
             $options = [
                 'ajax' => 'core_user/form_user_selector',
                 'multiple' => false,
-                'valuehtmlcallback' => function($userid) use ($context): string {
+                'valuehtmlcallback' => static function ($userid) use ($context): string {
                     $user = core_user::get_user($userid);
                     return fullname($user, has_capability('moodle/site:viewfullnames', $context));
-                }
+                },
             ];
             $mform->addElement('autocomplete', 'user', get_string('user'), [], $options)->setHiddenLabel(true);
             $mform->hideIf('user', 'userviewas', 'neq', model::REPORT_VIEWAS_USER);
@@ -220,9 +227,11 @@ class schedule extends dynamic_form {
         }
 
         // Make sure specific user was selected, if required.
-        if (array_key_exists('userviewas', $data) &&
-                (int) $data['userviewas'] === model::REPORT_VIEWAS_USER && empty($data['user'])) {
-
+        if (
+            array_key_exists('userviewas', $data) &&
+            (int) $data['userviewas'] === model::REPORT_VIEWAS_USER &&
+            empty($data['user'])
+        ) {
             $errors['user'] = get_string('required');
         }
 

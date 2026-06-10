@@ -33,7 +33,6 @@ use core_reportbuilder\local\helpers\database;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class boolean_select extends base {
-
     /** @var int Any value */
     public const ANY_VALUE = 0;
 

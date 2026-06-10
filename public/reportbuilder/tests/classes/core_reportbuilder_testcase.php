@@ -33,7 +33,6 @@ use Throwable;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class core_reportbuilder_testcase extends advanced_testcase {
-
     /**
      * Retrieve content for given report as array of report data
      *
@@ -125,8 +124,11 @@ abstract class core_reportbuilder_testcase extends advanced_testcase {
 
         // Now iterate over each column, and apply all suitable aggregation types.
         $columns = $instance->get_active_columns();
-        $this->assertDebuggingCalledCount($columndeprecatedcount, null,
-            array_fill(0, $columndeprecatedcount, DEBUG_DEVELOPER));
+        $this->assertDebuggingCalledCount(
+            $columndeprecatedcount,
+            null,
+            array_fill(0, $columndeprecatedcount, DEBUG_DEVELOPER),
+        );
         foreach ($columns as $column) {
             $aggregations = aggregation::get_column_aggregations($column->get_type(), $column->get_disabled_aggregation());
             foreach (array_keys($aggregations) as $aggregation) {
@@ -138,8 +140,11 @@ abstract class core_reportbuilder_testcase extends advanced_testcase {
                     $this->assertNotEmpty($content);
 
                     // Ensure appropriate debugging was triggered for deprecated columns.
-                    $this->assertDebuggingCalledCount($columndeprecatedcount, null,
-                        array_fill(0, $columndeprecatedcount, DEBUG_DEVELOPER));
+                    $this->assertDebuggingCalledCount(
+                        $columndeprecatedcount,
+                        null,
+                        array_fill(0, $columndeprecatedcount, DEBUG_DEVELOPER),
+                    );
                 } catch (Throwable $exception) {
                     $this->fail("Error for column '{$column->get_unique_identifier()}' with aggregation '{$aggregation}': " .
                         $exception->getMessage());

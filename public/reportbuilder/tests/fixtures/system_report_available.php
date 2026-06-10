@@ -34,7 +34,6 @@ use pix_icon;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class system_report_available extends system_report {
-
     /**
      * Initialise the report
      */
@@ -48,8 +47,7 @@ class system_report_available extends system_report {
             'user'
         ))
             ->add_joins($this->get_joins())
-            ->add_field('u.firstname')
-        );
+            ->add_field('u.firstname'));
 
         $withfilters = $this->get_parameter('withfilters', false, PARAM_BOOL);
         if ($withfilters) {
@@ -60,8 +58,7 @@ class system_report_available extends system_report {
                 'user',
                 'u.username'
             ))
-                ->add_joins($this->get_joins())
-            );
+                ->add_joins($this->get_joins()));
         }
 
         $withactions = $this->get_parameter('withactions', false, PARAM_BOOL);

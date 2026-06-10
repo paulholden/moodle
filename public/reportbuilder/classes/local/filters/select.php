@@ -34,7 +34,6 @@ use core_reportbuilder\local\helpers\database;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class select extends base {
-
     /** @var int Any value */
     public const ANY_VALUE = 0;
 
@@ -56,7 +55,7 @@ class select extends base {
         $operators = [
             self::ANY_VALUE => get_string('filterisanyvalue', 'core_reportbuilder'),
             self::EQUAL_TO => get_string('filterisequalto', 'core_reportbuilder'),
-            self::NOT_EQUAL_TO => get_string('filterisnotequalto', 'core_reportbuilder')
+            self::NOT_EQUAL_TO => get_string('filterisnotequalto', 'core_reportbuilder'),
         ];
 
         return $this->filter->restrict_limited_operators($operators);

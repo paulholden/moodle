@@ -29,7 +29,6 @@ use core_reportbuilder\table\system_report_table;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class testable_system_report_table extends system_report_table {
-
     /**
      * Format each row of returned data, replacing aliased column names with the original
      *

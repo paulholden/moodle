@@ -33,7 +33,6 @@ use core_user\reportbuilder\datasource\users;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class count_test extends core_reportbuilder_testcase {
-
     /**
      * Test aggregation when applied to column
      */

@@ -32,7 +32,6 @@ use core_user\reportbuilder\datasource\users;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class allusers_test extends advanced_testcase {
-
     /**
      * Test that this audience type description is generated correctly
      */
@@ -146,7 +145,9 @@ final class allusers_test extends advanced_testcase {
         $query = 'SELECT u.* FROM {user} u ' . $join . ' WHERE ' . $where;
         $records = $DB->get_records_sql($query, $params);
 
-        $this->assertEqualsCanonicalizing([get_admin()->id, $user1->id, $user2->id, $user3->id],
-            array_column($records, 'id'));
+        $this->assertEqualsCanonicalizing(
+            [get_admin()->id, $user1->id, $user2->id, $user3->id],
+            array_column($records, 'id'),
+        );
     }
 }

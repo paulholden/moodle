@@ -31,7 +31,6 @@ use core_reportbuilder\local\audiences\base;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_report_audience_cards_exporter extends custom_report_menu_cards_exporter {
-
     /**
      * Get the additional values to inject while exporting
      *
@@ -73,7 +72,7 @@ class custom_report_audience_cards_exporter extends custom_report_menu_cards_exp
         }
 
         // Order items in each menu card alphabetically.
-        array_walk($menucards, static function(array &$menucard): void {
+        array_walk($menucards, static function (array &$menucard): void {
             core_collator::asort_array_of_arrays_by_key($menucard['items'], 'name');
             $menucard['items'] = array_values($menucard['items']);
         });

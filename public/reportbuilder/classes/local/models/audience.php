@@ -34,7 +34,6 @@ use core_reportbuilder\local\helpers\audience as helper;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class audience extends persistent {
-
     /** @var string Table name */
     public const TABLE = 'reportbuilder_audience';
 
@@ -62,7 +61,7 @@ class audience extends persistent {
             ],
             'usercreated' => [
                 'type' => PARAM_INT,
-                'default' => static function(): int {
+                'default' => static function (): int {
                     global $USER;
 
                     return (int) $USER->id;

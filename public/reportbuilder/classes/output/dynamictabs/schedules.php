@@ -36,7 +36,6 @@ use core_reportbuilder\local\systemreports\report_schedules;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class schedules extends base {
-
     /**
      * Export this for use in a mustache template context
      *
@@ -44,8 +43,11 @@ class schedules extends base {
      * @return array
      */
     public function export_for_template(renderer_base $output): array {
-        $report = system_report_factory::create(report_schedules::class, context_system::instance(), '', '', 0,
-            ['reportid' => $this->data['reportid']]);
+        $report = system_report_factory::create(
+            report_schedules::class,
+            context_system::instance(),
+            parameters: ['reportid' => $this->data['reportid']]
+        );
 
         // Schedule type menu.
         $choicelist = new choicelist();

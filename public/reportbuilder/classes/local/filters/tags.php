@@ -42,7 +42,6 @@ use core_reportbuilder\local\report\filter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tags extends base {
-
     /** @var int Any value */
     public const ANY_VALUE = 0;
 
@@ -104,7 +103,7 @@ class tags extends base {
               ORDER BY t.name";
 
         // Transform tag records into appropriate display name, for selection in the autocomplete element.
-        $tags = array_map(static function(stdClass $record): string {
+        $tags = array_map(static function (stdClass $record): string {
             return core_tag_tag::make_display_name($record);
         }, $DB->get_records_sql($sql, $params));
 
@@ -149,14 +148,20 @@ class tags extends base {
             } else if ($operator === self::EMPTY) {
                 $select = "NOT EXISTS ({$componenttagselect})";
             } else if ($operator === self::EQUAL_TO && !empty($tags)) {
-                [$tagselect, $tagselectparams] = $DB->get_in_or_equal($tags, SQL_PARAMS_NAMED,
-                    database::generate_param_name('_'));
+                [$tagselect, $tagselectparams] = $DB->get_in_or_equal(
+                    $tags,
+                    SQL_PARAMS_NAMED,
+                    database::generate_param_name('_'),
+                );
 
                 $select = "EXISTS ({$componenttagselect} AND t.id {$tagselect})";
                 $params = array_merge($params, $tagselectparams);
             } else if ($operator === self::NOT_EQUAL_TO && !empty($tags)) {
-                [$tagselect, $tagselectparams] = $DB->get_in_or_equal($tags, SQL_PARAMS_NAMED,
-                    database::generate_param_name('_'));
+                [$tagselect, $tagselectparams] = $DB->get_in_or_equal(
+                    $tags,
+                    SQL_PARAMS_NAMED,
+                    database::generate_param_name('_'),
+                );
 
                 // We should also return those elements that aren't tagged at all.
                 $select = "NOT EXISTS ({$componenttagselect} AND t.id {$tagselect})";
@@ -166,27 +171,33 @@ class tags extends base {
                 return ['', []];
             }
         } else {
-
             // We're filtering directly from the tag table.
             if ($operator === self::NOT_EMPTY) {
                 $select = "{$fieldsql} IS NOT NULL";
             } else if ($operator === self::EMPTY) {
                 $select = "{$fieldsql} IS NULL";
             } else if ($operator === self::EQUAL_TO && !empty($tags)) {
-                [$tagselect, $tagselectparams] = $DB->get_in_or_equal($tags, SQL_PARAMS_NAMED,
-                    database::generate_param_name('_'));
+                [$tagselect, $tagselectparams] = $DB->get_in_or_equal(
+                    $tags,
+                    SQL_PARAMS_NAMED,
+                    database::generate_param_name('_'),
+                );
 
                 $select = "{$fieldsql} {$tagselect}";
                 $params = array_merge($params, $tagselectparams);
             } else if ($operator === self::NOT_EQUAL_TO && !empty($tags)) {
-                [$tagselect, $tagselectparams] = $DB->get_in_or_equal($tags, SQL_PARAMS_NAMED,
-                    database::generate_param_name('_'), false);
+                [$tagselect, $tagselectparams] = $DB->get_in_or_equal(
+                    $tags,
+                    SQL_PARAMS_NAMED,
+                    database::generate_param_name('_'),
+                    false,
+                );
 
                 // We should also return those elements that aren't tagged at all.
                 $select = "COALESCE({$fieldsql}, 0) {$tagselect}";
                 $params = array_merge($params, $tagselectparams);
             } else {
-                // Invalid/inactive (any value) filter..
+                // Invalid/inactive (any value) filter.
                 return ['', []];
             }
         }

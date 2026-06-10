@@ -34,7 +34,6 @@ use core_user\reportbuilder\datasource\users;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class report_test extends advanced_testcase {
-
     /**
      * Tests for report_created event
      *

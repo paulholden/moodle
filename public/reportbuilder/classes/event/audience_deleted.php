@@ -37,7 +37,6 @@ use moodle_url;
  * }
  */
 class audience_deleted extends base {
-
     /**
      * Initialise the event data.
      */
@@ -59,7 +58,7 @@ class audience_deleted extends base {
             'objectid' => $audience->get('id'),
             'other' => [
                 'reportid' => $audience->get('reportid'),
-            ]
+            ],
         ];
         $event = self::create($eventparams);
         $event->add_record_snapshot($event->objecttable, $audience->to_record());

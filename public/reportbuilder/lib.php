@@ -130,8 +130,14 @@ function core_reportbuilder_get_tagged_reports(
 
         $pixicon = new pix_icon('i/report', new lang_string('customreport', 'core_reportbuilder'));
 
-        $reports = $tag->get_tagged_items('core_reportbuilder', 'reportbuilder_report', $page * $perpage, $perpage,
-            $where, $params);
+        $reports = $tag->get_tagged_items(
+            'core_reportbuilder',
+            'reportbuilder_report',
+            $page * $perpage,
+            $perpage,
+            $where,
+            $params,
+        );
         foreach ($reports as $report) {
             $tagfeed->add(
                 $OUTPUT->render($pixicon),
@@ -145,8 +151,18 @@ function core_reportbuilder_get_tagged_reports(
         $content = $OUTPUT->render_from_template('core_tag/tagfeed', $tagfeed->export_for_template($OUTPUT));
     }
 
-    return new tagindex($tag, 'core_reportbuilder', 'reportbuilder_report', $content, $exclusivemode, $fromcontextid,
-        $contextid, $recurse, $page, $pagecount);
+    return new tagindex(
+        $tag,
+        'core_reportbuilder',
+        'reportbuilder_report',
+        $content,
+        $exclusivemode,
+        $fromcontextid,
+        $contextid,
+        $recurse,
+        $page,
+        $pagecount,
+    );
 }
 
 /**

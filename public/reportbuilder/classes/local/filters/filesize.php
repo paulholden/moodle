@@ -32,7 +32,6 @@ use MoodleQuickForm;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class filesize extends base {
-
     /** @var int Any value */
     public const ANY_VALUE = 0;
 
@@ -76,14 +75,22 @@ class filesize extends base {
      */
     public function setup_form(MoodleQuickForm $mform): void {
         // Operator selector.
-        $elements[] = $mform->createElement('select', "{$this->name}_operator",
-            get_string('filterfieldoperator', 'core_reportbuilder', $this->get_header()), $this->get_operators());
+        $elements[] = $mform->createElement(
+            'select',
+            "{$this->name}_operator",
+            get_string('filterfieldoperator', 'core_reportbuilder', $this->get_header()),
+            $this->get_operators(),
+        );
         $mform->setType("{$this->name}_operator", PARAM_INT);
         $mform->setDefault("{$this->name}_operator", self::ANY_VALUE);
 
         // Value selector.
-        $elements[] = $mform->createElement('text', "{$this->name}_value1",
-            get_string('filterfieldvalue', 'core_reportbuilder', $this->get_header()), ['size' => 4]);
+        $elements[] = $mform->createElement(
+            'text',
+            "{$this->name}_value1",
+            get_string('filterfieldvalue', 'core_reportbuilder', $this->get_header()),
+            ['size' => 4],
+        );
         $mform->setType("{$this->name}_value1", PARAM_LOCALISEDFLOAT);
         $mform->setDefault("{$this->name}_value1", 1);
         $mform->hideIf("{$this->name}_value1", "{$this->name}_operator", 'eq', self::ANY_VALUE);
@@ -96,8 +103,12 @@ class filesize extends base {
             self::SIZE_UNIT_GIGABYTE => new lang_string('sizegb'),
         ];
 
-        $elements[] = $mform->createElement('select', "{$this->name}_unit",
-            get_string('filterfieldunit', 'core_reportbuilder', $this->get_header()), $units);
+        $elements[] = $mform->createElement(
+            'select',
+            "{$this->name}_unit",
+            get_string('filterfieldunit', 'core_reportbuilder', $this->get_header()),
+            $units,
+        );
         $mform->setType("{$this->name}_unit", PARAM_INT);
         $mform->setDefault("{$this->name}_unit", self::SIZE_UNIT_BYTE);
         $mform->hideIf("{$this->name}_unit", "{$this->name}_operator", 'eq', self::ANY_VALUE);

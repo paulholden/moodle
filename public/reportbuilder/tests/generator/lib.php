@@ -31,7 +31,6 @@ use core_reportbuilder\local\schedules\base as schedule_base;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class core_reportbuilder_generator extends component_generator_base {
-
     /**
      * Create report
      *

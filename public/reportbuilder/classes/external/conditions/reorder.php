@@ -35,7 +35,6 @@ use core_reportbuilder\local\helpers\report;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class reorder extends external_api {
-
     /**
      * External method parameters
      *
@@ -45,7 +44,7 @@ class reorder extends external_api {
         return new external_function_parameters([
             'reportid' => new external_value(PARAM_INT, 'Report ID'),
             'conditionid' => new external_value(PARAM_INT, 'Condition ID'),
-            'position' => new external_value(PARAM_INT, 'New condition position')
+            'position' => new external_value(PARAM_INT, 'New condition position'),
         ]);
     }
 

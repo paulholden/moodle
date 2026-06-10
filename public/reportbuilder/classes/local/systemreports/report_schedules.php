@@ -41,7 +41,6 @@ use core_reportbuilder\output\schedule_name_editable;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_schedules extends system_report {
-
     /**
      * The name of our internal report entity
      *
@@ -68,12 +67,10 @@ class report_schedules extends system_report {
         $entityuseralias = $entityuser->get_table_alias('user');
 
         $this->add_entity($entityuser
-            ->add_join("JOIN {user} {$entityuseralias} ON {$entityuseralias}.id = sc.usermodified")
-        );
+            ->add_join("JOIN {user} {$entityuseralias} ON {$entityuseralias}.id = sc.usermodified"));
 
         // Define our internal entity for schedule elements.
-        $this->annotate_entity($this->get_schedule_entity_name(),
-            new lang_string('schedules', 'core_reportbuilder'));
+        $this->annotate_entity($this->get_schedule_entity_name(), new lang_string('schedules', 'core_reportbuilder'));
 
         $this->add_columns();
         $this->add_filters();
@@ -119,7 +116,7 @@ class report_schedules extends system_report {
             ->set_type(column::TYPE_BOOLEAN)
             ->add_fields("{$tablealias}.enabled, {$tablealias}.id")
             ->set_is_sortable(false)
-            ->set_callback(static function(bool $enabled, stdClass $row): string {
+            ->set_callback(static function (bool $enabled, stdClass $row): string {
                 global $PAGE;
 
                 $renderer = $PAGE->get_renderer('core_reportbuilder');
@@ -137,8 +134,7 @@ class report_schedules extends system_report {
                     'label' => $label,
                     'labelclasses' => 'visually-hidden',
                 ]);
-            })
-        );
+            }));
 
         // Report name column.
         $this->add_column((new column(
@@ -150,13 +146,12 @@ class report_schedules extends system_report {
             // We need enough fields to re-create the persistent and pass to the editable component.
             ->add_fields("{$tablealias}.id, {$tablealias}.name, {$tablealias}.reportid")
             ->set_is_sortable(true, ["{$tablealias}.name"])
-            ->add_callback(function(string $value, stdClass $schedule): string {
+            ->add_callback(function (string $value, stdClass $schedule): string {
                 global $PAGE;
 
                 $editable = new schedule_name_editable(0, new schedule(0, $schedule));
                 return $editable->render($PAGE->get_renderer('core'));
-            })
-        );
+            }));
 
         // Time last sent column.
         $this->add_column((new column(
@@ -167,14 +162,13 @@ class report_schedules extends system_report {
             ->set_type(column::TYPE_TIMESTAMP)
             ->add_fields("{$tablealias}.timelastsent")
             ->set_is_sortable(true)
-            ->add_callback(static function(int $timelastsent, stdClass $row): string {
+            ->add_callback(static function (int $timelastsent, stdClass $row): string {
                 if ($timelastsent === 0) {
                     return get_string('never');
                 }
 
                 return format::userdate($timelastsent, $row);
-            })
-        );
+            }));
 
         // Time next send column.
         $this->add_column((new column(
@@ -185,14 +179,13 @@ class report_schedules extends system_report {
             ->set_type(column::TYPE_TIMESTAMP)
             ->add_fields("{$tablealias}.timenextsend")
             ->set_is_sortable(true)
-            ->add_callback(static function(int $timenextsend, stdClass $row): string {
+            ->add_callback(static function (int $timenextsend, stdClass $row): string {
                 if ($timenextsend < time()) {
                     return get_string('never');
                 }
 
                 return format::userdate($timenextsend, $row);
-            })
-        );
+            }));
 
         // Format column.
         $this->add_column((new column(
@@ -203,14 +196,13 @@ class report_schedules extends system_report {
             ->set_type(column::TYPE_TEXT)
             ->add_fields("{$tablealias}.format")
             ->set_is_sortable(true)
-            ->add_callback(static function(string $format): string {
+            ->add_callback(static function (string $format): string {
                 if (get_string_manager()->string_exists('dataformat', 'dataformat_' . $format)) {
                     return get_string('dataformat', 'dataformat_' . $format);
                 } else {
                     return $format;
                 }
-            })
-        );
+            }));
 
         // Time created column.
         $this->add_column((new column(
@@ -221,8 +213,7 @@ class report_schedules extends system_report {
             ->set_type(column::TYPE_TIMESTAMP)
             ->add_fields("{$tablealias}.timecreated")
             ->set_is_sortable(true)
-            ->add_callback([format::class, 'userdate'])
-        );
+            ->add_callback([format::class, 'userdate']));
 
         // Time modified column.
         $this->add_column((new column(
@@ -233,8 +224,7 @@ class report_schedules extends system_report {
             ->set_type(column::TYPE_TIMESTAMP)
             ->add_fields("{$tablealias}.timemodified")
             ->set_is_sortable(true)
-            ->add_callback([format::class, 'userdate'])
-        );
+            ->add_callback([format::class, 'userdate']));
 
         // The user who modified the schedule.
         $this->add_column_from_entity('user:fullname')
@@ -284,8 +274,7 @@ class report_schedules extends system_report {
                 date::DATE_BEFORE,
                 date::DATE_LAST,
                 date::DATE_CURRENT,
-            ])
-        );
+            ]));
 
         // Time next send filter.
         $this->add_filter((new filter(
@@ -302,8 +291,7 @@ class report_schedules extends system_report {
                 date::DATE_NEXT,
                 date::DATE_AFTER,
                 date::DATE_CURRENT,
-            ])
-        );
+            ]));
     }
 
     /**
@@ -331,7 +319,7 @@ class report_schedules extends system_report {
             false,
             new lang_string('sendschedule', 'core_reportbuilder')
         ))
-            ->add_callback(function(stdClass $row): bool {
+            ->add_callback(function (stdClass $row): bool {
                 $instance = base::instance(0, $row);
                 if ($instance === null || !$instance->user_can_add()) {
                     return false;
@@ -339,7 +327,8 @@ class report_schedules extends system_report {
 
                 // Ensure data name attribute is properly formatted.
                 $row->name = $instance->get_persistent()->get_formatted_name(
-                    context::instance_by_id($row->contextid));
+                    context::instance_by_id($row->contextid)
+                );
 
                 return true;
             }));
@@ -357,7 +346,7 @@ class report_schedules extends system_report {
             false,
             new lang_string('deleteschedule', 'core_reportbuilder')
         ))
-            ->add_callback(function(stdClass $row): bool {
+            ->add_callback(function (stdClass $row): bool {
                 $instance = base::instance(0, $row);
                 if ($instance !== null && !$instance->user_can_add()) {
                     return false;
@@ -365,7 +354,8 @@ class report_schedules extends system_report {
 
                 // Ensure data name attribute is properly formatted.
                 $row->name = (new schedule(0, $row))->get_formatted_name(
-                    context::instance_by_id($row->contextid));
+                    context::instance_by_id($row->contextid)
+                );
 
                 return true;
             }));

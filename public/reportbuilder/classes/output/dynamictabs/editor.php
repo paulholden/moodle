@@ -33,7 +33,6 @@ use stdClass;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class editor extends base {
-
     /**
      * Export this for use in a mustache template context.
      *

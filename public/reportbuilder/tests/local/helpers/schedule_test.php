@@ -38,7 +38,6 @@ use core_user\reportbuilder\datasource\users;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class schedule_test extends advanced_testcase {
-
     /** @var clock $clock */
     private readonly clock $clock;
 

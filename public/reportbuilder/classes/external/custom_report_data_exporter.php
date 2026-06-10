@@ -31,7 +31,6 @@ use core_reportbuilder\table\custom_report_table_view;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_report_data_exporter extends exporter {
-
     /**
      * Return a list of objects that are related to the exporter
      *

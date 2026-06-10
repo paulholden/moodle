@@ -28,7 +28,7 @@ use stdClass;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot.'/user/profile/lib.php');
+require_once("{$CFG->dirroot}/user/profile/lib.php");
 
 /**
  * Helper class for user profile fields.
@@ -38,7 +38,6 @@ require_once($CFG->dirroot.'/user/profile/lib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class user_profile_fields {
-
     use join_trait;
 
     /** @var profile_field_base[] User profile fields */
@@ -110,7 +109,6 @@ class user_profile_fields {
             // Numeric column (non-text) should coalesce with default, for aggregation.
             $columntype = $this->get_user_field_type($profilefield->field->datatype);
             if (!in_array($columntype, [column::TYPE_TEXT, column::TYPE_LONGTEXT])) {
-
                 // See MDL-78783 regarding no bound parameters, and SQL Server limitations of GROUP BY.
                 $userinfosql = "
                     CASE WHEN {$this->usertablefieldalias} IS NOT NULL
@@ -134,7 +132,7 @@ class user_profile_fields {
                 ->add_field("{$userinfotablealias}.dataformat")
                 ->add_field($this->usertablefieldalias, 'userid')
                 ->set_is_sortable(true)
-                ->add_callback(static function($value, stdClass $row, profile_field_base $field): string {
+                ->add_callback(static function ($value, stdClass $row, profile_field_base $field): string {
                     if ($row->userid === null && $value === null) {
                         return '';
                     }

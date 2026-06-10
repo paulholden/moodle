@@ -37,7 +37,6 @@ use core_reportbuilder\output\column_heading_editable;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_report_table extends base_report_table {
-
     /** @var datasource $report */
     protected $report;
 
@@ -176,7 +175,7 @@ class custom_report_table extends base_report_table {
             $columns = $this->get_active_columns();
 
             // We need to sort the columns by the configured sorting order.
-            usort($columns, static function(column $a, column $b): int {
+            usort($columns, static function (column $a, column $b): int {
                 return ($a->get_persistent()->get('sortorder') < $b->get_persistent()->get('sortorder')) ? -1 : 1;
             });
 
@@ -307,7 +306,7 @@ class custom_report_table extends base_report_table {
         global $OUTPUT;
 
         if ($this->editing && debugging('', DEBUG_DEVELOPER)) {
-            $params = array_map(static function(string $param, $value): array {
+            $params = array_map(static function (string $param, $value): array {
                 return ['param' => $param, 'value' => var_export($value, true)];
             }, array_keys($this->sql->params), $this->sql->params);
 
@@ -347,7 +346,7 @@ class custom_report_table extends base_report_table {
                 'class' => 'btn collapsed',
                 'title' => $buttontitle,
                 'data-bs-toggle' => 'collapse',
-                'data-action' => 'toggle-card'
+                'data-action' => 'toggle-card',
             ]);
             $html .= html_writer::tag('td', $button, ['class' => 'card-toggle d-none']);
         }

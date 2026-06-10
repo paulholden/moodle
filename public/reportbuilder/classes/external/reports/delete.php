@@ -33,7 +33,6 @@ use core_reportbuilder\local\models\report as report_model;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class delete extends external_api {
-
     /**
      * External method parameters
      *

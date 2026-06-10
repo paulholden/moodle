@@ -32,7 +32,6 @@ use core_reportbuilder\exception\{source_invalid_exception, source_unavailable_e
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class system_report_factory_test extends advanced_testcase {
-
     /**
      * Test creating a valid/available system report
      */
@@ -59,8 +58,10 @@ final class system_report_factory_test extends advanced_testcase {
         $systemreporttwo = system_report_factory::create(system_report_available::class, context_system::instance());
 
         // Assert we have the same persistent for each.
-        $this->assertEquals($systemreportone->get_report_persistent()->get('id'),
-            $systemreporttwo->get_report_persistent()->get('id'));
+        $this->assertEquals(
+            $systemreportone->get_report_persistent()->get('id'),
+            $systemreporttwo->get_report_persistent()->get('id'),
+        );
     }
 
     /**

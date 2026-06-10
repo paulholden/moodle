@@ -33,7 +33,6 @@ use core_reportbuilder\local\report\filter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class date_test extends advanced_testcase {
-
     /** @var clock $clock */
     private readonly clock $clock;
 
@@ -133,7 +132,7 @@ final class date_test extends advanced_testcase {
      * @return array
      */
     public static function get_sql_filter_current_week_provider(): array {
-        return array_map(static function(int $day): array {
+        return array_map(static function (int $day): array {
             return [$day];
         }, range(0, 6));
     }

@@ -34,7 +34,6 @@ use core_reportbuilder\external\custom_report_conditions_exporter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class reset extends external_api {
-
     /**
      * External method parameters
      *

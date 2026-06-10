@@ -31,7 +31,6 @@ use core_reportbuilder\local\report\filter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class cohort_test extends advanced_testcase {
-
     /**
      * Data provider for {@see test_get_sql_filter}
      *
@@ -77,7 +76,7 @@ final class cohort_test extends advanced_testcase {
 
         // Create cohort lookup for convenience, transform values that refer to cohorts by name, to their ID.
         $cohortmap = $DB->get_records_menu(table: 'cohort', fields: 'name, id');
-        $values = array_map(static function(int|string $value) use ($cohortmap): int {
+        $values = array_map(static function (int|string $value) use ($cohortmap): int {
             if (is_numeric($value)) {
                 return $value;
             }

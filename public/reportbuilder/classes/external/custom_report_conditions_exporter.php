@@ -32,7 +32,6 @@ use core_reportbuilder\local\report\filter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_report_conditions_exporter extends exporter {
-
     /**
      * Return a list of objects that are related to the exporter
      *
@@ -98,16 +97,15 @@ class custom_report_conditions_exporter extends exporter {
         $report = $this->related['report'];
 
         // Current condition instances contained in the report.
-        $conditions = $report->get_active_conditions();
-        $conditionidentifiers = array_map(static function(filter $condition): string {
-            return $condition->get_unique_identifier();
-        }, $conditions);
+        $conditionidentifiers = array_map(
+            fn(filter $condition): string => $condition->get_unique_identifier(),
+            $report->get_active_conditions(),
+        );
 
         $availableconditions = [];
 
         // Populate available conditions.
         foreach ($report->get_conditions() as $condition) {
-
             // Conditions can only be added once per report, skip if it already exists.
             if (in_array($condition->get_unique_identifier(), $conditionidentifiers) || $condition->get_is_deprecated()) {
                 continue;
@@ -130,7 +128,7 @@ class custom_report_conditions_exporter extends exporter {
         }
 
         // Generate conditions form if any present.
-        $conditionspresent = !empty($conditions);
+        $conditionspresent = !empty($conditionidentifiers);
         if ($conditionspresent) {
             $conditionsform = new condition(null, null, 'post', '', [], true, [
                 'reportid' => $report->get_report_persistent()->get('id'),

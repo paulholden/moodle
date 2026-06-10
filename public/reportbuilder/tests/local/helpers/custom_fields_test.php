@@ -18,13 +18,14 @@ declare(strict_types=1);
 
 namespace core_reportbuilder\local\helpers;
 
+use core\context\system;
+use core_course\reportbuilder\datasource\{categories, courses};
 use core_customfield_generator;
 use core_reportbuilder_generator;
 use core_reportbuilder\local\entities\course;
 use core_reportbuilder\local\filters\{boolean_select, date, number, select, text};
 use core_reportbuilder\local\report\{column, filter};
 use core_reportbuilder\tests\core_reportbuilder_testcase;
-use core_course\reportbuilder\datasource\{categories, courses};
 
 /**
  * Unit tests for custom fields helper
@@ -35,7 +36,6 @@ use core_course\reportbuilder\datasource\{categories, courses};
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class custom_fields_test extends core_reportbuilder_testcase {
-
     /**
      * Generate custom fields, one of each type
      *
@@ -49,32 +49,56 @@ final class custom_fields_test extends core_reportbuilder_testcase {
             'component' => 'core_course',
             'area' => 'course',
             'itemid' => 0,
-            'contextid' => \context_system::instance()->id
+            'contextid' => system::instance()->id,
         ]);
 
-        $generator->create_field(
-            ['categoryid' => $category->get('id'), 'type' => 'text', 'name' => 'Text', 'shortname' => 'text',
-                'configdata' => ['defaultvalue' => 'default']]);
+        $generator->create_field([
+            'categoryid' => $category->get('id'),
+            'type' => 'text',
+            'name' => 'Text',
+            'shortname' => 'text',
+            'configdata' => ['defaultvalue' => 'default'],
+        ]);
 
-        $generator->create_field(
-            ['categoryid' => $category->get('id'), 'type' => 'textarea', 'name' => 'Textarea', 'shortname' => 'textarea',
-                'configdata' => ['defaultvalue' => 'Default']]);
+        $generator->create_field([
+            'categoryid' => $category->get('id'),
+            'type' => 'textarea',
+            'name' => 'Textarea',
+            'shortname' => 'textarea',
+            'configdata' => ['defaultvalue' => 'Default'],
+        ]);
 
         // This field is available only to course teachers.
-        $generator->create_field(
-            ['categoryid' => $category->get('id'), 'type' => 'checkbox', 'name' => 'Checkbox', 'shortname' => 'checkbox',
-                'configdata' => ['checkbydefault' => 1, 'visibility' => 1]]);
+        $generator->create_field([
+            'categoryid' => $category->get('id'),
+            'type' => 'checkbox',
+            'name' => 'Checkbox',
+            'shortname' => 'checkbox',
+            'configdata' => ['checkbydefault' => 1, 'visibility' => 1],
+        ]);
 
-        $generator->create_field(
-            ['categoryid' => $category->get('id'), 'type' => 'date', 'name' => 'Date', 'shortname' => 'date']);
+        $generator->create_field([
+            'categoryid' => $category->get('id'),
+            'type' => 'date',
+            'name' => 'Date',
+            'shortname' => 'date',
+        ]);
 
-        $generator->create_field(
-            ['categoryid' => $category->get('id'), 'type' => 'select', 'name' => 'Select', 'shortname' => 'select',
-                'configdata' => ['options' => "Cat\nDog\nFish", 'defaultvalue' => 'Cat']]);
+        $generator->create_field([
+            'categoryid' => $category->get('id'),
+            'type' => 'select',
+            'name' => 'Select',
+            'shortname' => 'select',
+            'configdata' => ['options' => "Cat\nDog\nFish", 'defaultvalue' => 'Cat'],
+        ]);
 
-        $generator->create_field(
-            ['categoryid' => $category->get('id'), 'type' => 'number', 'name' => 'Number', 'shortname' => 'number',
-                'configdata' => ['defaultvalue' => 1]]);
+        $generator->create_field([
+            'categoryid' => $category->get('id'),
+            'type' => 'number',
+            'name' => 'Number',
+            'shortname' => 'number',
+            'configdata' => ['defaultvalue' => 1],
+        ]);
 
         $courseentity = new course();
         $coursealias = $courseentity->get_table_alias('course');
@@ -476,4 +500,3 @@ final class custom_fields_test extends core_reportbuilder_testcase {
         $this->datasource_stress_test_conditions(courses::class, 'course:idnumber');
     }
 }
-

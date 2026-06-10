@@ -35,7 +35,6 @@ use core_reportbuilder\reportbuilder\audience\manual;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class permission_test extends advanced_testcase {
-
     /**
      * Test whether user can view reports list
      */
@@ -441,7 +440,7 @@ final class permission_test extends advanced_testcase {
         /** @var core_reportbuilder_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
         for ($i = 1; $i <= $existingreports; $i++) {
-            $generator->create_report(['name' => 'Report limited '.$i, 'source' => users::class]);
+            $generator->create_report(['name' => 'Report limited ' . $i, 'source' => users::class]);
         }
 
         // Set current custom report limit, and check whether user can create reports.

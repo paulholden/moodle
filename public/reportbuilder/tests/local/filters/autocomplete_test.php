@@ -31,7 +31,6 @@ use core_reportbuilder\local\report\filter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class autocomplete_test extends advanced_testcase {
-
     /**
      * Data provider for {@see test_get_sql_filter}
      *
@@ -91,6 +90,5 @@ final class autocomplete_test extends advanced_testcase {
         ]);
         $fullnames = $DB->get_fieldset_select('course', 'fullname', $select, $params);
         $this->assertEqualsCanonicalizing($expected, $fullnames);
-
     }
 }

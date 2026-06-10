@@ -629,6 +629,7 @@ final class datasource_test extends advanced_testcase {
  * Simple implementation of the base datasource
  */
 class datasource_test_source extends datasource {
+    #[\Override]
     protected function initialise(): void {
         $this->set_main_table('user', 'u');
 
@@ -642,18 +643,22 @@ class datasource_test_source extends datasource {
         $this->add_entity((new datasource_test_entity())->set_entity_name('entitythree'));
     }
 
+    #[\Override]
     public static function get_name(): string {
         return self::class;
     }
 
+    #[\Override]
     public function get_default_columns(): array {
         return [];
     }
 
+    #[\Override]
     public function get_default_filters(): array {
         return [];
     }
 
+    #[\Override]
     public function get_default_conditions(): array {
         return [];
     }
@@ -663,10 +668,12 @@ class datasource_test_source extends datasource {
  * Simple implementation of the base entity
  */
 class datasource_test_entity extends base {
+    #[\Override]
     protected function get_default_tables(): array {
         return ['course'];
     }
 
+    #[\Override]
     protected function get_default_entity_title(): lang_string {
         return new lang_string('course');
     }

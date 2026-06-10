@@ -33,7 +33,6 @@ use core_reportbuilder\local\models\column as column_model;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class column {
-
     use join_trait;
 
     /** @var int Column type is integer */
@@ -133,7 +132,6 @@ final class column {
         /** @var string Name of the entity this column belongs to */
         private readonly string $entityname,
     ) {
-
     }
 
     /**
@@ -356,10 +354,9 @@ final class column {
         $fields = [];
 
         foreach ($this->fields as $alias => $sql) {
-
             // Ensure parameter names within SQL are prefixed with column index.
             $params = array_keys($this->params);
-            $sql = database::sql_replace_parameter_names($sql, $params, function(string $param): string {
+            $sql = database::sql_replace_parameter_names($sql, $params, function (string $param): string {
                 return $this->unique_param_name($param);
             });
 
@@ -389,7 +386,7 @@ final class column {
 
             $fields = ["{$aggregationfieldsql} AS {$field['alias']}"];
         } else {
-            $fields = array_map(static function(array $field): string {
+            $fields = array_map(static function (array $field): string {
                 return "{$field['sql']} AS {$field['alias']}";
             }, $fieldsalias);
         }
@@ -532,7 +529,6 @@ final class column {
      */
     public function set_aggregation(?string $aggregation, ?array $options = null): self {
         if ((string) $aggregation !== '') {
-
             // Convert aggregation to full class instance for internal storage.
             $aggregationclasspath = aggregation::get_full_classpath($aggregation);
             if (!aggregation::valid($aggregationclasspath) || !$aggregationclasspath::compatible($this->get_type())) {
@@ -598,7 +594,7 @@ final class column {
      * @return self
      */
     public function set_disabled_aggregation_all(): self {
-        $aggregationnames = array_map(static function(string $aggregation): string {
+        $aggregationnames = array_map(static function (string $aggregation): string {
             return $aggregation::get_class_name();
         }, aggregation::get_aggregations());
 
@@ -651,7 +647,7 @@ final class column {
     public function get_sort_fields(): array {
         $fieldsalias = $this->get_fields_sql_alias();
 
-        return array_map(static function(string $sortfield) use ($fieldsalias): string {
+        return array_map(static function (string $sortfield) use ($fieldsalias): string {
 
             // Check whether sortfield refers to a defined field alias.
             if (array_key_exists($sortfield, $fieldsalias)) {

@@ -37,7 +37,6 @@ use core_reportbuilder\local\models\report;
  * }
  */
 class report_deleted extends base {
-
     /**
      * Initialise the event data.
      */
@@ -60,7 +59,7 @@ class report_deleted extends base {
             'other' => [
                 'name'     => $report->get('name'),
                 'source'   => $report->get('source'),
-            ]
+            ],
         ];
         $event = self::create($eventparams);
         $event->add_record_snapshot($event->objecttable, $report->to_record());

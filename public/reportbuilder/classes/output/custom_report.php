@@ -34,7 +34,6 @@ use templatable;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_report implements renderable, templatable {
-
     /** @var report $reportpersistent */
     protected $persistent;
 

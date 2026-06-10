@@ -34,7 +34,6 @@ use core_reportbuilder\local\models\report;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class renderer extends plugin_renderer_base {
-
     /**
      * Render a system report
      *
@@ -132,12 +131,12 @@ class renderer extends plugin_renderer_base {
         $editdetailsbutton = html_writer::tag('button', get_string('editdetails', 'core_reportbuilder'), [
             'class' => 'btn btn-outline-secondary me-2',
             'data-action' => 'report-edit',
-            'data-report-id' => $report->get('id')
+            'data-report-id' => $report->get('id'),
         ]);
         $closebutton = html_writer::link(new moodle_url('/reportbuilder/index.php'), get_string('close', 'core_reportbuilder'), [
             'class' => 'btn btn-secondary',
             'title' => get_string('closeeditor', 'core_reportbuilder', $reportname),
-            'role' => 'button'
+            'role' => 'button',
         ]);
         $context = [
             'title' => $reportname,

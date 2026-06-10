@@ -32,7 +32,6 @@ use core_reportbuilder\local\filters\text;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class filter_test extends advanced_testcase {
-
     /**
      * Test getting filter class
      */
@@ -112,8 +111,11 @@ final class filter_test extends advanced_testcase {
      * Test getting field SQL and params, while providing index for uniqueness
      */
     public function test_get_field_sql_and_params(): void {
-        $filter = $this->create_filter('username', 'u.username = :username AND u.idnumber = :idnumber',
-            ['username' => 'test', 'idnumber' => 'bar']);
+        $filter = $this->create_filter(
+            'username',
+            'u.username = :username AND u.idnumber = :idnumber',
+            ['username' => 'test', 'idnumber' => 'bar'],
+        );
 
         [$sql, $params] = $filter->get_field_sql_and_params(1);
         $this->assertEquals('u.username = :username_1 AND u.idnumber = :idnumber_1', $sql);
@@ -146,7 +148,7 @@ final class filter_test extends advanced_testcase {
      */
     public function test_set_options_callback(): void {
         $filter = $this->create_filter('username', 'u.username')
-            ->set_options_callback(static function() {
+            ->set_options_callback(static function () {
                 return 10 * 5;
             });
 

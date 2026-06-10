@@ -30,7 +30,6 @@ use core_reportbuilder\local\helpers\database;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class number extends base {
-
     /** @var int Any value */
     public const ANY_VALUE = 0;
 
@@ -87,19 +86,35 @@ class number extends base {
     public function setup_form(\MoodleQuickForm $mform): void {
         $objs = [];
 
-        $objs['select'] = $mform->createElement('select', $this->name . '_operator',
-            get_string('filterfieldoperator', 'core_reportbuilder', $this->get_header()), $this->get_operators());
+        $objs['select'] = $mform->createElement(
+            'select',
+            "{$this->name}_operator",
+            get_string('filterfieldoperator', 'core_reportbuilder', $this->get_header()),
+            $this->get_operators(),
+        );
         $mform->setType($this->name . '_operator', PARAM_INT);
 
-        $objs['text'] = $mform->createElement('text', $this->name . '_value1',
-            get_string('filterfieldvalue', 'core_reportbuilder', $this->get_header()), ['size' => 3]);
+        $objs['text'] = $mform->createElement(
+            'text',
+            "{$this->name}_value1",
+            get_string('filterfieldvalue', 'core_reportbuilder', $this->get_header()),
+            ['size' => 3],
+        );
         $mform->setType($this->name . '_value1', PARAM_LOCALISEDFLOAT);
         $mform->setDefault($this->name . '_value1', 0);
-        $mform->hideIf($this->name . '_value1', $this->name . '_operator', 'in',
-            [self::ANY_VALUE,  self::IS_NOT_EMPTY,  self::IS_EMPTY]);
+        $mform->hideIf(
+            "{$this->name}_value1",
+            "{$this->name}_operator",
+            'in',
+            [self::ANY_VALUE, self::IS_NOT_EMPTY, self::IS_EMPTY],
+        );
 
-        $objs['text2'] = $mform->createElement('text', $this->name . '_value2',
-            get_string('filterfieldto', 'core_reportbuilder', $this->get_header()), ['size' => 3]);
+        $objs['text2'] = $mform->createElement(
+            'text',
+            "{$this->name}_value2",
+            get_string('filterfieldto', 'core_reportbuilder', $this->get_header()),
+            ['size' => 3],
+        );
         $mform->setType($this->name . '_value2', PARAM_LOCALISEDFLOAT);
         $mform->setDefault($this->name . '_value2', 0);
         $mform->hideIf($this->name . '_value2', $this->name . '_operator', 'noteq', self::RANGE);
@@ -194,7 +209,7 @@ class number extends base {
             self::GREATER_THAN,
             self::EQUAL_TO,
             self::EQUAL_OR_LESS_THAN,
-            self::EQUAL_OR_GREATER_THAN
+            self::EQUAL_OR_GREATER_THAN,
         ];
         if (in_array($operator, $requirescomparisonvalue) && $value1 === null) {
             return false;

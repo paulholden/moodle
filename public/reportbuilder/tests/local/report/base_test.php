@@ -36,7 +36,6 @@ use ReflectionClass;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class base_test extends advanced_testcase {
-
     /**
      * Load required class
      */
@@ -188,8 +187,11 @@ final class base_test extends advanced_testcase {
     public function test_get_filter_instances(): void {
         $this->resetAfterTest();
 
-        $systemreport = system_report_factory::create(system_report_available::class, context_system::instance(),
-            '', '', 0, ['withfilters' => true]);
+        $systemreport = system_report_factory::create(
+            system_report_available::class,
+            context_system::instance(),
+            parameters: ['withfilters' => true],
+        );
         $filters = $systemreport->get_filter_instances();
         $this->assertCount(1, $filters);
         $this->assertInstanceOf(\core_reportbuilder\local\filters\text::class, reset($filters));
@@ -293,8 +295,11 @@ final class base_test extends advanced_testcase {
     public function test_get_filter(): void {
         $this->resetAfterTest();
 
-        $systemreport = system_report_factory::create(system_report_available::class, context_system::instance(),
-            '', '', 0, ['withfilters' => true]);
+        $systemreport = system_report_factory::create(
+            system_report_available::class,
+            context_system::instance(),
+            parameters: ['withfilters' => true],
+        );
         $filter = $systemreport->get_filter('user:username');
         $this->assertInstanceOf(filter::class, $filter);
 

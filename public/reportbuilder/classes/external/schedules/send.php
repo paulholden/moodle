@@ -33,7 +33,6 @@ use core_reportbuilder\task\send_schedule;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class send extends external_api {
-
     /**
      * External method parameters
      *

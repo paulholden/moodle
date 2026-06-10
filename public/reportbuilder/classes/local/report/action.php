@@ -33,7 +33,6 @@ use stdClass;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class action {
-
     /** @var moodle_url $url */
     protected $url;
 
@@ -145,8 +144,8 @@ final class action {
      * @return array
      */
     private static function replace_placeholders(array $values, stdClass $row): array {
-        return array_map(static function($value) use ($row) {
-            return preg_replace_callback('/^:(?<property>.*)$/', static function(array $matches) use ($row): string {
+        return array_map(static function ($value) use ($row) {
+            return preg_replace_callback('/^:(?<property>.*)$/', static function (array $matches) use ($row): string {
                 return (string) ($row->{$matches['property']} ?? '');
             }, (string) $value);
         }, $values);

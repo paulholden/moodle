@@ -23,8 +23,6 @@ use context_system;
 use core_reportbuilder_generator;
 use core_user\reportbuilder\datasource\users;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Unit tests for system role report audience type
  *
@@ -34,7 +32,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class systemrole_test extends advanced_testcase {
-
     /**
      * Test that this audience type description is generated correctly
      */

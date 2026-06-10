@@ -31,7 +31,6 @@ use core_reportbuilder\table\system_report_table;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class system_report_data_exporter extends exporter {
-
     /**
      * Return a list of objects that are related to the exporter
      *

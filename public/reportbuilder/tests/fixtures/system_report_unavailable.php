@@ -30,7 +30,6 @@ require_once(__DIR__ . '/system_report_available.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class system_report_unavailable extends system_report_available {
-
     /**
      * Explicitly set availability of report to false
      *

@@ -28,7 +28,6 @@ use moodle_url;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_report_table_view extends custom_report_table {
-
     /** @var bool We're pre/viewing the report, not editing it */
     protected const REPORT_EDITING = false;
 

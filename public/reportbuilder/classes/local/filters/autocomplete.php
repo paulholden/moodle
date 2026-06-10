@@ -29,7 +29,6 @@ use core_reportbuilder\local\helpers\database;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class autocomplete extends base {
-
     /**
      * Return the options for the filter as an array, to be used to populate the select input field
      *

@@ -34,7 +34,6 @@ use stdClass;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class column_test extends advanced_testcase {
-
     /**
      * Test column name getter/setter
      */
@@ -44,8 +43,7 @@ final class column_test extends advanced_testcase {
 
         $this->assertEquals('another', $column
             ->set_name('another')
-            ->get_name()
-        );
+            ->get_name());
     }
 
     /**
@@ -58,8 +56,7 @@ final class column_test extends advanced_testcase {
 
         $this->assertEquals('Hide', $column
             ->set_title(new lang_string('hide'))
-            ->get_title()
-        );
+            ->get_title());
         $this->assertTrue($column->has_custom_title());
 
         // Column titles can also be empty.
@@ -389,7 +386,7 @@ final class column_test extends advanced_testcase {
             ->set_index(1)
             ->add_field('t.foo')
             ->set_type(column::TYPE_INTEGER)
-            ->add_callback(static function(int $value, stdClass $values) {
+            ->add_callback(static function (int $value, stdClass $values) {
                 return $value * 2;
             });
 
@@ -407,7 +404,7 @@ final class column_test extends advanced_testcase {
             ->set_index(1)
             ->add_fields('t.foo, t.baz')
             ->set_type(column::TYPE_INTEGER)
-            ->add_callback(static function(int $value, stdClass $values) {
+            ->add_callback(static function (int $value, stdClass $values) {
                 return $values->foo + $values->baz;
             });
 
@@ -426,7 +423,7 @@ final class column_test extends advanced_testcase {
             ->set_index(1)
             ->add_field('t.foo')
             ->set_type(column::TYPE_INTEGER)
-            ->add_callback(static function(int $value, stdClass $values, int $argument) {
+            ->add_callback(static function (int $value, stdClass $values, int $argument) {
                 return $value - $argument;
             }, 10);
 
@@ -444,7 +441,7 @@ final class column_test extends advanced_testcase {
             ->set_index(1)
             ->add_field('t.foo')
             ->set_type(column::TYPE_INTEGER)
-            ->add_callback(static function(int $value, stdClass $values, $argument, ?string $aggregation): string {
+            ->add_callback(static function (int $value, stdClass $values, $argument, ?string $aggregation): string {
                 // Simple callback to return the given value, and append type of aggregation parameter.
                 return "{$value} " . gettype($aggregation);
             });
@@ -460,10 +457,10 @@ final class column_test extends advanced_testcase {
             ->set_index(1)
             ->add_field('t.foo')
             ->set_type(column::TYPE_TEXT)
-            ->add_callback(static function(string $value): string {
+            ->add_callback(static function (string $value): string {
                 return strrev($value);
             })
-            ->add_callback(static function(string $value): string {
+            ->add_callback(static function (string $value): string {
                 return strtoupper($value);
             });
 
@@ -480,10 +477,10 @@ final class column_test extends advanced_testcase {
             ->set_index(1)
             ->add_field('t.foo')
             ->set_type(column::TYPE_TEXT)
-            ->add_callback(static function(string $value): string {
+            ->add_callback(static function (string $value): string {
                 return strrev($value);
             })
-            ->set_callback(static function(string $value): string {
+            ->set_callback(static function (string $value): string {
                 return strtoupper($value);
             });
 

@@ -31,7 +31,6 @@ use core_reportbuilder\local\models\schedule as model;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class send_schedules extends scheduled_task {
-
     /**
      * Return name of the task
      *
@@ -62,8 +61,12 @@ class send_schedules extends scheduled_task {
             $sendschedule->execute();
 
             // Calculate next send time (set persistent property manually to avoid updating it's user/time modified data).
-            $DB->set_field($schedule::TABLE, 'timenextsend', schedule::calculate_next_send_time($schedule->read()),
-                ['id' => $schedule->get('id')]);
+            $DB->set_field(
+                $schedule::TABLE,
+                'timenextsend',
+                schedule::calculate_next_send_time($schedule->read()),
+                ['id' => $schedule->get('id')],
+            );
         }
     }
 }

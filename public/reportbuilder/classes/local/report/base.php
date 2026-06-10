@@ -35,7 +35,6 @@ use core_reportbuilder\output\report_action;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class base {
-
     /** @var int Custom report type value */
     public const TYPE_CUSTOM_REPORT = 0;
 
@@ -438,7 +437,7 @@ abstract class base {
         $entity = $this->normalise_entity($entityname);
 
         // Retrieve filtered columns from entity, respecting given $include/$exclude parameters.
-        $columns = array_filter($entity->get_columns(), function(column $column) use ($include, $exclude): bool {
+        $columns = array_filter($entity->get_columns(), function (column $column) use ($include, $exclude): bool {
             if (!empty($include)) {
                 return $this->report_element_search($column->get_name(), $include);
             }
@@ -484,9 +483,7 @@ abstract class base {
      * @return column[]
      */
     final public function get_columns(): array {
-        return array_filter($this->columns, static function(column $column): bool {
-            return $column->get_is_available();
-        });
+        return array_filter($this->columns, fn(column $column): bool => $column->get_is_available());
     }
 
     /**
@@ -593,9 +590,7 @@ abstract class base {
      * @return filter[]
      */
     final public function get_conditions(): array {
-        return array_filter($this->conditions, static function(filter $condition): bool {
-            return $condition->get_is_available();
-        });
+        return array_filter($this->conditions, fn(filter $condition): bool => $condition->get_is_available());
     }
 
     /**
@@ -622,7 +617,7 @@ abstract class base {
      * @return filter_base[]
      */
     final public function get_condition_instances(): array {
-        return array_map(static function(filter $condition): filter_base {
+        return array_map(static function (filter $condition): filter_base {
             /** @var filter_base $conditionclass */
             $conditionclass = $condition->get_filter_class();
 
@@ -742,7 +737,7 @@ abstract class base {
         $entity = $this->normalise_entity($entityname);
 
         // Retrieve filtered filters from entity, respecting given $include/$exclude parameters.
-        $filters = array_filter($entity->get_filters(), function(filter $filter) use ($include, $exclude): bool {
+        $filters = array_filter($entity->get_filters(), function (filter $filter) use ($include, $exclude): bool {
             if (!empty($include)) {
                 return $this->report_element_search($filter->get_name(), $include);
             }
@@ -788,9 +783,7 @@ abstract class base {
      * @return filter[]
      */
     final public function get_filters(): array {
-        return array_filter($this->filters, static function(filter $filter): bool {
-            return $filter->get_is_available();
-        });
+        return array_filter($this->filters, fn(filter $filter): bool => $filter->get_is_available());
     }
 
     /**
@@ -816,7 +809,7 @@ abstract class base {
      * @return filter_base[]
      */
     final public function get_filter_instances(): array {
-        return array_map(static function(filter $filter): filter_base {
+        return array_map(static function (filter $filter): filter_base {
             /** @var filter_base $filterclass */
             $filterclass = $filter->get_filter_class();
 
@@ -851,9 +844,11 @@ abstract class base {
      */
     final public function get_applied_filter_count(): int {
         $values = $this->get_filter_values();
-        $applied = array_filter($this->get_filter_instances(), static function(filter_base $filter) use ($values): bool {
-            return $filter->applies_to_values($values);
-        });
+
+        $applied = array_filter(
+            $this->get_filter_instances(),
+            fn(filter_base $filter): bool => $filter->applies_to_values($values),
+        );
 
         return count($applied);
     }

@@ -31,7 +31,6 @@ use core_reportbuilder\exception\source_invalid_exception;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class system_report_factory {
-
     /**
      * Create and return instance of given system report source
      *
@@ -44,8 +43,14 @@ class system_report_factory {
      * @return system_report
      * @throws source_invalid_exception
      */
-    public static function create(string $source, context $context, string $component = '', string $area = '',
-            int $itemid = 0, array $parameters = []): system_report {
+    public static function create(
+        string $source,
+        context $context,
+        string $component = '',
+        string $area = '',
+        int $itemid = 0,
+        array $parameters = [],
+    ): system_report {
 
         // Exit early if source isn't a system report.
         if (!manager::report_source_exists($source, system_report::class)) {
@@ -67,8 +72,13 @@ class system_report_factory {
      * @param int $itemid
      * @return report
      */
-    private static function get_report_persistent(string $source, context $context, string $component = '', string $area = '',
-            int $itemid = 0): report {
+    private static function get_report_persistent(
+        string $source,
+        context $context,
+        string $component = '',
+        string $area = '',
+        int $itemid = 0,
+    ): report {
 
         $reportdata = [
             'type' => base::TYPE_SYSTEM_REPORT,

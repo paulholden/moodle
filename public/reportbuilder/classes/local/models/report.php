@@ -34,7 +34,6 @@ use core_reportbuilder\local\report\base;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report extends persistent {
-
     /** @var string The table name. */
     public const TABLE = 'reportbuilder_report';
 
@@ -76,9 +75,9 @@ class report extends persistent {
             ],
             'contextid' => [
                 'type' => PARAM_INT,
-                'default' => static function(): int {
+                'default' => static function (): int {
                     return context_system::instance()->id;
-                }
+                },
             ],
             'component' => [
                 'type' => PARAM_COMPONENT,
@@ -94,7 +93,7 @@ class report extends persistent {
             ],
             'usercreated' => [
                 'type' => PARAM_INT,
-                'default' => static function(): int {
+                'default' => static function (): int {
                     global $USER;
 
                     return (int) $USER->id;

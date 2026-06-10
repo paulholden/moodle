@@ -35,7 +35,6 @@ use invalid_parameter_exception;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class audience {
-
     /**
      * Return audience instances for a given report. Note that any records pointing to invalid audience types will be excluded
      *
@@ -45,7 +44,7 @@ class audience {
     public static function get_base_records(int $reportid): array {
         $records = audience_model::get_records(['reportid' => $reportid], 'id');
 
-        $instances = array_map(static function(audience_model $audience): ?base {
+        $instances = array_map(static function (audience_model $audience): ?base {
             return base::instance(0, $audience->to_record());
         }, $records);
 
@@ -82,7 +81,6 @@ class audience {
         }
 
         foreach ($reportaudiences as $reportid => $audiences) {
-
             // Generate audience SQL based on those for the current report.
             [$wheres, $params] = self::user_audience_sql($audiences);
             if (count($wheres) === 0) {
@@ -258,7 +256,7 @@ class audience {
         $audiences = $DB->get_fieldset_select(schedule::TABLE, 'audiences', 'reportid = ? AND audiences IS NOT NULL', [$reportid]);
 
         // Reduce JSON encoded audience data of each schedule to an array of audience IDs.
-        $audienceids = array_reduce($audiences, static function(array $carry, string $audience): array {
+        $audienceids = array_reduce($audiences, static function (array $carry, string $audience): array {
             return array_merge($carry, (array) json_decode($audience));
         }, []);
 

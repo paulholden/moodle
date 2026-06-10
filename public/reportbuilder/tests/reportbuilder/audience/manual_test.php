@@ -23,8 +23,6 @@ use context_system;
 use core_reportbuilder_generator;
 use core_user\reportbuilder\datasource\users;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Unit tests for manual report audience type
  *
@@ -34,7 +32,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class manual_test extends advanced_testcase {
-
     /**
      * Test that this audience type description is generated correctly
      */
@@ -55,8 +52,10 @@ final class manual_test extends advanced_testcase {
 
         $canviewfullnames = has_capability('moodle/site:viewfullnames', context_system::instance());
         $audience = manual::create($report->get('id'), ['users' => [$user1->id, $user2->id]]);
-        $this->assertEquals(implode(', ', [fullname($user1, $canviewfullnames), fullname($user2, $canviewfullnames)]),
-            $audience->get_description());
+        $this->assertEquals(
+            implode(', ', [fullname($user1, $canviewfullnames), fullname($user2, $canviewfullnames)]),
+            $audience->get_description(),
+        );
     }
 
     /**

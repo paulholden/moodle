@@ -36,7 +36,6 @@ use stdClass;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class manager_test extends core_reportbuilder_testcase {
-
     /**
      * Test creating a report instance from persistent
      */
@@ -201,7 +200,7 @@ final class manager_test extends core_reportbuilder_testcase {
         /** @var core_reportbuilder_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
         for ($i = 1; $i <= $existingreports; $i++) {
-            $generator->create_report(['name' => 'Limited report '.$i, 'source' => users::class]);
+            $generator->create_report(['name' => 'Limited report ' . $i, 'source' => users::class]);
         }
 
         // Set current custom report limit, and check whether the limit has been reached.

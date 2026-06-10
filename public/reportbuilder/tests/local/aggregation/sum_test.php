@@ -35,7 +35,6 @@ use stdClass;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class sum_test extends core_reportbuilder_testcase {
-
     /**
      * Test aggregation when applied to column
      */
@@ -120,7 +119,7 @@ final class sum_test extends core_reportbuilder_testcase {
         $instance = manager::get_report_from_persistent($report);
         $instance->get_column('user:suspended')
             ->set_type($columntype)
-            ->set_callback(static function(int|float $value, stdClass $row, $arguments, ?string $aggregation): string {
+            ->set_callback(static function (int|float $value, stdClass $row, $arguments, ?string $aggregation): string {
                 // Simple callback to return the given value, and append aggregation type.
                 return var_export($value, true) . " ({$aggregation})";
             });

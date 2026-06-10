@@ -33,7 +33,6 @@ use core_reportbuilder\local\report\base;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class permission {
-
     /**
      * Require given user can view reports list
      *

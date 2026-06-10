@@ -32,7 +32,6 @@ use core_user\reportbuilder\datasource\users;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class custom_report_details_exporter_test extends advanced_testcase {
-
     /**
      * Test exported data structure
      */

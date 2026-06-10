@@ -32,7 +32,6 @@ use core_reportbuilder\local\models\filter as filter_model;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class base {
-
     /** @var filter $filter */
     protected $filter;
 

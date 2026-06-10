@@ -33,7 +33,6 @@ use core_reportbuilder\local\models\report;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_name_editable extends inplace_editable {
-
     /**
      * Class constructor
      *
@@ -54,8 +53,15 @@ class report_name_editable extends inplace_editable {
 
         $displayvalue = html_writer::link($url, $report->get_formatted_name());
 
-        parent::__construct('core_reportbuilder', 'reportname', $report->get('id'), $editable, $displayvalue, $report->get('name'),
-            get_string('editreportname', 'core_reportbuilder'));
+        parent::__construct(
+            'core_reportbuilder',
+            'reportname',
+            $report->get('id'),
+            $editable,
+            $displayvalue,
+            $report->get('name'),
+            get_string('editreportname', 'core_reportbuilder'),
+        );
     }
 
     /**

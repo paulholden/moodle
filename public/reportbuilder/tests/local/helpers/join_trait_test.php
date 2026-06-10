@@ -39,7 +39,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class join_trait_test extends advanced_testcase {
-
     /**
      * Test adding single join
      */

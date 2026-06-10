@@ -209,7 +209,7 @@ class schedule {
             $table->download,
             $exportclass->format_data($table->headers),
             $table->rawdata,
-            static function(stdClass $record, bool $supportshtml) use ($table, $exportclass): array {
+            static function (stdClass $record, bool $supportshtml) use ($table, $exportclass): array {
                 $record = $table->format_row($record);
                 if (!$supportshtml) {
                     $record = $exportclass->format_data($record);
@@ -290,10 +290,10 @@ class schedule {
         switch ($recurrence) {
             case model::RECURRENCE_HOURLY:
                 $hour += 1;
-            break;
+                break;
             case model::RECURRENCE_DAILY:
                 $day += 1;
-            break;
+                break;
             case model::RECURRENCE_WEEKDAYS:
                 $day += 1;
 
@@ -304,16 +304,16 @@ class schedule {
                 while ((bool) ($weekend & (1 << (++$dayofweek % $calendar->get_num_weekdays())))) {
                     $day++;
                 }
-            break;
+                break;
             case model::RECURRENCE_WEEKLY:
                 $day += 7;
-            break;
+                break;
             case model::RECURRENCE_MONTHLY:
                 $month += 1;
-            break;
+                break;
             case model::RECURRENCE_ANNUALLY:
                 $year += 1;
-            break;
+                break;
             default:
                 throw new coding_exception('Invalid recurrence value', $recurrence);
             break;
@@ -389,7 +389,7 @@ class schedule {
     public static function get_format_options(): array {
         $dataformats = dataformat::get_enabled_plugins();
 
-        return array_map(static function(string $pluginname): string {
+        return array_map(static function (string $pluginname): string {
             return get_string('dataformat', 'dataformat_' . $pluginname);
         }, $dataformats);
     }

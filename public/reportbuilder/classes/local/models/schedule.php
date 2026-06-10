@@ -33,7 +33,6 @@ use core\persistent;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class schedule extends persistent {
-
     /** @var string Table name */
     public const TABLE = 'reportbuilder_schedule';
 
@@ -129,7 +128,7 @@ class schedule extends persistent {
             ],
             'usercreated' => [
                 'type' => PARAM_INT,
-                'default' => static function(): int {
+                'default' => static function (): int {
                     global $USER;
                     return (int) $USER->id;
                 },

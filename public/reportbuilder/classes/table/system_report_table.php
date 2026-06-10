@@ -20,13 +20,14 @@ namespace core_reportbuilder\table;
 
 use action_menu;
 use action_menu_filler;
+use action_menu_link;
 use core_table\local\filter\filterset;
 use html_writer;
 use moodle_exception;
 use stdClass;
 use core_reportbuilder\{manager, system_report};
 use core_reportbuilder\local\models\report;
-use core_reportbuilder\local\report\column;
+use core_reportbuilder\local\report\{action, column};
 
 /**
  * System report dynamic table class
@@ -36,7 +37,6 @@ use core_reportbuilder\local\report\column;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class system_report_table extends base_report_table {
-
     /** @var system_report $report */
     protected $report;
 
@@ -98,8 +98,10 @@ class system_report_table extends base_report_table {
         // Retrieve all report columns. If we are downloading the report, remove as required.
         $columns = $this->report->get_active_columns();
         if ($this->is_downloading()) {
-            $columns = array_diff_key($columns,
-                array_flip($this->report->get_exclude_columns_for_download()));
+            $columns = array_diff_key(
+                $columns,
+                array_flip($this->report->get_exclude_columns_for_download()),
+            );
         }
 
         // If we are aggregating any columns, we should group by the remaining ones.
@@ -226,7 +228,7 @@ class system_report_table extends base_report_table {
         // Walk over the row, and for any key that matches one of our column aliases, call that columns format method.
         $columnsbyalias = $this->report->get_active_columns_by_alias();
         $row = (array) $row;
-        array_walk($row, static function(&$value, $key) use ($columnsbyalias, $row): void {
+        array_walk($row, static function (&$value, $key) use ($columnsbyalias, $row): void {
             if (array_key_exists($key, $columnsbyalias)) {
                 $value = $columnsbyalias[$key]->format_value($row);
             }
@@ -257,9 +259,9 @@ class system_report_table extends base_report_table {
         $menu = new action_menu();
         $menu->set_kebab_trigger(get_string('actions', 'core_reportbuilder'));
 
-        $actions = array_filter($this->report->get_actions(), function($action) use ($row) {
+        $actions = array_filter($this->report->get_actions(), static function (action_menu_filler|action $action) use ($row): bool {
             // Only return dividers and action items who can be displayed for current users.
-            return $action instanceof action_menu_filler || $action->get_action_link($row);
+            return $action instanceof action_menu_filler || $action->get_action_link($row) instanceof action_menu_link;
         });
 
         $totalactions = count($actions);

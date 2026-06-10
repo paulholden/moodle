@@ -36,7 +36,6 @@ use renderer_base;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class system_report_exporter extends persistent_exporter {
-
     /**
      * Return the name of the class we are exporting
      *
@@ -78,7 +77,7 @@ class system_report_exporter extends persistent_exporter {
             'attributes' => [
                 'type' => [
                     'name' => ['type' => PARAM_TEXT],
-                    'value' => ['type' => PARAM_TEXT]
+                    'value' => ['type' => PARAM_TEXT],
                 ],
                 'multiple' => true,
             ],
@@ -135,7 +134,7 @@ class system_report_exporter extends persistent_exporter {
             $classes = $sourceattributes['class'];
             unset($sourceattributes['class']);
         }
-        $attributes = array_map(static function($key, $value): array {
+        $attributes = array_map(static function ($key, $value): array {
             return ['name' => $key, 'value' => $value];
         }, array_keys($sourceattributes), $sourceattributes);
 

@@ -38,7 +38,6 @@ use moodle_url;
  * }
  */
 class report_created extends base {
-
     /**
      * Initialise the event data.
      */
@@ -61,7 +60,7 @@ class report_created extends base {
             'other' => [
                 'name'     => $report->get('name'),
                 'source'   => $report->get('source'),
-            ]
+            ],
         ];
         $event = self::create($eventparams);
         $event->add_record_snapshot($event->objecttable, $report->to_record());

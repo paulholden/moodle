@@ -31,7 +31,6 @@ use core_reportbuilder\local\report\column;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class date extends base {
-
     /**
      * Return aggregation name
      *

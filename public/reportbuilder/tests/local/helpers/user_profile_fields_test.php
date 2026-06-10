@@ -34,7 +34,6 @@ use core_user\reportbuilder\datasource\users;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class user_profile_fields_test extends core_reportbuilder_testcase {
-
     /**
      * Generate custom profile fields, one of each type
      *

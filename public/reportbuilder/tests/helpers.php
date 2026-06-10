@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-declare(strict_types=1);
-
 /**
  * Helper base class for reportbuilder unit tests
  *
@@ -24,5 +22,7 @@ declare(strict_types=1);
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @deprecated  since Moodle 5.0 - please use {@see \core_reportbuilder\tests\core_reportbuilder_testcase} instead
  */
+
+declare(strict_types=1);
 
 class_alias(\core_reportbuilder\tests\core_reportbuilder_testcase::class, \core_reportbuilder_testcase::class);

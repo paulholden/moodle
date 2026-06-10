@@ -32,7 +32,6 @@ use core_reportbuilder\output\filter_heading_editable;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_report_filters_exporter extends exporter {
-
     /**
      * Return a list of objects that are related to the exporter
      *
@@ -102,16 +101,15 @@ class custom_report_filters_exporter extends exporter {
         $report = $this->related['report'];
 
         // Current filter instances contained in the report.
-        $filters = $report->get_active_filters();
-        $filteridentifiers = array_map(static function(filter $filter): string {
-            return $filter->get_unique_identifier();
-        }, $filters);
+        $filteridentifiers = array_map(
+            fn(filter $filter): string => $filter->get_unique_identifier(),
+            $report->get_active_filters(),
+        );
 
         $availablefilters = $activefilters = [];
 
         // Populate available filters.
         foreach ($report->get_filters() as $filter) {
-
             // Filters can only be added once per report, skip if it already exists.
             if (in_array($filter->get_unique_identifier(), $filteridentifiers) || $filter->get_is_deprecated()) {
                 continue;

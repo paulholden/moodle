@@ -35,7 +35,6 @@ use core_reportbuilder\exception\report_access_exception;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class base {
-
     /** @var int Maximim number of multi-select elements to show in description, before appending "plus X more" */
     private const MULTI_SELECT_LIMIT = 5;
 

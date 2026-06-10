@@ -96,8 +96,12 @@ final class get_test extends \core_external\tests\externallib_testcase {
         $report = $generator->create_report(['name' => 'My report', 'source' => users::class, 'default' => false]);
 
         $instance = manager::get_report_from_persistent($report);
-        $instance->set_report_action(new report_action('Add', ['class' => 'btn', 'data-action' => 'action'], 'button',
-            new pix_icon('t/add', 'Add')));
+        $instance->set_report_action(new report_action(
+            'Add',
+            ['class' => 'btn', 'data-action' => 'action'],
+            'button',
+            new pix_icon('t/add', 'Add'),
+        ));
         $instance->set_report_info_container('Hello');
 
         // Add two filters.

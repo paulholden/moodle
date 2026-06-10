@@ -34,7 +34,6 @@ use moodle_exception;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class send_schedule extends adhoc_task {
-
     use \core\task\logging_trait;
 
     /**

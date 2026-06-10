@@ -32,7 +32,6 @@ use core_reportbuilder\local\helpers\database;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class duration extends base {
-
     /** @var int Any value */
     public const DURATION_ANY = 0;
 

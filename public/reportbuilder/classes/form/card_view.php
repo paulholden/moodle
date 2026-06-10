@@ -34,7 +34,6 @@ use core_reportbuilder\local\models\report;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class card_view extends dynamic_form {
-
     /**
      * Return instance of the report using the card view form
      *
@@ -72,9 +71,9 @@ class card_view extends dynamic_form {
         $values = $this->get_data();
 
         $settings = [
-            'cardview_showfirsttitle' => (int)$values->showfirsttitle,
+            'cardview_showfirsttitle' => (int) $values->showfirsttitle,
             // Minimum value for 'cardview_visiblecolumns' should be 1.
-            'cardview_visiblecolumns' => max((int)$values->visiblecolumns, 1)
+            'cardview_visiblecolumns' => max((int) $values->visiblecolumns, 1),
         ];
         return $this->get_report()->set_settings_values($settings);
     }
@@ -116,8 +115,12 @@ class card_view extends dynamic_form {
 
         // Generate select options from 1 to report total number of columns.
         $visiblecolumns = range(1, max(count($report->get_active_columns()), 1));
-        $mform->addElement('select', 'visiblecolumns', get_string('cardviewvisiblecolumns', 'core_reportbuilder'),
-            array_combine($visiblecolumns, $visiblecolumns));
+        $mform->addElement(
+            'select',
+            'visiblecolumns',
+            get_string('cardviewvisiblecolumns', 'core_reportbuilder'),
+            array_combine($visiblecolumns, $visiblecolumns),
+        );
         $mform->setType('visiblecolumns', PARAM_INT);
 
         $mform->addElement('selectyesno', 'showfirsttitle', get_string('cardviewfirstcolumntitle', 'core_reportbuilder'));

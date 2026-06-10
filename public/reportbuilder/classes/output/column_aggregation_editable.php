@@ -33,7 +33,6 @@ use core_reportbuilder\local\models\column;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class column_aggregation_editable extends inplace_editable {
-
     /**
      * Class constructor
      *
@@ -54,12 +53,22 @@ class column_aggregation_editable extends inplace_editable {
         $currentvalue = (string) $column->get('aggregation');
 
         $editlabel = get_string('aggregatecolumn', 'core_reportbuilder', $columninstance->get_title());
-        parent::__construct('core_reportbuilder', 'columnaggregation', $column->get('id'), $editable, null, $currentvalue,
-            $editlabel, $editlabel);
+        parent::__construct(
+            'core_reportbuilder',
+            'columnaggregation',
+            $column->get('id'),
+            $editable,
+            null,
+            $currentvalue,
+            $editlabel,
+            $editlabel,
+        );
 
         // List of available aggregation methods for the column type, minus any specifically disabled.
-        $options = aggregation::get_column_aggregations($columninstance->get_type(),
-            $columninstance->get_disabled_aggregation());
+        $options = aggregation::get_column_aggregations(
+            $columninstance->get_type(),
+            $columninstance->get_disabled_aggregation(),
+        );
 
         $this->set_type_select(['' => get_string('aggregationnone', 'core_reportbuilder')] + $options);
     }

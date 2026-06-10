@@ -49,7 +49,6 @@ use core_reportbuilder\local\report\filter;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class user extends base {
-
     /** @var user_profile_fields $userprofilefields */
     private user_profile_fields $userprofilefields;
 
@@ -184,7 +183,7 @@ class user extends base {
             ->add_joins($this->get_joins())
             ->add_fields($fullnameselect)
             ->set_is_sortable(true, $fullnamesort)
-            ->add_callback(static function($value, stdClass $row) use ($viewfullnames): string {
+            ->add_callback(static function ($value, stdClass $row) use ($viewfullnames): string {
 
                 // Ensure we have at least one field present.
                 if (count(array_filter((array) $row, fn($field) => $field !== null)) === 0) {
@@ -216,7 +215,7 @@ class user extends base {
                 ->add_fields($fullnameselect)
                 ->add_field("{$usertablealias}.id")
                 ->set_is_sortable(true, $fullnamesort)
-                ->add_callback(static function($value, stdClass $row) use ($fullnamefield, $viewfullnames): string {
+                ->add_callback(static function ($value, stdClass $row) use ($fullnamefield, $viewfullnames): string {
                     global $OUTPUT;
 
                     // Ensure we have at least one field present.
@@ -231,17 +230,21 @@ class user extends base {
                     }
 
                     if ($fullnamefield === 'fullnamewithlink') {
-                        return html_writer::link(new moodle_url('/user/profile.php', ['id' => $row->id]),
-                            fullname($row, $viewfullnames));
+                        return html_writer::link(
+                            new moodle_url('/user/profile.php', ['id' => $row->id]),
+                            fullname($row, $viewfullnames),
+                        );
                     }
                     if ($fullnamefield === 'fullnamewithpicture') {
                         return $OUTPUT->user_picture($row, ['link' => false, 'alttext' => false]) .
                             fullname($row, $viewfullnames);
                     }
                     if ($fullnamefield === 'fullnamewithpicturelink') {
-                        return html_writer::link(new moodle_url('/user/profile.php', ['id' => $row->id]),
+                        return html_writer::link(
+                            new moodle_url('/user/profile.php', ['id' => $row->id]),
                             $OUTPUT->user_picture($row, ['link' => false, 'alttext' => false]) .
-                            fullname($row, $viewfullnames));
+                            fullname($row, $viewfullnames),
+                        );
                     }
 
                     return (string) $value;
@@ -263,7 +266,7 @@ class user extends base {
         ))
             ->add_joins($this->get_joins())
             ->add_fields($userpictureselect)
-            ->add_callback(static function($value, stdClass $row): string {
+            ->add_callback(static function ($value, stdClass $row): string {
                 global $OUTPUT;
 
                 return !empty($row->id) ? $OUTPUT->user_picture($row, ['link' => false, 'alttext' => false]) : '';
@@ -362,7 +365,7 @@ class user extends base {
         // Extract any name fields from the fullname format in the order that they appear.
         $matchednames = array_values(order_in_string($namefields, $dummyfullname));
 
-        $userfields = array_map(static function(string $userfield) use ($usertablealias): string {
+        $userfields = array_map(static function (string $userfield) use ($usertablealias): string {
             if (!empty($usertablealias)) {
                 $userfield = "{$usertablealias}.{$userfield}";
             }

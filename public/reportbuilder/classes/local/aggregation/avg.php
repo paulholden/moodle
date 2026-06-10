@@ -29,7 +29,6 @@ use core_reportbuilder\local\report\column;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class avg extends base {
-
     /**
      * Return aggregation name
      *

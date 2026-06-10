@@ -45,7 +45,6 @@ use core_tag_tag;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class reports_list extends system_report {
-
     /**
      * The name of our internal report entity
      *
@@ -73,18 +72,15 @@ class reports_list extends system_report {
         $entityuser = new user();
         $entityuseralias = $entityuser->get_table_alias('user');
         $this->add_entity($entityuser
-            ->add_join("JOIN {user} {$entityuseralias} ON {$entityuseralias}.id = rb.usermodified")
-        );
+            ->add_join("JOIN {user} {$entityuseralias} ON {$entityuseralias}.id = rb.usermodified"));
 
         // Join tag entity.
         $entitytag = new tag();
         $this->add_entity($entitytag
-            ->add_joins($entitytag->get_tag_joins('core_reportbuilder', 'reportbuilder_report', 'rb.id'))
-        );
+            ->add_joins($entitytag->get_tag_joins('core_reportbuilder', 'reportbuilder_report', 'rb.id')));
 
         // Define our internal entity for report elements.
-        $this->annotate_entity($this->get_report_entity_name(),
-            new lang_string('customreports', 'core_reportbuilder'));
+        $this->annotate_entity($this->get_report_entity_name(), new lang_string('customreports', 'core_reportbuilder'));
 
         $this->add_columns();
         $this->add_filters();
@@ -134,13 +130,12 @@ class reports_list extends system_report {
                 "{$tablealias}.usercreated",
             ]))
             ->set_is_sortable(true, ["{$tablealias}.name"])
-            ->add_callback(static function(string $value, stdClass $report): string {
+            ->add_callback(static function (string $value, stdClass $report): string {
                 global $PAGE;
 
                 $editable = new report_name_editable(0, new report(0, $report));
                 return $editable->render($PAGE->get_renderer('core'));
-            })
-        );
+            }));
 
         // Report source column.
         $this->add_column((new column(
@@ -151,15 +146,14 @@ class reports_list extends system_report {
             ->set_type(column::TYPE_TEXT)
             ->add_fields("{$tablealias}.source")
             ->set_is_sortable(true)
-            ->add_callback(function(string $value, stdClass $row) {
+            ->add_callback(function (string $value, stdClass $row) {
                 if (!$this->report_source_valid($value)) {
                     // Add danger badge if report source is not valid (either it's missing, or has errors).
                     return html_writer::span(get_string('errorsourceinvalid', 'core_reportbuilder'), 'badge bg-danger text-white');
                 }
 
                 return call_user_func([$value, 'get_name']);
-            })
-        );
+            }));
 
         // Tags column.
         $this->add_column_from_entity('tag:namewithbadge')
@@ -176,8 +170,7 @@ class reports_list extends system_report {
             ->set_type(column::TYPE_TIMESTAMP)
             ->add_fields("{$tablealias}.timecreated")
             ->set_is_sortable(true)
-            ->add_callback([format::class, 'userdate'])
-        );
+            ->add_callback([format::class, 'userdate']));
 
         // Time modified column.
         $this->add_column((new column(
@@ -188,8 +181,7 @@ class reports_list extends system_report {
             ->set_type(column::TYPE_TIMESTAMP)
             ->add_fields("{$tablealias}.timemodified")
             ->set_is_sortable(true)
-            ->add_callback([format::class, 'userdate'])
-        );
+            ->add_callback([format::class, 'userdate']));
 
         // The user who modified the report.
         $this->add_column_from_entity('user:fullname')
@@ -222,10 +214,9 @@ class reports_list extends system_report {
             $this->get_report_entity_name(),
             "{$tablealias}.source"
         ))
-            ->set_options_callback(static function(): array {
+            ->set_options_callback(static function (): array {
                 return manager::get_report_datasources();
-            })
-        );
+            }));
 
         // Schedules filter.
         $this->add_filter((new filter(
@@ -248,8 +239,7 @@ class reports_list extends system_report {
                 'component' => 'core_reportbuilder',
                 'itemtype' => 'reportbuilder_report',
             ])
-            ->set_is_available(core_tag_tag::is_enabled('core_reportbuilder', 'reportbuilder_report') === true)
-        );
+            ->set_is_available(core_tag_tag::is_enabled('core_reportbuilder', 'reportbuilder_report') === true));
 
         // Time created filter.
         $this->add_filter((new filter(
@@ -265,8 +255,7 @@ class reports_list extends system_report {
                 date::DATE_BEFORE,
                 date::DATE_LAST,
                 date::DATE_CURRENT,
-            ])
-        );
+            ]));
 
         // Time modified filter.
         $this->add_filter((new filter(
@@ -282,8 +271,7 @@ class reports_list extends system_report {
                 date::DATE_BEFORE,
                 date::DATE_LAST,
                 date::DATE_CURRENT,
-            ])
-        );
+            ]));
 
         // User modified filter.
         $this->add_filter_from_entity('user:userselect')
@@ -314,10 +302,9 @@ class reports_list extends system_report {
             false,
             new lang_string('editreportcontent', 'core_reportbuilder')
         ))
-            ->add_callback(function(stdClass $row): bool {
+            ->add_callback(function (stdClass $row): bool {
                 return $this->report_source_valid($row->source) && permission::can_edit_report(new report(0, $row));
-            })
-        );
+            }));
 
         // Edit details action.
         $this->add_action((new action(
@@ -327,10 +314,9 @@ class reports_list extends system_report {
             false,
             new lang_string('editreportdetails', 'core_reportbuilder')
         ))
-            ->add_callback(function(stdClass $row): bool {
+            ->add_callback(function (stdClass $row): bool {
                 return $this->report_source_valid($row->source) && permission::can_edit_report(new report(0, $row));
-            })
-        );
+            }));
 
         // Preview action.
         $this->add_action((new action(
@@ -340,11 +326,10 @@ class reports_list extends system_report {
             false,
             new lang_string('viewreport', 'core_reportbuilder')
         ))
-            ->add_callback(function(stdClass $row): bool {
+            ->add_callback(function (stdClass $row): bool {
                 // We check this only to give the action to editors, because normal users can just click on the report name.
                 return $this->report_source_valid($row->source) && permission::can_edit_report(new report(0, $row));
-            })
-        );
+            }));
 
         // Duplicate action.
         $this->add_action((new action(
@@ -354,15 +339,14 @@ class reports_list extends system_report {
             false,
             new lang_string('duplicatereport', 'core_reportbuilder')
         ))
-            ->add_callback(function(stdClass $row): bool {
+            ->add_callback(function (stdClass $row): bool {
 
                 // Ensure data name attribute is properly formatted.
                 $report = new report(0, $row);
                 $row->name = $report->get_formatted_name();
 
                 return $this->report_source_valid($row->source) && permission::can_duplicate_report($report);
-            })
-        );
+            }));
 
         // Delete action.
         $this->add_action((new action(
@@ -377,7 +361,7 @@ class reports_list extends system_report {
             false,
             new lang_string('deletereport', 'core_reportbuilder')
         ))
-            ->add_callback(function(stdClass $row): bool {
+            ->add_callback(function (stdClass $row): bool {
 
                 // Ensure data name attribute is properly formatted.
                 $report = new report(0, $row);
@@ -385,8 +369,7 @@ class reports_list extends system_report {
 
                 // We don't check whether report is valid to ensure editor can always delete them.
                 return permission::can_edit_report($report);
-            })
-        );
+            }));
     }
 
     /**

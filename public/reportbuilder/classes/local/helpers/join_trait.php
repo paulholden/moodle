@@ -26,7 +26,6 @@ namespace core_reportbuilder\local\helpers;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 trait join_trait {
-
     /** @var string[] SQL table joins */
     private array $joins = [];
 

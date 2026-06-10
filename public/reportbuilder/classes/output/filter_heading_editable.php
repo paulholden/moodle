@@ -32,7 +32,6 @@ use core_reportbuilder\local\models\filter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class filter_heading_editable extends inplace_editable {
-
     /**
      * Class constructor
      *
@@ -57,8 +56,15 @@ class filter_heading_editable extends inplace_editable {
             $displayvalue = $value = $filterinstance->get_header();
         }
 
-        parent::__construct('core_reportbuilder', 'filterheading', $filter->get('id'), $editable, $displayvalue, $value,
-            get_string('renamefilter', 'core_reportbuilder', $filterinstance->get_header()));
+        parent::__construct(
+            'core_reportbuilder',
+            'filterheading',
+            $filter->get('id'),
+            $editable,
+            $displayvalue,
+            $value,
+            get_string('renamefilter', 'core_reportbuilder', $filterinstance->get_header()),
+        );
     }
 
     /**

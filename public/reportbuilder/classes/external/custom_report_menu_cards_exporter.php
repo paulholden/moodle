@@ -28,7 +28,6 @@ use core\external\exporter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class custom_report_menu_cards_exporter extends exporter {
-
     /**
      * Return the list of additional properties for read structure and export
      *

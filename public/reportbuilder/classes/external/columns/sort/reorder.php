@@ -35,7 +35,6 @@ use core_reportbuilder\external\custom_report_columns_sorting_exporter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class reorder extends external_api {
-
     /**
      * External method parameters
      *

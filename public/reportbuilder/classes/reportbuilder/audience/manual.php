@@ -32,24 +32,20 @@ use MoodleQuickForm;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class manual extends base {
-
     /**
      * Adds audience's elements to the given mform
      *
      * @param MoodleQuickForm $mform The form to add elements to
      */
     public function get_config_form(MoodleQuickForm $mform): void {
-        // Users selector.
-        $options = [
+        $mform->addElement('autocomplete', 'users', get_string('addusers', 'core_reportbuilder'), [], [
             'ajax' => 'core_user/form_user_selector',
             'multiple' => true,
-            'valuehtmlcallback' => function($userid) {
+            'valuehtmlcallback' => static function ($userid): string {
                 $user = core_user::get_user($userid);
                 return fullname($user, has_capability('moodle/site:viewfullnames', context_system::instance()));
-            }
-        ];
-
-        $mform->addElement('autocomplete', 'users', get_string('addusers', 'core_reportbuilder'), [], $options);
+            },
+        ]);
         $mform->addRule('users', null, 'required', null, 'client');
     }
 

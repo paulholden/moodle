@@ -42,7 +42,6 @@ require_once("$CFG->libdir/formslib.php");
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report extends dynamic_form {
-
     /**
      * Return instance of the custom report we are editing, or null when creating a new report
      *
@@ -106,8 +105,12 @@ class report extends dynamic_form {
         // Allow user to select report source if creating a new report.
         if (!$this->get_custom_report()) {
             $default = ['' => ['' => get_string('selectareportsource', 'core_reportbuilder')]];
-            $mform->addElement('selectgroups', 'source', get_string('reportsource', 'core_reportbuilder'),
-                array_merge($default, manager::get_report_datasources()));
+            $mform->addElement(
+                'selectgroups',
+                'source',
+                get_string('reportsource', 'core_reportbuilder'),
+                array_merge($default, manager::get_report_datasources()),
+            );
             $mform->addRule('source', null, 'required', null, 'client');
             $mform->addHelpButton('source', 'reportsource', 'core_reportbuilder');
 

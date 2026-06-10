@@ -34,7 +34,6 @@ use core_reportbuilder\exception\{source_invalid_exception, source_unavailable_e
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class manager {
-
     /** @var base $instances */
     private static $instances = [];
 
@@ -132,12 +131,11 @@ class manager {
      * @return array[][] Indexed by [component => [class => name]]
      */
     public static function get_report_datasources(): array {
-        $sources = array();
+        $sources = [];
 
         $datasources = core_component::get_component_classes_in_namespace(null, 'reportbuilder\\datasource');
         foreach ($datasources as $class => $path) {
             if (self::report_source_exists($class, datasource::class) && self::report_source_available($class)) {
-
                 // Group each report source by the component that it belongs to.
                 [$component] = explode('\\', $class);
                 if ($plugininfo = core_plugin_manager::instance()->get_plugin_info($component)) {
@@ -151,7 +149,7 @@ class manager {
         }
 
         // Order source for each component alphabetically.
-        array_walk($sources, static function(array &$componentsources): void {
+        array_walk($sources, static function (array &$componentsources): void {
             core_collator::asort($componentsources);
         });
 

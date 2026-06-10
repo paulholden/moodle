@@ -44,7 +44,6 @@ class provider implements
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\plugin\provider,
     core_userlist_provider {
-
     /**
      * Returns metadata about the component
      *
@@ -316,7 +315,7 @@ class provider implements
      * @param user_filter[] $userfilters
      */
     protected static function export_user_filters(context $context, array $subcontext, array $userfilters): void {
-        $userfilterdata = array_map(static function(user_filter $userfilter): stdClass {
+        $userfilterdata = array_map(static function (user_filter $userfilter): stdClass {
             return (object) [
                 'filterdata' => $userfilter->get('filterdata'),
                 'timecreated' => transform::datetime($userfilter->get('timecreated')),
@@ -335,7 +334,7 @@ class provider implements
      * @param audience[] $audiences
      */
     protected static function export_audiences(context $context, array $subcontext, array $audiences): void {
-        $audiencedata = array_map(static function(audience $audience) use ($context): stdClass {
+        $audiencedata = array_map(static function (audience $audience) use ($context): stdClass {
             // Show the audience name, if it exists.
             $classname = $audience->get('classname');
             if (class_exists($classname)) {

@@ -35,7 +35,6 @@ use core_reportbuilder\external\{custom_report_data_exporter, custom_report_deta
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class retrieve extends external_api {
-
     /**
      * External method parameters
      *

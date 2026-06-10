@@ -39,7 +39,6 @@ use core_table\local\filter\integer_filter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_report_exporter extends persistent_exporter {
-
     /** @var report The persistent object we will export. */
     protected $persistent = null;
 
@@ -101,7 +100,7 @@ class custom_report_exporter extends persistent_exporter {
             'attributes' => [
                 'type' => [
                     'name' => ['type' => PARAM_TEXT],
-                    'value' => ['type' => PARAM_TEXT]
+                    'value' => ['type' => PARAM_TEXT],
                 ],
                 'multiple' => true,
             ],
@@ -174,7 +173,7 @@ class custom_report_exporter extends persistent_exporter {
                 $classes = $reportattributes['class'];
                 unset($reportattributes['class']);
             }
-            $attributes = array_map(static function($key, $value): array {
+            $attributes = array_map(static function ($key, $value): array {
                 return ['name' => $key, 'value' => $value];
             }, array_keys($reportattributes), $reportattributes);
         }

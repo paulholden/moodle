@@ -31,7 +31,6 @@ use core_reportbuilder\form\card_view;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_report_card_view_exporter extends exporter {
-
     /**
      * Return a list of objects that are related to the exporter
      *
@@ -70,14 +69,12 @@ class custom_report_card_view_exporter extends exporter {
         $report = $this->related['report'];
 
         $reportid = $report->get_report_persistent()->get('id');
-
         $reportsettings = $report->get_settings_values();
-        $cardviewsettings = [
+
+        $cardviewform = new card_view(ajaxformdata: array_merge(['reportid' => $reportid], [
             'showfirsttitle' => $reportsettings['cardview_showfirsttitle'] ?? 0,
             'visiblecolumns' => $reportsettings['cardview_visiblecolumns'] ?? 1,
-        ];
-        $cardviewform = new card_view(null, null, 'post', '', [], true,
-            array_merge(['reportid' => $reportid], $cardviewsettings));
+        ]));
         $cardviewform->set_data_for_dynamic_submission();
 
         return [

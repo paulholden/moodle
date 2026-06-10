@@ -34,7 +34,6 @@ use core_user\reportbuilder\datasource\users;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class tags_test extends advanced_testcase {
-
     /**
      * Data provider for {@see test_get_sql_filter}
      *

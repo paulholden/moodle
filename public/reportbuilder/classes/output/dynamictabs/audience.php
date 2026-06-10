@@ -34,7 +34,6 @@ use renderer_base;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class audience extends base {
-
     /**
      * Export this for use in a mustache template context.
      *

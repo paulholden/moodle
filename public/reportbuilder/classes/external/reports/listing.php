@@ -39,7 +39,6 @@ use core_reportbuilder\local\models\report;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class listing extends external_api {
-
     /**
      * External method parameters
      *
@@ -86,7 +85,7 @@ class listing extends external_api {
         $output = $PAGE->get_renderer('core');
 
         return [
-            'reports' => array_map(static function(stdClass $report) use ($output): array {
+            'reports' => array_map(static function (stdClass $report) use ($output): array {
                 $exporter = new custom_report_details_exporter(new report(0, $report));
                 return (array) $exporter->export($output);
             }, $reports),

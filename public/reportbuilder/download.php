@@ -45,8 +45,14 @@ if ($reportpersistent->get('type') === \core_reportbuilder\local\report\base::TY
     $parameters = (array) json_decode($parameters);
 
     // Re-create the exact report that is being downloaded.
-    $systemreport = system_report_factory::create($reportpersistent->get('source'), $context, $reportpersistent->get('component'),
-        $reportpersistent->get('area'), $reportpersistent->get('itemid'), $parameters);
+    $systemreport = system_report_factory::create(
+        $reportpersistent->get('source'),
+        $context,
+        $reportpersistent->get('component'),
+        $reportpersistent->get('area'),
+        $reportpersistent->get('itemid'),
+        $parameters,
+    );
 
     if (!$systemreport->can_be_downloaded()) {
         throw new \core_reportbuilder\exception\report_access_exception();

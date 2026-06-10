@@ -33,7 +33,6 @@ use MoodleQuickForm;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class date extends base {
-
     /** @var int Any value */
     public const DATE_ANY = 0;
 
@@ -158,14 +157,22 @@ class date extends base {
             ->setHiddenLabel(true);
 
         // Date selectors for range operator.
-        $mform->addElement('date_time_selector', "{$this->name}_from",
-            get_string('filterfieldfrom', 'core_reportbuilder', $this->get_header()), ['optional' => true]);
+        $mform->addElement(
+            'date_time_selector',
+            "{$this->name}_from",
+            get_string('filterfieldfrom', 'core_reportbuilder', $this->get_header()),
+            ['optional' => true],
+        );
         $mform->setType("{$this->name}_from", PARAM_INT);
         $mform->setDefault("{$this->name}_from", 0);
         $mform->hideIf("{$this->name}_from", "{$this->name}_operator", 'neq', self::DATE_RANGE);
 
-        $mform->addElement('date_time_selector', "{$this->name}_to",
-            get_string('filterfieldto', 'core_reportbuilder', $this->get_header()), ['optional' => true]);
+        $mform->addElement(
+            'date_time_selector',
+            "{$this->name}_to",
+            get_string('filterfieldto', 'core_reportbuilder', $this->get_header()),
+            ['optional' => true],
+        );
         $mform->setType("{$this->name}_to", PARAM_INT);
         $mform->setDefault("{$this->name}_to", 0);
         $mform->hideIf("{$this->name}_to", "{$this->name}_operator", 'neq', self::DATE_RANGE);
@@ -231,7 +238,6 @@ class date extends base {
             case self::DATE_LAST:
             case self::DATE_CURRENT:
             case self::DATE_NEXT:
-
                 // Last and next operators require a unit value greater than zero.
                 if ($operator !== self::DATE_CURRENT && $dateunitvalue === 0) {
                     return ['', []];

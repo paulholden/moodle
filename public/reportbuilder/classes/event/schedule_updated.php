@@ -37,7 +37,6 @@ use moodle_url;
  * }
  */
 class schedule_updated extends base {
-
     /**
      * Initialise the event data.
      */
@@ -59,7 +58,7 @@ class schedule_updated extends base {
             'objectid' => $schedule->get('id'),
             'other' => [
                 'reportid' => $schedule->get('reportid'),
-            ]
+            ],
         ];
         $event = self::create($eventparams);
         $event->add_record_snapshot($event->objecttable, $schedule->to_record());

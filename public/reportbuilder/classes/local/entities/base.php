@@ -31,7 +31,6 @@ use core_reportbuilder\local\report\{column, filter};
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class base {
-
     use join_trait;
 
     /** @var string|null $entityname Internal reference to name of entity */

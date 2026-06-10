@@ -31,7 +31,6 @@ use core_user\reportbuilder\datasource\users;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class date_test extends core_reportbuilder_testcase {
-
     /**
      * Mock the clock
      */

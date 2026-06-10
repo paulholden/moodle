@@ -32,7 +32,6 @@ use core_reportbuilder\local\models\audience;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class audience_heading_editable extends inplace_editable {
-
     /**
      * Class constructor
      *
@@ -56,8 +55,15 @@ class audience_heading_editable extends inplace_editable {
             $displayvalue = $value = $audienceinstance->get_name();
         }
 
-        parent::__construct('core_reportbuilder', 'audienceheading', $audience->get('id'), $editable, $displayvalue, $value,
-            get_string('renameaudience', 'core_reportbuilder', $audienceinstance->get_name()));
+        parent::__construct(
+            'core_reportbuilder',
+            'audienceheading',
+            $audience->get('id'),
+            $editable,
+            $displayvalue,
+            $value,
+            get_string('renameaudience', 'core_reportbuilder', $audienceinstance->get_name()),
+        );
     }
 
     /**

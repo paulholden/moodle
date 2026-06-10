@@ -36,7 +36,6 @@ use stdClass;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class groupconcat_test extends core_reportbuilder_testcase {
-
     /**
      * Test aggregation when applied to column
      */
@@ -164,7 +163,7 @@ final class groupconcat_test extends core_reportbuilder_testcase {
         // Add callback to format the column.
         $instance = manager::get_report_from_persistent($report);
         $instance->get_column('user:confirmed')
-            ->add_callback(static function(string $value, stdClass $row, $arguments, ?string $aggregation): string {
+            ->add_callback(static function (string $value, stdClass $row, $arguments, ?string $aggregation): string {
                 // Simple callback to return the given value, and append aggregation type.
                 return "{$value} ({$aggregation})";
             });

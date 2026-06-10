@@ -33,7 +33,6 @@ use core_reportbuilder\local\report\column;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class groupconcat extends base {
-
     /** @var string Character to use as a delimeter between column fields */
     protected const COLUMN_FIELD_DELIMETER = '<|>';
 
@@ -118,7 +117,6 @@ class groupconcat extends base {
         // Loop over each extracted value from the concatenated string.
         $values = explode(self::FIELD_VALUE_DELIMETER, $concatenation);
         foreach ($values as $value) {
-
             // Ensure we have equal number of value names/data, account for truncation by DB.
             $valuedata = explode(self::COLUMN_FIELD_DELIMETER, $value);
             if ($valuenamescount !== count($valuedata)) {
@@ -126,7 +124,7 @@ class groupconcat extends base {
             }
 
             // Re-construct original values, also ensuring any nulls contained within are restored.
-            $originalvalues = array_map(static function(string $value): ?string {
+            $originalvalues = array_map(static function (string $value): ?string {
                 return $value === self::COLUMN_NULL_COALESCE ? null : $value;
             }, array_combine($valuenames, $valuedata));
 

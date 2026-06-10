@@ -35,7 +35,6 @@ use stdClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_fields {
-
     use join_trait;
 
     /** @var handler $handler The handler for the customfields */
@@ -119,7 +118,6 @@ class custom_fields {
                 // Numeric column (non-text) should coalesce with default, for aggregation.
                 $columntype = $this->get_column_type($field, $datafield);
                 if (!in_array($columntype, [column::TYPE_TEXT, column::TYPE_LONGTEXT])) {
-
                     // See MDL-78783 regarding no bound parameters, and SQL Server limitations of GROUP BY.
                     $customdatasql = "
                         CASE WHEN {$this->tablefieldalias} IS NOT NULL
@@ -147,7 +145,7 @@ class custom_fields {
                     ->add_fields($customdatasqlextra)
                     ->add_field($this->tablefieldalias, 'tablefieldalias')
                     ->set_is_sortable(true)
-                    ->add_callback(static function($value, stdClass $row, field_controller $field, ?string $aggregation): string {
+                    ->add_callback(static function ($value, stdClass $row, field_controller $field, ?string $aggregation): string {
                         if ($row->tablefieldalias === null && $value === null) {
                             return '';
                         }

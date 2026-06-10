@@ -34,7 +34,6 @@ use core_reportbuilder\system_report_factory;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class system_report_exporter_test extends advanced_testcase {
-
     /**
      * Load test fixture
      */
@@ -72,8 +71,11 @@ final class system_report_exporter_test extends advanced_testcase {
         // Prevent debug warnings from flexible_table.
         $PAGE->set_url(new moodle_url('/'));
 
-        $instance = system_report_factory::create(system_report_available::class, context_system::instance(), '', '', 0,
-            ['withfilters' => $withfilters]);
+        $instance = system_report_factory::create(
+            system_report_available::class,
+            context_system::instance(),
+            parameters: ['withfilters' => $withfilters],
+        );
         $instance->set_report_action(new report_action('Add', []));
         $instance->set_report_info_container('Hello');
         $instance->add_attributes(['data-foo' => 'bar', 'data-another' => '1']);
@@ -100,7 +102,7 @@ final class system_report_exporter_test extends advanced_testcase {
 
         $this->assertEquals([
             ['name' => 'data-foo', 'value' => 'bar'],
-            ['name' => 'data-another', 'value' => '1']
+            ['name' => 'data-another', 'value' => '1'],
         ], $data->attributes);
     }
 }

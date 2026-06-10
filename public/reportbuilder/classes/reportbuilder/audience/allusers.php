@@ -31,7 +31,6 @@ use MoodleQuickForm;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class allusers extends base {
-
     /**
      * Adds audience's elements to the given mform
      *

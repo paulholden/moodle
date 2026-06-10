@@ -36,7 +36,6 @@ use core_reportbuilder\local\report\filter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_access_list extends system_report {
-
     /**
      * Initialise the report
      */
@@ -113,8 +112,7 @@ class report_access_list extends system_report {
         ))
             ->set_options([
                 'reportid' => $this->get_parameter('id', 0, PARAM_INT),
-            ])
-        );
+            ]));
 
         // Include all identity field filters.
         $identityfilters = $userentity->get_identity_filters($this->get_context());

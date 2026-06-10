@@ -33,13 +33,12 @@ use stdClass;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class action_test extends advanced_testcase {
-
     /**
      * Test adding a callback that returns true
      */
     public function test_add_callback_true(): void {
         $action = $this->create_action()
-            ->add_callback(static function(stdClass $row): bool {
+            ->add_callback(static function (stdClass $row): bool {
                 return true;
             });
 
@@ -51,7 +50,7 @@ final class action_test extends advanced_testcase {
      */
     public function test_add_callback_false(): void {
         $action = $this->create_action()
-            ->add_callback(static function(stdClass $row): bool {
+            ->add_callback(static function (stdClass $row): bool {
                 return false;
             });
 

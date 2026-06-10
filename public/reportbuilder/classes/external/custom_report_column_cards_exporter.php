@@ -29,7 +29,6 @@ use core_reportbuilder\datasource;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_report_column_cards_exporter extends custom_report_menu_cards_exporter {
-
     /**
      * Return a list of objects that are related to the exporter
      *

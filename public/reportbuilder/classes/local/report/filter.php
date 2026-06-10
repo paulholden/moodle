@@ -32,7 +32,6 @@ use core_reportbuilder\local\models\filter as filter_model;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class filter {
-
     use join_trait;
 
     /** @var string $fieldsql */
@@ -183,7 +182,7 @@ final class filter {
         }
 
         // Simple callback for replacement of parameter names within filter SQL.
-        $transform = function(string $param) use ($index): string {
+        $transform = function (string $param) use ($index): string {
             return "{$param}_{$index}";
         };
 

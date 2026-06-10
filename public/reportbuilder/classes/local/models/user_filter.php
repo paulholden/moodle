@@ -29,7 +29,6 @@ use core\persistent;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class user_filter extends persistent {
-
     /** @var string The table name. */
     public const TABLE = 'reportbuilder_user_filter';
 
@@ -48,7 +47,7 @@ class user_filter extends persistent {
             ],
             'usercreated' => [
                 'type' => PARAM_INT,
-                'default' => static function(): int {
+                'default' => static function (): int {
                     global $USER;
 
                     return (int) $USER->id;

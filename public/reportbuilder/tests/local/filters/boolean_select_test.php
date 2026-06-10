@@ -32,7 +32,6 @@ use core_reportbuilder\local\report\filter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class boolean_select_test extends advanced_testcase {
-
     /**
      * Data provider for {@see test_get_sql_filter_simple}
      *

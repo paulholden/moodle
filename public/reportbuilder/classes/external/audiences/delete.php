@@ -33,7 +33,6 @@ use core_reportbuilder\permission;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class delete extends external_api {
-
     /**
      * Describes the parameters for get_users_courses.
      *

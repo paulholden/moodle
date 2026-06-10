@@ -31,7 +31,6 @@ use core_reportbuilder\output\report_action;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_action_exporter extends exporter {
-
     /**
      * Return a list of objects that are related to the exporter
      *
@@ -102,7 +101,7 @@ class report_action_exporter extends exporter {
         /** @var report_action $reportaction */
         $reportaction = $this->related['reportaction'];
 
-        $attributes = array_map(static function($key, $value): array {
+        $attributes = array_map(static function ($key, $value): array {
             return ['name' => $key, 'value' => $value];
         }, array_keys($reportaction->attributes), $reportaction->attributes);
 

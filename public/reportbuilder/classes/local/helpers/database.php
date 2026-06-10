@@ -29,7 +29,6 @@ use core_text;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class database {
-
     /** @var string Prefix for generated aliases */
     private const GENERATE_ALIAS_PREFIX = 'rbalias';
 
@@ -92,7 +91,7 @@ class database {
      * @throws coding_exception For invalid params.
      */
     public static function validate_params(array $params): bool {
-        $nonmatchingkeys = array_filter($params, static function($key): bool {
+        $nonmatchingkeys = array_filter($params, static function ($key): bool {
             return !preg_match('/^' . static::GENERATE_PARAM_PREFIX . '[\d]+/', $key);
         }, ARRAY_FILTER_USE_KEY);
 
@@ -114,11 +113,10 @@ class database {
      */
     public static function sql_replace_parameter_names(string $sql, array $params, callable $callback): string {
         foreach ($params as $param) {
-
             // Pattern to look for param within the SQL.
             $pattern = '/:(?<param>' . preg_quote($param) . ')\b/';
 
-            $sql = preg_replace_callback($pattern, function(array $matches) use ($callback): string {
+            $sql = preg_replace_callback($pattern, static function (array $matches) use ($callback): string {
                 return ':' . $callback($matches['param']);
             }, $sql);
         }

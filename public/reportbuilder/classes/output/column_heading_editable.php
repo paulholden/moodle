@@ -32,7 +32,6 @@ use core_reportbuilder\local\models\column;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class column_heading_editable extends inplace_editable {
-
     /**
      * Class constructor
      *
@@ -57,8 +56,15 @@ class column_heading_editable extends inplace_editable {
             $displayvalue = $value = $columninstance->get_title();
         }
 
-        parent::__construct('core_reportbuilder', 'columnheading', $column->get('id'), $editable, $displayvalue, $value,
-            get_string('renamecolumn', 'core_reportbuilder', $columninstance->get_title()));
+        parent::__construct(
+            'core_reportbuilder',
+            'columnheading',
+            $column->get('id'),
+            $editable,
+            $displayvalue,
+            $value,
+            get_string('renamecolumn', 'core_reportbuilder', $columninstance->get_title()),
+        );
     }
 
     /**

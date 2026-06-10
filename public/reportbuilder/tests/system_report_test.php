@@ -40,8 +40,11 @@ final class system_report_test extends advanced_testcase {
 
         $this->resetAfterTest();
 
-        $systemreport = system_report_factory::create(system_report_available::class, context_system::instance(),
-            '', '', 0, ['withactions' => true]);
+        $systemreport = system_report_factory::create(
+            system_report_available::class,
+            context_system::instance(),
+            parameters: ['withactions' => true]
+        );
         $actions = $systemreport->get_actions();
         $this->assertCount(1, $actions);
         $action = reset($actions);
@@ -62,8 +65,11 @@ final class system_report_test extends advanced_testcase {
 
         $this->resetAfterTest();
 
-        $systemreport = system_report_factory::create(system_report_available::class, context_system::instance(),
-            '', '', 0, ['withactions' => true]);
+        $systemreport = system_report_factory::create(
+            system_report_available::class,
+            context_system::instance(),
+            parameters: ['withactions' => true]
+        );
 
         $this->assertEquals(['withactions' => true], $systemreport->get_parameters());
 

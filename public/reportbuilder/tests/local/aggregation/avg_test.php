@@ -34,7 +34,6 @@ use stdClass;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class avg_test extends core_reportbuilder_testcase {
-
     /**
      * Test aggregation when applied to column
      */
@@ -92,7 +91,7 @@ final class avg_test extends core_reportbuilder_testcase {
         $instance = manager::get_report_from_persistent($report);
         $instance->get_column('user:suspended')
             ->set_type(column::TYPE_FLOAT)
-            ->set_callback(static function(float $value, stdClass $row, $arguments, ?string $aggregation): string {
+            ->set_callback(static function (float $value, stdClass $row, $arguments, ?string $aggregation): string {
                 // Simple callback to return the given value, and append aggregation type.
                 return number_format($value, 1) . " ({$aggregation})";
             });

@@ -33,7 +33,6 @@ use core_reportbuilder\local\helpers\schedule;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class toggle extends external_api {
-
     /**
      * External method parameters
      *

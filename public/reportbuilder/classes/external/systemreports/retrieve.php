@@ -35,7 +35,6 @@ use core_reportbuilder\external\system_report_data_exporter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class retrieve extends external_api {
-
     /**
      * External method parameters
      *
@@ -53,7 +52,9 @@ class retrieve extends external_api {
                     'name' => new external_value(PARAM_RAW),
                     'value' => new external_value(PARAM_RAW),
                 ]),
-                'Report parameters', VALUE_DEFAULT, []
+                'Report parameters',
+                VALUE_DEFAULT,
+                [],
             ),
             'page' => new external_value(PARAM_INT, 'Page number', VALUE_DEFAULT, 0),
             'perpage' => new external_value(PARAM_INT, 'Reports per page', VALUE_DEFAULT, 10),

@@ -34,7 +34,6 @@ use core_reportbuilder\system_report_factory;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class can_view extends external_api {
-
     /**
      * External method parameters
      *
@@ -52,7 +51,9 @@ class can_view extends external_api {
                     'name' => new external_value(PARAM_RAW),
                     'value' => new external_value(PARAM_RAW),
                 ]),
-                'Report parameters', VALUE_DEFAULT, []
+                'Report parameters',
+                VALUE_DEFAULT,
+                [],
             ),
         ]);
     }

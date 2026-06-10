@@ -44,7 +44,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class base_test extends advanced_testcase {
-
     /**
      * Test entity table alias
      */
@@ -353,7 +352,6 @@ final class base_test extends advanced_testcase {
  * Simple implementation of the base entity
  */
 class base_test_entity extends base {
-
     /**
      * Database tables that this entity uses
      *
@@ -424,7 +422,6 @@ class base_test_entity extends base {
  * Another simple implementation of the base entity
  */
 class base_test_entity_second extends base_test_entity {
-
     /**
      * Database tables that this entity no longer uses
      *

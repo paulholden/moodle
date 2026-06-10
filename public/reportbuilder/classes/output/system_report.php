@@ -34,7 +34,6 @@ use core_reportbuilder\local\models\report;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class system_report implements renderable, templatable {
-
     /** @var report $report */
     protected $report;
 

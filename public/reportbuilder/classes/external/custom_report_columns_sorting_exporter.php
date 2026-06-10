@@ -33,7 +33,6 @@ use core_reportbuilder\local\report\column;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_report_columns_sorting_exporter extends exporter {
-
     /**
      * Return a list of objects that are related to the exporter
      *
@@ -92,11 +91,9 @@ class custom_report_columns_sorting_exporter extends exporter {
         $report = $this->related['report'];
 
         // Filter/retrieve all "sortable" active columns.
-        $sortablecolumns = array_filter($report->get_active_columns(), function(column $column): bool {
-            return $column->get_is_sortable();
-        });
+        $sortablecolumns = array_filter($report->get_active_columns(), fn(column $column): bool => $column->get_is_sortable());
 
-        $sortablecolumns = array_map(function(column $column) use ($report): array {
+        $sortablecolumns = array_map(static function (column $column) use ($report): array {
             $persistent = $column->get_persistent();
 
             $columntitle = $column->get_title();

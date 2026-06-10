@@ -28,7 +28,6 @@ use core_table\local\filter\filterset;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_report_table_filterset extends filterset {
-
     /**
      * Get the required filters
      *

@@ -34,7 +34,6 @@ use core_reportbuilder\local\helpers\database;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class user extends base {
-
     /** @var int Filter for any user */
     public const USER_ANY = 0;
 
@@ -77,10 +76,10 @@ class user extends base {
         $options = [
             'ajax' => 'core_user/form_user_selector',
             'multiple' => true,
-            'valuehtmlcallback' => static function($userid): string {
+            'valuehtmlcallback' => static function ($userid): string {
                 $user = core_user::get_user($userid);
                 return fullname($user, has_capability('moodle/site:viewfullnames', context_system::instance()));
-            }
+            },
         ];
         $mform->addElement('autocomplete', "{$this->name}_value", $valuelabel, [], $options)
             ->setHiddenLabel(true);
@@ -107,7 +106,7 @@ class user extends base {
                 $paramuserid = database::generate_param_name();
                 $sql = "{$fieldsql} = :{$paramuserid}";
                 $params[$paramuserid] = $USER->id;
-            break;
+                break;
             case self::USER_SELECT:
                 [$useridselect, $useridparams] = $DB->get_in_or_equal(
                     $userids,
@@ -119,7 +118,7 @@ class user extends base {
 
                 $sql = "{$fieldsql} {$useridselect}";
                 $params = array_merge($params, $useridparams);
-            break;
+                break;
             default:
                 // Invalid or inactive filter.
                 return ['', []];

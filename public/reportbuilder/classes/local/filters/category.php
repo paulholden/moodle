@@ -36,7 +36,6 @@ use MoodleQuickForm;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class category extends base {
-
     /** @var int Category is any value */
     public const ANY_VALUE = -1;
 
@@ -110,7 +109,6 @@ class category extends base {
 
         // Sub-category matching on path of selected category.
         if ($subcategories) {
-
             // We need to re-use the original filter SQL here, while ensuring parameter uniqueness is preserved.
             [$fieldsql, $params1] = $this->filter->get_field_sql_and_params(1);
             $params = array_merge($params, $params1);

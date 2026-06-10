@@ -36,7 +36,6 @@ use core_user\external\user_summary_exporter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_report_details_exporter extends persistent_exporter {
-
     /** @var report The persistent object we will export. */
     protected $persistent = null;
 

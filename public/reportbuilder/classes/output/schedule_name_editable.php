@@ -31,7 +31,6 @@ use core_reportbuilder\local\models\schedule;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class schedule_name_editable extends inplace_editable {
-
     /**
      * Class constructor
      *
@@ -48,8 +47,15 @@ class schedule_name_editable extends inplace_editable {
 
         $displayvalue = $schedule->get_formatted_name($report->get_context());
 
-        parent::__construct('core_reportbuilder', 'schedulename', $schedule->get('id'), $editable, $displayvalue,
-            $schedule->get('name'), get_string('editschedulename', 'core_reportbuilder'));
+        parent::__construct(
+            'core_reportbuilder',
+            'schedulename',
+            $schedule->get('id'),
+            $editable,
+            $displayvalue,
+            $schedule->get('name'),
+            get_string('editschedulename', 'core_reportbuilder'),
+        );
     }
 
     /**

@@ -37,7 +37,6 @@ use invalid_parameter_exception;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class report_test extends advanced_testcase {
-
     /**
      * Test creation report
      */
@@ -65,8 +64,7 @@ final class report_test extends advanced_testcase {
 
         $this->assertEquals('My report without tags', $report->get('name'));
         $this->assertEquals(datasource::TYPE_CUSTOM_REPORT, $report->get('type'));
-        $this->assertEmpty(core_tag_tag::get_item_tags_array('core_reportbuilder', 'reportbuilder_report',
-            $report->get('id')));
+        $this->assertEmpty(core_tag_tag::get_item_tags_array('core_reportbuilder', 'reportbuilder_report', $report->get('id')));
     }
 
     /**
@@ -88,8 +86,9 @@ final class report_test extends advanced_testcase {
 
         $this->assertEquals('My renamed report without add tags', $reportupdated->get('name'));
         $this->assertTrue($reportupdated->get('uniquerows'));
-        $this->assertEmpty(core_tag_tag::get_item_tags_array('core_reportbuilder', 'reportbuilder_report',
-            $reportupdated->get('id')));
+        $this->assertEmpty(
+            core_tag_tag::get_item_tags_array('core_reportbuilder', 'reportbuilder_report', $reportupdated->get('id')),
+        );
 
         $reportupdated = report::update_report((object) [
             'id' => $report->get('id'),
@@ -102,7 +101,9 @@ final class report_test extends advanced_testcase {
         $this->assertTrue($reportupdated->get('uniquerows'));
         $this->assertEqualsCanonicalizing(
             ['cat', 'dog'],
-            array_values(core_tag_tag::get_item_tags_array('core_reportbuilder', 'reportbuilder_report', $reportupdated->get('id'))),
+            array_values(
+                core_tag_tag::get_item_tags_array('core_reportbuilder', 'reportbuilder_report', $reportupdated->get('id')),
+            ),
         );
     }
 
@@ -510,8 +511,9 @@ final class report_test extends advanced_testcase {
 
         // Add first condition.
         $conditionfullname = report::add_report_condition($report->get('id'), 'user:fullname');
-        $this->assertTrue(filter::record_exists_select('id = :id AND iscondition = 1',
-            ['id' => $conditionfullname->get('id')]));
+        $this->assertTrue(
+            filter::record_exists_select('id = :id AND iscondition = 1', ['id' => $conditionfullname->get('id')]),
+        );
 
         $this->assertEquals($report->get('id'), $conditionfullname->get('reportid'));
         $this->assertEquals('user:fullname', $conditionfullname->get('uniqueidentifier'));
@@ -519,8 +521,9 @@ final class report_test extends advanced_testcase {
 
         // Add second condition.
         $conditionemail = report::add_report_condition($report->get('id'), 'user:email');
-        $this->assertTrue(filter::record_exists_select('id = :id AND iscondition = 1',
-            ['id' => $conditionemail->get('id')]));
+        $this->assertTrue(
+            filter::record_exists_select('id = :id AND iscondition = 1', ['id' => $conditionemail->get('id')]),
+        );
 
         $this->assertEquals($report->get('id'), $conditionemail->get('reportid'));
         $this->assertEquals('user:email', $conditionemail->get('uniqueidentifier'));
@@ -678,8 +681,9 @@ final class report_test extends advanced_testcase {
 
         // Add first filter.
         $filterfullname = report::add_report_filter($report->get('id'), 'user:fullname');
-        $this->assertTrue(filter::record_exists_select('id = :id AND iscondition = 0',
-            ['id' => $filterfullname->get('id')]));
+        $this->assertTrue(
+            filter::record_exists_select('id = :id AND iscondition = 0', ['id' => $filterfullname->get('id')]),
+        );
 
         $this->assertEquals($report->get('id'), $filterfullname->get('reportid'));
         $this->assertEquals('user:fullname', $filterfullname->get('uniqueidentifier'));
@@ -687,8 +691,9 @@ final class report_test extends advanced_testcase {
 
         // Add second filter.
         $filteremail = report::add_report_filter($report->get('id'), 'user:email');
-        $this->assertTrue(filter::record_exists_select('id = :id AND iscondition = 0',
-            ['id' => $filteremail->get('id')]));
+        $this->assertTrue(
+            filter::record_exists_select('id = :id AND iscondition = 0', ['id' => $filteremail->get('id')]),
+        );
 
         $this->assertEquals($report->get('id'), $filteremail->get('reportid'));
         $this->assertEquals('user:email', $filteremail->get('uniqueidentifier'));
@@ -870,7 +875,7 @@ final class report_test extends advanced_testcase {
         // There are two users, the admin plus the user we just created.
         $this->assertEquals(
             2,
-            report::get_report_row_count($reportaccesslist->get('id'), ['id' => $report->get('id')],
-        ));
+            report::get_report_row_count($reportaccesslist->get('id'), ['id' => $report->get('id')]),
+        );
     }
 }

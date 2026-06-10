@@ -31,15 +31,18 @@ use core_reportbuilder\output\report_action;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class report_action_exporter_test extends advanced_testcase {
-
     /**
      * Test exported data/structure
      */
     public function test_export(): void {
         global $PAGE;
 
-        $reportaction = new report_action('Add', ['class' => 'btn', 'data-action' => 'action'], 'button',
-            new pix_icon('t/add', 'Add'));
+        $reportaction = new report_action(
+            'Add',
+            ['class' => 'btn', 'data-action' => 'action'],
+            'button',
+            new pix_icon('t/add', 'Add'),
+        );
 
         $exporter = new report_action_exporter(null, ['reportaction' => $reportaction]);
         $export = $exporter->export($PAGE->get_renderer('core_reportbuilder'));

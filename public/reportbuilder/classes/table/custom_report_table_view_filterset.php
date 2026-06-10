@@ -29,7 +29,6 @@ use core_table\local\filter\integer_filter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_report_table_view_filterset extends filterset {
-
     /**
      * Get the required filters
      *

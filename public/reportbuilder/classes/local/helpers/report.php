@@ -35,7 +35,6 @@ use core_tag_tag;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report {
-
     /**
      * Create custom report
      *
@@ -63,8 +62,13 @@ class report {
 
         // Report tags.
         if (property_exists($data, "tags")) {
-            core_tag_tag::set_item_tags('core_reportbuilder', 'reportbuilder_report', $report->get('id'),
-                $report->get_context(), $data->tags);
+            core_tag_tag::set_item_tags(
+                'core_reportbuilder',
+                'reportbuilder_report',
+                $report->get('id'),
+                $report->get_context(),
+                $data->tags,
+            );
         }
 
         // Report custom fields.
@@ -93,8 +97,13 @@ class report {
 
         // Report tags.
         if (property_exists($data, "tags")) {
-            core_tag_tag::set_item_tags('core_reportbuilder', 'reportbuilder_report', $report->get('id'),
-                $report->get_context(), $data->tags);
+            core_tag_tag::set_item_tags(
+                'core_reportbuilder',
+                'reportbuilder_report',
+                $report->get('id'),
+                $report->get_context(),
+                $data->tags,
+            );
         }
 
         // Report custom fields.
@@ -145,7 +154,6 @@ class report {
             $audiencemap = [];
 
             foreach (audience::get_base_records($report->get('id')) as $audienceinstance) {
-
                 // If user can't edit the current audience then do not copy it.
                 if (!$audienceinstance->user_can_edit()) {
                     continue;
@@ -326,8 +334,12 @@ class report {
      * @return bool
      * @throws invalid_parameter_exception
      */
-    public static function toggle_report_column_sorting(int $reportid, int $columnid, bool $enabled,
-            int $direction = SORT_ASC): bool {
+    public static function toggle_report_column_sorting(
+        int $reportid,
+        int $columnid,
+        bool $enabled,
+        int $direction = SORT_ASC,
+    ): bool {
 
         $column = column::get_record(['id' => $columnid, 'reportid' => $reportid]);
         if ($column === false) {
@@ -559,8 +571,12 @@ class report {
      * @param string $field The field we need to update
      * @return bool
      */
-    private static function reorder_persistents_by_field(persistent $persistent, array $persistents, int $position,
-            string $field): bool {
+    private static function reorder_persistents_by_field(
+        persistent $persistent,
+        array $persistents,
+        int $position,
+        string $field,
+    ): bool {
 
         // Splice into new position.
         array_splice($persistents, $position - 1, 0, [$persistent]);

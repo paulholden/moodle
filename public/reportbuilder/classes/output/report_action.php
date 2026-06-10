@@ -29,7 +29,6 @@ use core_reportbuilder\external\report_action_exporter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_action implements templatable {
-
     /**
      * Constructor
      *
@@ -48,7 +47,6 @@ class report_action implements templatable {
         /** @var pix_icon|null */
         public readonly ?pix_icon $icon = null,
     ) {
-
     }
 
     #[\Override]

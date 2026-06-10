@@ -29,7 +29,6 @@ use core_reportbuilder\local\report\column;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class base {
-
     /**
      * Constructor
      *
@@ -39,7 +38,6 @@ abstract class base {
         /** @var array Aggregation type specific options */
         protected readonly array $options = [],
     ) {
-
     }
 
     /**

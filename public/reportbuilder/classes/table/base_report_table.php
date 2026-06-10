@@ -43,7 +43,6 @@ require_once("{$CFG->libdir}/tablelib.php");
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class base_report_table extends table_sql implements dynamic, renderable {
-
     /** @var report $persistent */
     protected $persistent;
 
@@ -66,8 +65,14 @@ abstract class base_report_table extends table_sql implements dynamic, renderabl
      * @param array $params
      * @param array $groupby
      */
-    protected function init_sql(string $fields, string $from, array $joins, string $where, array $params,
-            array $groupby = []): void {
+    protected function init_sql(
+        string $fields,
+        string $from,
+        array $joins,
+        string $where,
+        array $params,
+        array $groupby = [],
+    ): void {
 
         $wheres = [];
         if ($where !== '') {
@@ -179,7 +184,6 @@ abstract class base_report_table extends table_sql implements dynamic, renderabl
         global $DB;
 
         if (!$this->is_downloading()) {
-
             // Initially set the page size, so the following SQL read has correct values.
             $this->pagesize($pagesize, 0);
 
@@ -236,7 +240,7 @@ abstract class base_report_table extends table_sql implements dynamic, renderabl
 
         // First pass over sorted columns, to extract all the fullname fields from table_sql.
         $sortedcolumns = $this->get_sort_columns();
-        $sortedcolumnsfullname = array_filter($sortedcolumns, static function(string $alias): bool {
+        $sortedcolumnsfullname = array_filter($sortedcolumns, static function (string $alias): bool {
             return !preg_match('/^c[\d]+_/', $alias);
         }, ARRAY_FILTER_USE_KEY);
 

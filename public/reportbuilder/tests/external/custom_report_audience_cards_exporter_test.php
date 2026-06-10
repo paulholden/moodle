@@ -30,7 +30,6 @@ use context_system;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class custom_report_audience_cards_exporter_test extends advanced_testcase {
-
     /**
      * Test exported data/structure
      */
@@ -46,7 +45,7 @@ final class custom_report_audience_cards_exporter_test extends advanced_testcase
         $this->assertNotEmpty($export->menucards);
 
         // Test only the site audiences, so tests are unaffected by audiences within components.
-        $menucardsite = array_filter($export->menucards, static function(array $menucard): bool {
+        $menucardsite = array_filter($export->menucards, static function (array $menucard): bool {
             return $menucard['name'] === get_string('site');
         });
 

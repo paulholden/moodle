@@ -35,7 +35,6 @@ use invalid_parameter_exception;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class audience_test extends advanced_testcase {
-
      /**
       * Test reports list is empty for a normal user without any audience records configured
       */
@@ -409,12 +408,12 @@ final class audience_test extends advanced_testcase {
 
         // The first schedule contains audience one and two.
         $generator->create_schedule(['reportid' => $report->get('id'), 'name' => 'Schedule one', 'audiences' =>
-            json_encode([$audienceone->get_persistent()->get('id'), $audiencetwo->get_persistent()->get('id')])
+            json_encode([$audienceone->get_persistent()->get('id'), $audiencetwo->get_persistent()->get('id')]),
         ]);
 
         // Second schedule contains only audience one.
         $generator->create_schedule(['reportid' => $report->get('id'), 'name' => 'Schedule two', 'audiences' =>
-            json_encode([$audienceone->get_persistent()->get('id')])
+            json_encode([$audienceone->get_persistent()->get('id')]),
         ]);
 
         // The first two audiences should be returned, the third omitted.

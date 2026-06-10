@@ -32,7 +32,6 @@ use core_reportbuilder\permission;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class set extends external_api {
-
     /**
      * External method parameters
      *

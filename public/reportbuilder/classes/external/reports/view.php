@@ -35,7 +35,6 @@ use core_reportbuilder\event\report_viewed;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class view extends external_api {
-
     /**
      * External method parameters
      *

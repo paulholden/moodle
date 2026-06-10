@@ -31,7 +31,6 @@ use core_reportbuilder\local\report\filter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class course_selector_test extends advanced_testcase {
-
     /**
      * Test getting filter SQL
      */

@@ -34,7 +34,6 @@ use renderer_base;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class access extends base {
-
     /**
      * Export this for use in a mustache template context.
      *
@@ -42,8 +41,11 @@ class access extends base {
      * @return array
      */
     public function export_for_template(renderer_base $output): array {
-        $report = system_report_factory::create(report_access_list::class, context_system::instance(), '', '', 0,
-            ['id' => $this->data['reportid']]);
+        $report = system_report_factory::create(
+            report_access_list::class,
+            context_system::instance(),
+            parameters: ['id' => $this->data['reportid']],
+        );
         $data['report'] = $report->output();
         return $data;
     }

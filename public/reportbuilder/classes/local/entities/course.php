@@ -48,7 +48,6 @@ require_once($CFG->dirroot . '/course/lib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course extends base {
-
     /** @var custom_fields $customfields */
     private custom_fields $customfields;
 
@@ -205,7 +204,7 @@ class course extends base {
                 ->add_field("{$tablealias}.{$field}")
                 ->add_fields(context_helper::get_preload_record_columns_sql($contexttablealias))
                 ->set_is_sortable(true)
-                ->add_callback(static function(?string $value, stdClass $course): string {
+                ->add_callback(static function (?string $value, stdClass $course): string {
                     if ($value === null || $course->ctxid === null) {
                         return '';
                     }
@@ -215,8 +214,8 @@ class course extends base {
 
                     return html_writer::link(
                         course_get_url($context->instanceid),
-                        format_string($value, true, ['context' => $context],
-                    ));
+                        format_string($value, true, ['context' => $context]),
+                    );
                 });
         }
 
@@ -357,7 +356,7 @@ class course extends base {
      */
     public static function get_options_for_format(): array {
         global $CFG;
-        require_once($CFG->dirroot.'/course/lib.php');
+        require_once("{$CFG->dirroot}/course/lib.php");
 
         $options = [];
 
