@@ -19,7 +19,7 @@ declare(strict_types=1);
 namespace core_competency\reportbuilder\datasource;
 
 use core_competency_generator;
-use core_competency\user_competency;
+use core_competency\{evidence, user_competency};
 use core_reportbuilder_generator;
 use core_reportbuilder\local\filters\{boolean_select, date, select, text};
 use core_reportbuilder\tests\core_reportbuilder_testcase;
@@ -33,7 +33,6 @@ use core_reportbuilder\tests\core_reportbuilder_testcase;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class competencies_test extends core_reportbuilder_testcase {
-
     /**
      * Test default datasource
      */
@@ -95,11 +94,20 @@ final class competencies_test extends core_reportbuilder_testcase {
 
         $framework = $generator->create_framework(['description' => 'So cool', 'idnumber' => 'FRM101', 'scaleid' => $scale->id]);
         $competency = $generator->create_competency(['competencyframeworkid' => $framework->get('id'), 'idnumber' => 'COM101']);
-        $generator->create_user_competency([
+        $usercompetency = $generator->create_user_competency([
             'competencyid' => $competency->get('id'),
             'userid' => $user->id,
             'proficiency' => true,
             'grade' => 3,
+        ]);
+        $generator->create_evidence([
+            'usercompetencyid' => $usercompetency->get('id'),
+            'action' => evidence::ACTION_COMPLETE,
+            'grade' => 1,
+            'descidentifier' => 'evidence_manualoverrideincourse',
+            'desccomponent' => 'core_competency',
+            'desca' => json_encode('My course'),
+            'note' => 'LGTM',
         ]);
 
         /** @var core_reportbuilder_generator $generator */
@@ -123,6 +131,14 @@ final class competencies_test extends core_reportbuilder_testcase {
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'usercompetency:status']);
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'usercompetency:rating']);
 
+        // Evidence.
+        $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'evidence:action']);
+        $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'evidence:description']);
+        $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'evidence:url']);
+        $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'evidence:notes']);
+        $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'evidence:timecreated']);
+        $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'evidence:timemodified']);
+
         // Cohort.
         $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'cohort:name']);
 
@@ -141,6 +157,12 @@ final class competencies_test extends core_reportbuilder_testcase {
             $competencytimemodified,
             $usercompetencystatus,
             $usercompetencyrating,
+            $evidenceaction,
+            $evidencedescription,
+            $evidenceurl,
+            $evidencenotes,
+            $evidencetimecreated,
+            $evidencetimemodified,
             $cohortname,
         ] = array_values($content[0]);
 
@@ -155,6 +177,12 @@ final class competencies_test extends core_reportbuilder_testcase {
         $this->assertNotEmpty($competencytimemodified);
         $this->assertEquals('Idle', $usercompetencystatus);
         $this->assertEquals('C', $usercompetencyrating);
+        $this->assertEquals('Complete', $evidenceaction);
+        $this->assertEquals('The competency rating was manually set in the course \'My course\'.', $evidencedescription);
+        $this->assertEquals('', $evidenceurl);
+        $this->assertEquals('LGTM', $evidencenotes);
+        $this->assertNotEmpty($evidencetimecreated);
+        $this->assertNotEmpty($evidencetimemodified);
         $this->assertEquals('My cohort', $cohortname);
     }
 
@@ -249,11 +277,11 @@ final class competencies_test extends core_reportbuilder_testcase {
 
             // User competency.
             'User competency status' => ['usercompetency:status', [
-                'usercompetency:status_operator' => SELECT::EQUAL_TO,
+                'usercompetency:status_operator' => select::EQUAL_TO,
                 'usercompetency:status_value' => user_competency::STATUS_IDLE,
             ], true],
             'User competency status (no match)' => ['usercompetency:status', [
-                'usercompetency:status_operator' => SELECT::EQUAL_TO,
+                'usercompetency:status_operator' => select::EQUAL_TO,
                 'usercompetency:status_value' => user_competency::STATUS_WAITING_FOR_REVIEW,
             ], false],
             'User competency proficient' => ['usercompetency:proficient', [
@@ -261,6 +289,40 @@ final class competencies_test extends core_reportbuilder_testcase {
             ], true],
             'User competency proficient (no match)' => ['usercompetency:proficient', [
                 'usercompetency:proficient_operator' => boolean_select::NOT_CHECKED,
+            ], false],
+
+            // Evidence.
+            'Evidence action' => ['evidence:action', [
+                'evidence:action_operator' => select::EQUAL_TO,
+                'evidence:action_value' => evidence::ACTION_COMPLETE,
+            ], true],
+            'Evidence action (no match)' => ['evidence:action', [
+                'evidence:action_operator' => select::EQUAL_TO,
+                'evidence:action_value' => evidence::ACTION_LOG,
+            ], false],
+            'Evidence notes' => ['evidence:notes', [
+                'evidence:notes_operator' => text::IS_EQUAL_TO,
+                'evidence:notes_value' => 'LGTM',
+            ], true],
+            'Evidence notes (no match)' => ['evidence:notes', [
+                'evidence:notes_operator' => text::IS_NOT_EQUAL_TO,
+                'evidence:notes_value' => 'LGTM',
+            ], false],
+            'Evidence time created' => ['evidence:timecreated', [
+                'evidence:timecreated_operator' => date::DATE_RANGE,
+                'evidence:timecreated_from' => 1622502000,
+            ], true],
+            'Evidence time created (no match)' => ['evidence:timecreated', [
+                'evidence:timecreated_operator' => date::DATE_RANGE,
+                'evidence:timecreated_to' => 1622502000,
+            ], false],
+            'Evidence time modified' => ['evidence:timemodified', [
+                'evidence:timemodified_operator' => date::DATE_RANGE,
+                'evidence:timemodified_from' => 1622502000,
+            ], true],
+            'Evidence time modified (no match)' => ['evidence:timemodified', [
+                'evidence:timemodified_operator' => date::DATE_RANGE,
+                'evidence:timemodified_to' => 1622502000,
             ], false],
 
             // User.
@@ -321,11 +383,17 @@ final class competencies_test extends core_reportbuilder_testcase {
             'shortname' => 'My framework',
             'idnumber' => 'COM101',
         ]);
-        $generator->create_user_competency([
+        $usercompetency = $generator->create_user_competency([
             'competencyid' => $competency->get('id'),
             'userid' => $user->id,
             'proficiency' => true,
             'grade' => 3,
+        ]);
+        $generator->create_evidence([
+            'usercompetencyid' => $usercompetency->get('id'),
+            'action' => evidence::ACTION_COMPLETE,
+            'grade' => 1,
+            'note' => 'LGTM',
         ]);
 
         /** @var core_reportbuilder_generator $generator */
@@ -369,7 +437,8 @@ final class competencies_test extends core_reportbuilder_testcase {
 
         $framework = $generator->create_framework();
         $competency = $generator->create_competency(['competencyframeworkid' => $framework->get('id')]);
-        $generator->create_user_competency(['competencyid' => $competency->get('id'), 'userid' => $user->id]);
+        $usercompetency = $generator->create_user_competency(['competencyid' => $competency->get('id'), 'userid' => $user->id]);
+        $generator->create_evidence(['usercompetencyid' => $usercompetency->get('id')]);
 
         $this->datasource_stress_test_columns(competencies::class);
         $this->datasource_stress_test_columns_aggregation(competencies::class);

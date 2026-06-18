@@ -20,7 +20,7 @@ namespace core_competency\reportbuilder\datasource;
 
 use core\reportbuilder\local\entities\context;
 use core_cohort\reportbuilder\local\entities\cohort;
-use core_competency\reportbuilder\local\entities\{competency, framework, usercompetency};
+use core_competency\reportbuilder\local\entities\{competency, evidence, framework, usercompetency};
 use core_reportbuilder\datasource;
 use core_reportbuilder\local\entities\user;
 use core_reportbuilder\local\filters\boolean_select;
@@ -34,7 +34,6 @@ use core_reportbuilder\local\helpers\database;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class competencies extends datasource {
-
     /**
      * Return user friendly name of the report source
      *
@@ -61,8 +60,7 @@ class competencies extends datasource {
         $this->add_entity($contextentity);
 
         $this->add_entity($frameworkentity
-            ->set_table_join_alias('context', $contextalias)
-        );
+            ->set_table_join_alias('context', $contextalias));
 
         // Join competency entity.
         $competencyentity = new competency();
@@ -70,8 +68,7 @@ class competencies extends datasource {
         $this->add_entity($competencyentity
             ->set_table_join_alias('context', $contextalias)
             ->add_join("LEFT JOIN {competency} {$competencyalias}
-                ON {$competencyalias}.competencyframeworkid = {$frameworkalias}.id")
-        );
+                ON {$competencyalias}.competencyframeworkid = {$frameworkalias}.id"));
 
         // Join user competency entity.
         $usercompetencyentity = new usercompetency();
@@ -79,16 +76,22 @@ class competencies extends datasource {
         $this->add_entity($usercompetencyentity
             ->add_joins($competencyentity->get_joins())
             ->add_join("LEFT JOIN {competency_usercomp} {$usercompetencyalias}
-                ON {$usercompetencyalias}.competencyid = {$competencyalias}.id")
-        );
+                ON {$usercompetencyalias}.competencyid = {$competencyalias}.id"));
+
+        // Join evidence entity.
+        $evidenceentity = new evidence();
+        $evidencealias = $evidenceentity->get_table_alias('competency_evidence');
+        $this->add_entity($evidenceentity
+            ->add_joins($usercompetencyentity->get_joins())
+            ->add_join("LEFT JOIN {competency_evidence} {$evidencealias}
+                ON {$evidencealias}.usercompetencyid = {$usercompetencyalias}.id"));
 
         // Join user entity.
         $userentity = new user();
         $useralias = $userentity->get_table_alias('user');
         $this->add_entity($userentity
             ->add_joins($usercompetencyentity->get_joins())
-            ->add_join("LEFT JOIN {user} {$useralias} ON {$useralias}.id = {$usercompetencyalias}.userid")
-        );
+            ->add_join("LEFT JOIN {user} {$useralias} ON {$useralias}.id = {$usercompetencyalias}.userid"));
 
         // Join cohort entity.
         $cohortentity = new cohort();
@@ -99,20 +102,20 @@ class competencies extends datasource {
             ->add_joins([
                 "LEFT JOIN {cohort_members} {$cohortmemberalias} ON {$cohortmemberalias}.userid = {$useralias}.id",
                 "LEFT JOIN {cohort} {$cohortalias} ON {$cohortalias}.id = {$cohortmemberalias}.cohortid",
-            ])
-        );
+            ]));
 
         // Add report elements from each of the entities we added to the report.
         $this->add_all_from_entities([
-            $contextentity->get_entity_name(),
-            $frameworkentity->get_entity_name(),
-            $competencyentity->get_entity_name(),
-            $usercompetencyentity->get_entity_name(),
-            $userentity->get_entity_name(),
+            $contextentity,
+            $frameworkentity,
+            $competencyentity,
+            $usercompetencyentity,
+            $evidenceentity,
+            $userentity,
         ]);
 
         $this->add_all_from_entity(
-            $cohortentity->get_entity_name(),
+            $cohortentity,
             ['name', 'idnumber', 'description', 'customfield*'],
             ['cohortselect', 'name', 'idnumber', 'customfield*'],
             ['cohortselect', 'name', 'idnumber', 'customfield*'],
