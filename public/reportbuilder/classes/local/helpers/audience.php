@@ -81,6 +81,12 @@ class audience {
             $reportaudiences[$audience->get('reportid')][] = $audience;
         }
 
+        // Build a single UNION query to retrieve all allowed reports in one query.
+        $audienceunion = [];
+
+        $paramuserid = database::generate_param_name();
+        $audienceparams[$paramuserid] = $userid;
+
         foreach ($reportaudiences as $reportid => $audiences) {
 
             // Generate audience SQL based on those for the current report.
@@ -89,19 +95,20 @@ class audience {
                 continue;
             }
 
-            $paramuserid = database::generate_param_name();
-            $params[$paramuserid] = $userid;
+            // Add UNION clause for this report.
+            $audienceunion[] = "SELECT {$reportid} AS reportid, u.id AS userid
+                                  FROM {user} u
+                                 WHERE (" . implode(' OR ', $wheres) . ")
+                                   AND u.deleted = 0";
+            $audienceparams = array_merge($audienceparams, $params);
+        }
 
-            $sql = "SELECT DISTINCT(u.id)
-                      FROM {user} u
-                     WHERE (" . implode(' OR ', $wheres) . ")
-                       AND u.deleted = 0
-                       AND u.id = :{$paramuserid}";
-
-            // If we have a matching record, user can view the report.
-            if ($DB->record_exists_sql($sql, $params)) {
-                $allowedreports[] = $reportid;
-            }
+        // If we have any audience-bearing reports, execute the query.
+        if (!empty($audienceunion)) {
+            $audiencesql = "SELECT DISTINCT(au.reportid)
+                              FROM (" . implode(" UNION ", $audienceunion) . ") au
+                             WHERE au.userid = :{$paramuserid}";
+            $allowedreports = $DB->get_fieldset_sql($audiencesql, $audienceparams);
         }
 
         // Store users allowed reports in cache.
