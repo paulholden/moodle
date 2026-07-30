@@ -50,7 +50,7 @@ class data_field_number extends data_field_base {
         $content->recordid = $recordid;
         $value = trim($value);
         if (strlen($value) > 0) {
-            $content->content = floatval($value);
+            $content->content = unformat_float($value);
         } else {
             $content->content = null;
         }
@@ -69,11 +69,10 @@ class data_field_number extends data_field_base {
         }
         $number = $content->content;
         $decimals = trim($this->field->param1 ?? '');
-        // Only apply number formatting if param1 contains an integer number >= 0.
         if (preg_match("/^\d+$/", $decimals)) {
-            $decimals = $decimals * 1;
-            // Removes leading zeros (eg. '007' -> '7'; '00' -> '0').
-            $str = format_float($number, $decimals, true);
+            $str = format_float($number, (int) $decimals);
+        } else if (is_numeric($number)) {
+            $str = format_float($number, -1);
         } else {
             $str = $number;
         }
