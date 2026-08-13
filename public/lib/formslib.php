@@ -2977,6 +2977,70 @@ require([
     }
 
     /**
+     * Rewrite existing dependency and hideif entries whose element names reference $childname so that they are
+     * prefixed by $newprefix. Names that are exactly $childname become $newprefix, and names that start with
+     * "$childname[" have the leading $childname replaced by $newprefix, preserving any trailing sub-key
+     *
+     * This is used by {@see MoodleQuickForm_group::prefix_nested_dependencies()} to reconcile disabledIf/hideIf
+     * rules registered by a nested element (e.g. optional date_selector) before it was added to a group with
+     * appendName=true, so that they match the rendered DOM element names
+     *
+     * @param string $childname the (un-prefixed) name of the nested element to rewrite references to
+     * @param string $newprefix the replacement prefix (typically "$groupname[$childname]")
+     */
+    public function rewrite_dependency_names(string $childname, string $newprefix): void {
+        $this->rewrite_dependency_array($this->_dependencies, $childname, $newprefix);
+        $this->rewrite_dependency_array($this->_hideifs, $childname, $newprefix);
+    }
+
+    /**
+     * Helper for {@see rewrite_dependency_names()} that rewrites both top-level keys (dependency sources) and
+     * the leaf element names (dependency targets) inside a dependencies/hideifs structure
+     *
+     * @param array $deps
+     * @param string $childname
+     * @param string $newprefix
+     */
+    protected function rewrite_dependency_array(array &$deps, string $childname, string $newprefix): void {
+        $rewritename = function (string $name) use ($childname, $newprefix): string {
+            if ($name === $childname) {
+                return $newprefix;
+            }
+            $needle = $childname . '[';
+            if (strncmp($name, $needle, strlen($needle)) === 0) {
+                return $newprefix . substr($name, strlen($childname));
+            }
+            return $name;
+        };
+        // Rewrite top-level keys (dependency source names).
+        foreach (array_keys($deps) as $key) {
+            $newkey = $rewritename((string) $key);
+            if ($newkey === $key) {
+                continue;
+            }
+            if (isset($deps[$newkey])) {
+                $deps[$newkey] = array_merge_recursive($deps[$newkey], $deps[$key]);
+            } else {
+                $deps[$newkey] = $deps[$key];
+            }
+            unset($deps[$key]);
+        }
+        // Rewrite leaf element names (dependency target names).
+        foreach ($deps as &$conditions) {
+            foreach ($conditions as &$values) {
+                foreach ($values as &$dependents) {
+                    foreach ($dependents as $i => $name) {
+                        $dependents[$i] = $rewritename((string) $name);
+                    }
+                }
+                unset($dependents);
+            }
+            unset($values);
+        }
+        unset($conditions);
+    }
+
+    /**
      * Adds a dependency for $elementName which will be hidden if $condition is met.
      * If $condition = 'notchecked' (default) then the condition is that the $dependentOn element
      * is not checked. If $condition = 'checked' then the condition is that the $dependentOn element

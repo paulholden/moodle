@@ -153,7 +153,36 @@ class MoodleQuickForm_group extends HTML_QuickForm_group implements templatable 
      */
     public function onQuickFormEvent($event, $arg, &$caller) {
         $this->setMoodleForm($caller);
-        return parent::onQuickFormEvent($event, $arg, $caller);
+        $result = parent::onQuickFormEvent($event, $arg, $caller);
+
+        // When the group is added to the form with appendName=true, child element names are prefixed with the group
+        // name at render time. Any dependencies that inner elements already registered (via disabledIf/hideIf during
+        // their own createElement event, e.g. date_selector optional checkbox) still reference the un-prefixed local
+        // names, so rewrite them to match the DOM names that will be produced.
+        if ($event === 'addElement' && $this->_appendName && $caller instanceof MoodleQuickForm) {
+            $this->prefix_nested_dependencies($caller);
+        }
+        return $result;
+    }
+
+    /**
+     * Rewrite any pre-existing dependency/hideif entries on the caller so that names referencing this group's child
+     * elements are prefixed with this group's name, matching how child element names are prefixed at render time.
+     *
+     * @param MoodleQuickForm $caller
+     */
+    protected function prefix_nested_dependencies(MoodleQuickForm $caller): void {
+        $groupname = (string) $this->getName();
+        if ($groupname === '') {
+            return;
+        }
+        foreach ($this->_elements as $element) {
+            $childname = (string) $element->getName();
+            if ($childname === '') {
+                continue;
+            }
+            $caller->rewrite_dependency_names($childname, $groupname . '[' . $childname . ']');
+        }
     }
 
     /**

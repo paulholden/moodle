@@ -29,6 +29,7 @@ namespace core_form;
 
 use moodleform;
 use MoodleQuickForm_date_selector;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -39,13 +40,12 @@ require_once($CFG->libdir.'/formslib.php');
 /**
  * Unit tests for MoodleQuickForm_date_selector
  *
- * Contains test cases for testing MoodleQuickForm_date_selector
- *
  * @package    core_form
  * @category   test
  * @copyright  2012 Rajesh Taneja
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(MoodleQuickForm_date_selector::class)]
 final class dateselector_test extends \advanced_testcase {
     /** @var \MoodleQuickForm Keeps reference of dummy form object */
     private $mform;
@@ -170,6 +170,30 @@ final class dateselector_test extends \advanced_testcase {
             $el->onQuickFormEvent('updateValue', null, $mform);
             $this->assertSame($expectedvalues, $el->getValue());
         }
+    }
+
+    /**
+     * Ensure disabledIf rules registered by an optional date_selector are prefixed with the outer group name when
+     * the date_selector is nested inside a group added with appendName=true
+     */
+    public function test_disabledif_rewritten_for_nested_group(): void {
+        $mform = $this->mform;
+
+        $group = [];
+        $group[] = $mform->createElement('date_selector', 'optionaldate', 'Optional date', ['optional' => true]);
+        $mform->addGroup($group, 'outergroup', 'Outer group', '', true);
+
+        [, $result] = $mform->getLockOptionObject();
+
+        // The dependency source (the enabled checkbox) must be the fully-prefixed name that is present in the DOM.
+        $this->assertArrayHasKey('outergroup[optionaldate][enabled]', $result);
+        $this->assertArrayNotHasKey('optionaldate[enabled]', $result);
+
+        // The dependency targets (day/month/year) must also be fully prefixed.
+        $targets = $result['outergroup[optionaldate][enabled]']['notchecked']['1'][\MoodleQuickForm::DEP_DISABLE];
+        $this->assertContains('outergroup[optionaldate][day]', $targets);
+        $this->assertContains('outergroup[optionaldate][month]', $targets);
+        $this->assertContains('outergroup[optionaldate][year]', $targets);
     }
 }
 
