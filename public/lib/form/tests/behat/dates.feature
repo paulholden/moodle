@@ -100,3 +100,50 @@ Feature: Setting and validating date fields
     And I should see "dategroup2[group2optionaldateonly]: 1693411200"
     And I should see "dategroup2[group2datetime]: 1690773300"
     And I should see "dategroup2[group2optionaldatetime]: 1693464300"
+
+  @javascript
+  Scenario: Toggle enabled state of optional date fields
+    Given I am on fixture page "/lib/form/tests/behat/fixtures/dates_form.php"
+    # Default state of optional date fields is disabled.
+    And the "simpleoptionaldateonly[day]" "field" should be disabled
+    And the "simpleoptionaldatetime[day]" "field" should be disabled
+    And the "group1optionaldateonly[day]" "field" should be disabled
+    And the "group1optionaldatetime[day]" "field" should be disabled
+    And the "dategroup2[group2optionaldateonly][day]" "field" should be disabled
+    And the "dategroup2[group2optionaldatetime][day]" "field" should be disabled
+    # Enable them all.
+    When I set the following fields to these values:
+      | simpleoptionaldateonly[enabled]             | 1 |
+      | simpleoptionaldatetime[enabled]             | 1 |
+      | group1optionaldateonly[enabled]             | 1 |
+      | group1optionaldatetime[enabled]             | 1 |
+      | dategroup2[group2optionaldateonly][enabled] | 1 |
+      | dategroup2[group2optionaldatetime][enabled] | 1 |
+    Then the "simpleoptionaldateonly[day]" "field" should be enabled
+    And the "simpleoptionaldatetime[day]" "field" should be enabled
+    And the "group1optionaldateonly[day]" "field" should be enabled
+    And the "group1optionaldatetime[day]" "field" should be enabled
+    And the "dategroup2[group2optionaldateonly][day]" "field" should be enabled
+    And the "dategroup2[group2optionaldatetime][day]" "field" should be enabled
+    # Disable them all.
+    And I set the following fields to these values:
+      | simpleoptionaldateonly[enabled]             | 0 |
+      | simpleoptionaldatetime[enabled]             | 0 |
+      | group1optionaldateonly[enabled]             | 0 |
+      | group1optionaldatetime[enabled]             | 0 |
+      | dategroup2[group2optionaldateonly][enabled] | 0 |
+      | dategroup2[group2optionaldatetime][enabled] | 0 |
+    And the "simpleoptionaldateonly[day]" "field" should be disabled
+    And the "simpleoptionaldatetime[day]" "field" should be disabled
+    And the "group1optionaldateonly[day]" "field" should be disabled
+    And the "group1optionaldatetime[day]" "field" should be disabled
+    And the "dategroup2[group2optionaldateonly][day]" "field" should be disabled
+    And the "dategroup2[group2optionaldatetime][day]" "field" should be disabled
+    # Confirm form submission with all optional date fields disabled.
+    And I press "Send form"
+    And I should see "simpleoptionaldateonly: 0"
+    And I should see "simpleoptionaldatetime: 0"
+    And I should see "group1optionaldateonly: 0"
+    And I should see "group1optionaldatetime: 0"
+    And I should see "dategroup2[group2optionaldateonly]: 0"
+    And I should see "dategroup2[group2optionaldatetime]: 0"
