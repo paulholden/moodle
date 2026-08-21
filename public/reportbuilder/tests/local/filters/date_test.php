@@ -22,18 +22,17 @@ use advanced_testcase;
 use core\clock;
 use core\lang_string;
 use core_reportbuilder\local\report\filter;
+use PHPUnit\Framework\Attributes\{CoversClass, DataProvider};
 
 /**
  * Unit tests for date report filter
  *
  * @package     core_reportbuilder
- * @covers      \core_reportbuilder\local\filters\base
- * @covers      \core_reportbuilder\local\filters\date
  * @copyright   2021 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(date::class)]
 final class date_test extends advanced_testcase {
-
     /** @var clock $clock */
     private readonly clock $clock;
 
@@ -48,7 +47,7 @@ final class date_test extends advanced_testcase {
     /**
      * Data provider for {@see test_get_sql_filter_simple}
      *
-     * @return array
+     * @return array[]
      */
     public static function get_sql_filter_simple_provider(): array {
         return [
@@ -63,9 +62,8 @@ final class date_test extends advanced_testcase {
      *
      * @param int $operator
      * @param bool $expectuser
-     *
-     * @dataProvider get_sql_filter_simple_provider
      */
+    #[DataProvider('get_sql_filter_simple_provider')]
     public function test_get_sql_filter_simple(int $operator, bool $expectuser): void {
         global $DB;
 
@@ -97,15 +95,37 @@ final class date_test extends advanced_testcase {
     }
 
     /**
-     * Test getting filter SQL while specifying a date range
+     * Data provider for {@see test_get_sql_filter_date_range}
+     *
+     * @return array[]
      */
-    public function test_get_sql_filter_date_range(): void {
+    public static function get_sql_filter_date_range_provider(): array {
+        return [
+            [0, 49, ['admin', 'guest']],
+            [0, 50, ['admin', 'guest', 'userone']],
+            [50, 100, ['userone', 'usertwo']],
+            [100, 0, ['usertwo', 'userthree']],
+            [101, 0, ['userthree']],
+            [51, 99, []],
+        ];
+    }
+
+    /**
+     * Test getting filter SQL while specifying a date range
+     *
+     * @param int $datefrom
+     * @param int $dateto
+     * @param string[] $expectedusers
+     */
+    #[DataProvider('get_sql_filter_date_range_provider')]
+    public function test_get_sql_filter_date_range(int $datefrom, int $dateto, array $expectedusers): void {
         global $DB;
 
         $this->resetAfterTest();
 
-        $userone = $this->getDataGenerator()->create_user(['timecreated' => 50]);
-        $usertwo = $this->getDataGenerator()->create_user(['timecreated' => 100]);
+        $this->getDataGenerator()->create_user(['username' => 'userone', 'timecreated' => 50]);
+        $this->getDataGenerator()->create_user(['username' => 'usertwo', 'timecreated' => 100]);
+        $this->getDataGenerator()->create_user(['username' => 'userthree', 'timecreated' => 150]);
 
         $filter = new filter(
             date::class,
@@ -118,22 +138,21 @@ final class date_test extends advanced_testcase {
         // Create instance of our date range filter.
         [$select, $params] = date::create($filter)->get_sql_filter([
             $filter->get_unique_identifier() . '_operator' => date::DATE_RANGE,
-            $filter->get_unique_identifier() . '_from' => 80,
-            $filter->get_unique_identifier() . '_to' => 120,
+            $filter->get_unique_identifier() . '_from' => $datefrom,
+            $filter->get_unique_identifier() . '_to' => $dateto,
         ]);
 
-        // The only matching user should be our first test user.
         $usernames = $DB->get_fieldset_select('user', 'username', $select, $params);
-        $this->assertEquals([$usertwo->username], $usernames);
+        $this->assertEqualsCanonicalizing($expectedusers, $usernames);
     }
 
     /**
      * Data provider for {@see test_get_sql_filter_current_week}
      *
-     * @return array
+     * @return array[]
      */
     public static function get_sql_filter_current_week_provider(): array {
-        return array_map(static function(int $day): array {
+        return array_map(static function (int $day): array {
             return [$day];
         }, range(0, 6));
     }
@@ -143,9 +162,8 @@ final class date_test extends advanced_testcase {
      * the current time is always within the current week regardless of calendar configuration/preferences
      *
      * @param int $startweekday
-     *
-     * @dataProvider get_sql_filter_current_week_provider
      */
+    #[DataProvider('get_sql_filter_current_week_provider')]
     public function test_get_sql_filter_current_week(int $startweekday): void {
         global $DB;
 
@@ -176,7 +194,7 @@ final class date_test extends advanced_testcase {
     /**
      * Data provider for {@see test_get_sql_filter_current_week_no_match}
      *
-     * @return array
+     * @return array[]
      */
     public static function get_sql_filter_current_week_no_match_provider(): array {
         $data = [];
@@ -197,9 +215,8 @@ final class date_test extends advanced_testcase {
      *
      * @param int $startweekday
      * @param string $timecreated Relative time suitable for passing to {@see strtotime}
-     *
-     * @dataProvider get_sql_filter_current_week_no_match_provider
      */
+    #[DataProvider('get_sql_filter_current_week_no_match_provider')]
     public function test_get_sql_filter_current_week_no_match(int $startweekday, string $timecreated): void {
         global $DB;
 
@@ -230,7 +247,7 @@ final class date_test extends advanced_testcase {
     /**
      * Data provider for {@see test_get_sql_filter_relative}
      *
-     * @return array
+     * @return array[]
      */
     public static function get_sql_filter_relative_provider(): array {
         return [
@@ -305,9 +322,8 @@ final class date_test extends advanced_testcase {
      * @param int|null $unitvalue
      * @param int|null $unit
      * @param string|null $timecreated Relative time suitable for passing to {@see strtotime} (or null for current time)
-     *
-     * @dataProvider get_sql_filter_relative_provider
      */
+    #[DataProvider('get_sql_filter_relative_provider')]
     public function test_get_sql_filter_relative(int $operator, ?int $unitvalue, ?int $unit, ?string $timecreated = null): void {
         global $DB;
 
