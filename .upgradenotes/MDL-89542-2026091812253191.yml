@@ -1,0 +1,7 @@
+issueNumber: MDL-89542
+notes:
+  core_reportbuilder:
+    - message: >-
+        When using the `date` filter type with the range operator, both `to` and
+        `from` dates are always inclusive
+      type: changed
