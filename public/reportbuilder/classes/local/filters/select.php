@@ -34,7 +34,6 @@ use core_reportbuilder\local\helpers\database;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class select extends base {
-
     /** @var int Any value */
     public const ANY_VALUE = 0;
 
@@ -56,7 +55,7 @@ class select extends base {
         $operators = [
             self::ANY_VALUE => get_string('filterisanyvalue', 'core_reportbuilder'),
             self::EQUAL_TO => get_string('filterisequalto', 'core_reportbuilder'),
-            self::NOT_EQUAL_TO => get_string('filterisnotequalto', 'core_reportbuilder')
+            self::NOT_EQUAL_TO => get_string('filterisnotequalto', 'core_reportbuilder'),
         ];
 
         return $this->filter->restrict_limited_operators($operators);
@@ -146,7 +145,7 @@ class select extends base {
         // Get available options, if multidimensional then flatten the array.
         $options = $this->get_select_options();
         if (count($options) !== count($options, COUNT_RECURSIVE)) {
-            $options = array_merge(...array_values($options));
+            $options = array_replace(...array_values($options));
         }
 
         // Validate filter form values.
