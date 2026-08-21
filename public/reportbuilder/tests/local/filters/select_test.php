@@ -21,34 +21,31 @@ namespace core_reportbuilder\local\filters;
 use advanced_testcase;
 use lang_string;
 use core_reportbuilder\local\report\filter;
+use PHPUnit\Framework\Attributes\{CoversClass, DataProvider};
 
 /**
  * Unit tests for select report filter
  *
  * @package     core_reportbuilder
- * @covers      \core_reportbuilder\local\filters\base
- * @covers      \core_reportbuilder\local\filters\select
  * @copyright   2021 David Matamoros <davidmc@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(select::class)]
 final class select_test extends advanced_testcase {
-
     /**
-     * Data provider for {@see test_get_sql_filter_simple}
+     * Data provider for {@see test_get_sql_filter_simple} and {@see test_get_sql_filter_grouped}
      *
-     * @return array
+     * @return array[]
      */
-    public static function get_sql_filter_simple_provider(): array {
+    public static function get_sql_filter_provider(): array {
         return [
-            [select::ANY_VALUE, null, true],
-            [select::EQUAL_TO, 'starwars', true],
-            [select::EQUAL_TO, 'mandalorian', false],
-            [select::EQUAL_TO, '', false],
-            [select::EQUAL_TO, 'invalid', true],
-            [select::NOT_EQUAL_TO, 'starwars', false],
-            [select::NOT_EQUAL_TO, 'mandalorian', true],
-            [select::NOT_EQUAL_TO, '', true],
-            [select::NOT_EQUAL_TO, 'invalid', true],
+            [select::ANY_VALUE, null, ['PHPUnit test site', 'courseone', 'coursetwo']],
+            [select::EQUAL_TO, 'courseone', ['courseone']],
+            [select::EQUAL_TO, '', ['PHPUnit test site', 'courseone', 'coursetwo']],
+            [select::EQUAL_TO, 'invalid', []],
+            [select::NOT_EQUAL_TO, 'courseone', ['PHPUnit test site', 'coursetwo']],
+            [select::NOT_EQUAL_TO, '', ['PHPUnit test site', 'courseone', 'coursetwo']],
+            [select::NOT_EQUAL_TO, 'invalid', ['PHPUnit test site', 'courseone', 'coursetwo']],
         ];
     }
 
@@ -57,34 +54,27 @@ final class select_test extends advanced_testcase {
      *
      * @param int $operator
      * @param string|null $value
-     * @param bool $expectmatch
-     *
-     * @dataProvider get_sql_filter_simple_provider
+     * @param string[] $expectedcourses
      */
-    public function test_get_sql_filter_simple(int $operator, ?string $value, bool $expectmatch): void {
+    #[DataProvider('get_sql_filter_provider')]
+    public function test_get_sql_filter_simple(int $operator, ?string $value, array $expectedcourses): void {
         global $DB;
 
         $this->resetAfterTest();
 
-        $course1 = $this->getDataGenerator()->create_course([
-            'fullname' => "May the course be with you",
-            'idnumber' => 'starwars',
-        ]);
-        $course2 = $this->getDataGenerator()->create_course([
-            'fullname' => "This is the course",
-            'idnumber' => '',
-        ]);
+        $course1 = $this->getDataGenerator()->create_course(['fullname' => 'courseone', 'idnumber' => 'courseone']);
+        $course2 = $this->getDataGenerator()->create_course(['fullname' => 'coursetwo', 'idnumber' => 'coursetwo']);
 
         $filter = (new filter(
             select::class,
-            'test',
+            'simpletest',
             new lang_string('course'),
             'testentity',
             'idnumber'
         ))->set_options([
             $course1->idnumber => $course1->fullname,
             $course2->idnumber => $course2->fullname,
-            'mandalorian' => 'This is not the course you are looking for',
+            'invalid' => 'This is not the course you are looking for',
         ]);
 
         // Create instance of our filter, passing given operator.
@@ -93,11 +83,51 @@ final class select_test extends advanced_testcase {
             $filter->get_unique_identifier() . '_value' => $value,
         ]);
 
-        $fullnames = $DB->get_fieldset_select('course', 'fullname', $select, $params);
-        if ($expectmatch) {
-            $this->assertContains($course1->fullname, $fullnames);
-        } else {
-            $this->assertNotContains($course1->fullname, $fullnames);
-        }
+        $coursenames = $DB->get_fieldset_select('course', 'fullname', $select, $params);
+        $this->assertEqualsCanonicalizing($expectedcourses, $coursenames);
+    }
+
+    /**
+     * Test getting filter SQL with grouped (multidimensional) options using non-sequential integer keys
+     *
+     * @param int $operator
+     * @param string|null $value
+     * @param string[] $expectedcourses
+     */
+    #[DataProvider('get_sql_filter_provider')]
+    public function test_get_sql_filter_grouped(int $operator, ?string $value, array $expectedcourses): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $course1 = $this->getDataGenerator()->create_course(['fullname' => 'courseone']);
+        $course2 = $this->getDataGenerator()->create_course(['fullname' => 'coursetwo']);
+
+        $filter = (new filter(
+            select::class,
+            'groupedtest',
+            new lang_string('course'),
+            'testentity',
+            'id'
+        ))->set_options([
+            'Group 1' => [$course1->id => $course1->fullname],
+            'Group 2' => [$course2->id => $course2->fullname],
+            'Group 3' => [999 => 'invalid'],
+        ]);
+
+        $value = match ($value) {
+            $course1->fullname => (string) $course1->id,
+            $course2->fullname => (string) $course2->id,
+            'invalid' => '999',
+            default => $value,
+        };
+
+        [$select, $params] = select::create($filter)->get_sql_filter([
+            $filter->get_unique_identifier() . '_operator' => $operator,
+            $filter->get_unique_identifier() . '_value' => $value,
+        ]);
+
+        $coursenames = $DB->get_fieldset_select('course', 'fullname', $select, $params);
+        $this->assertEqualsCanonicalizing($expectedcourses, $coursenames);
     }
 }
