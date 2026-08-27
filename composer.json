@@ -94,7 +94,7 @@
         "mustache/mustache": "3.0.0",
         "openspout/openspout": "4.32.0",
         "geoip2/geoip2": "3.2.0",
-        "maxmind-db/reader": "1.12.1",
+        "maxmind-db/reader": "1.15.0",
         "redeyeventures/geopattern": "1.1.2",
         "phpxmlrpc/phpxmlrpc": "4.11.1",
         "ralouphie/getallheaders": "3.0.3",

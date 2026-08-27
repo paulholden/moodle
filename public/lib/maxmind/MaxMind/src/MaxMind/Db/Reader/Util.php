@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace MaxMind\Db\Reader;
 
+/**
+ * @final
+ */
 class Util
 {
     /**
      * @param resource    $stream
      * @param int<0, max> $numberOfBytes
+     *
+     * @throws InvalidDatabaseException if the bytes cannot be read
      */
     public static function read($stream, int $offset, int $numberOfBytes): string
     {
@@ -18,10 +23,8 @@ class Util
         if (fseek($stream, $offset) === 0) {
             $value = fread($stream, $numberOfBytes);
 
-            // We check that the number of bytes read is equal to the number
-            // asked for. We use ftell as getting the length of $value is
-            // much slower.
-            if ($value !== false && ftell($stream) - $offset === $numberOfBytes) {
+            // Check that the number of bytes read is the number asked for.
+            if ($value !== false && \strlen($value) === $numberOfBytes) {
                 return $value;
             }
         }

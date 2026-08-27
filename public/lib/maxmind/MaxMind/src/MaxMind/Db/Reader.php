@@ -7,11 +7,17 @@ namespace MaxMind\Db;
 use MaxMind\Db\Reader\Decoder;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 use MaxMind\Db\Reader\Metadata;
+use MaxMind\Db\Reader\UnsupportedPlatformException;
 use MaxMind\Db\Reader\Util;
 
 /**
  * Instances of this class provide a reader for the MaxMind DB format. IP
  * addresses can be looked up using the get method.
+ *
+ * The declared exceptions describe the pure PHP reader. The C extension may
+ * differ.
+ *
+ * @final
  */
 class Reader
 {
@@ -46,6 +52,11 @@ class Reader
     private $fileHandle;
 
     /**
+     * @var bool
+     */
+    private $lookupInProgress = false;
+
+    /**
      * @var int
      */
     private $fileSize;
@@ -62,14 +73,22 @@ class Reader
 
     /**
      * Constructs a Reader for the MaxMind DB format. The file passed to it must
-     * be a valid MaxMind DB file such as a GeoIp2 database file.
+     * be a valid MaxMind DB file such as a GeoIP database file.
      *
      * @param string $database the MaxMind DB file to use
      *
-     * @throws \InvalidArgumentException for invalid database path or unknown arguments
+     * @throws \InvalidArgumentException    if the database file does not exist or
+     *                                      is not readable
      * @throws InvalidDatabaseException
-     *                                   if the database is invalid or there is an error reading
-     *                                   from it
+     *                                      if the database is invalid or there is an error reading
+     *                                      from it
+     * @throws \UnexpectedValueException    if the size of the database file
+     *                                      cannot be determined
+     * @throws UnsupportedPlatformException if the metadata contains an integer
+     *                                      that needs the gmp or bcmath extension
+     *                                      and neither is installed, or a data
+     *                                      offset that is too large for the
+     *                                      platform
      */
     public function __construct(string $database)
     {
@@ -94,17 +113,20 @@ class Reader
         }
         $this->fileHandle = $fileHandle;
 
-        $fileSize = @filesize($database);
-        if ($fileSize === false) {
+        $fstat = fstat($fileHandle);
+        if ($fstat === false) {
             throw new \UnexpectedValueException(
                 "Error determining the size of \"$database\"."
             );
         }
-        $this->fileSize = $fileSize;
+        $this->fileSize = $fstat['size'];
 
         $start = $this->findMetadataStart($database);
         $metadataDecoder = new Decoder($this->fileHandle, $start);
         [$metadataArray] = $metadataDecoder->decode($start);
+        if (!\is_array($metadataArray)) {
+            throw new InvalidDatabaseException('The database metadata must be a map.');
+        }
         $this->metadata = new Metadata($metadataArray);
         $this->decoder = new Decoder(
             $this->fileHandle,
@@ -118,11 +140,18 @@ class Reader
      *
      * @param string $ipAddress the IP address to look up
      *
-     * @throws \BadMethodCallException   if this method is called on a closed database
-     * @throws \InvalidArgumentException if something other than a single IP address is passed to the method
+     * @throws \BadMethodCallException      if the database is closed or another lookup is in progress
+     * @throws \InvalidArgumentException    if the IP address is not valid, or if
+     *                                      it is an IPv6 address and the database
+     *                                      is IPv4-only
      * @throws InvalidDatabaseException
-     *                                   if the database is invalid or there is an error reading
-     *                                   from it
+     *                                      if the database is invalid or there is an error reading
+     *                                      from it
+     * @throws UnsupportedPlatformException if the record contains an integer
+     *                                      that needs the gmp or bcmath extension
+     *                                      and neither is installed, or a data
+     *                                      offset that is too large for the
+     *                                      platform
      *
      * @return mixed the record for the IP address
      */
@@ -143,11 +172,18 @@ class Reader
      *
      * @param string $ipAddress the IP address to look up
      *
-     * @throws \BadMethodCallException   if this method is called on a closed database
-     * @throws \InvalidArgumentException if something other than a single IP address is passed to the method
+     * @throws \BadMethodCallException      if the database is closed or another lookup is in progress
+     * @throws \InvalidArgumentException    if the IP address is not valid, or if
+     *                                      it is an IPv6 address and the database
+     *                                      is IPv4-only
      * @throws InvalidDatabaseException
-     *                                   if the database is invalid or there is an error reading
-     *                                   from it
+     *                                      if the database is invalid or there is an error reading
+     *                                      from it
+     * @throws UnsupportedPlatformException if the record contains an integer
+     *                                      that needs the gmp or bcmath extension
+     *                                      and neither is installed, or a data
+     *                                      offset that is too large for the
+     *                                      platform
      *
      * @return array{0:mixed, 1:int} an array where the first element is the record and the
      *                               second the network prefix length for the record
@@ -166,15 +202,31 @@ class Reader
             );
         }
 
-        [$pointer, $prefixLen] = $this->findAddressInTree($ipAddress);
-        if ($pointer === 0) {
-            return [null, $prefixLen];
+        if ($this->lookupInProgress) {
+            throw new \BadMethodCallException(
+                'A lookup is already in progress on this reader. Use a separate reader for nested lookups.'
+            );
         }
+        // A stream wrapper can call back into this reader during a read.
+        // Reject nested lookups before they can move the shared stream.
+        $this->lookupInProgress = true;
 
-        return [$this->resolveDataPointer($pointer), $prefixLen];
+        try {
+            [$pointer, $prefixLen] = $this->findAddressInTree($ipAddress);
+            if ($pointer === 0) {
+                return [null, $prefixLen];
+            }
+
+            return [$this->resolveDataPointer($pointer), $prefixLen];
+        } finally {
+            $this->lookupInProgress = false;
+        }
     }
 
     /**
+     * @throws \InvalidArgumentException
+     * @throws InvalidDatabaseException
+     *
      * @return array{0:int, 1:int}
      */
     private function findAddressInTree(string $ipAddress): array
@@ -236,6 +288,9 @@ class Reader
         );
     }
 
+    /**
+     * @throws InvalidDatabaseException
+     */
     private function ipV4StartNode(): int
     {
         // If we have an IPv4 database, the start node is the first node
@@ -252,6 +307,9 @@ class Reader
         return $node;
     }
 
+    /**
+     * @throws InvalidDatabaseException
+     */
     private function readNode(int $nodeNumber, int $index): int
     {
         $baseOffset = $nodeNumber * $this->metadata->nodeByteSize;
@@ -307,6 +365,9 @@ class Reader
     }
 
     /**
+     * @throws InvalidDatabaseException
+     * @throws UnsupportedPlatformException
+     *
      * @return mixed
      */
     private function resolveDataPointer(int $pointer)
@@ -324,21 +385,17 @@ class Reader
         return $data;
     }
 
-    /*
+    /**
      * This is an extremely naive but reasonably readable implementation. There
      * are much faster algorithms (e.g., Boyer-Moore) for this if speed is ever
      * an issue, but I suspect it won't be.
+     *
+     * @throws InvalidDatabaseException
      */
     private function findMetadataStart(string $filename): int
     {
         $handle = $this->fileHandle;
-        $fstat = fstat($handle);
-        if ($fstat === false) {
-            throw new InvalidDatabaseException(
-                "Error getting file information ($filename)."
-            );
-        }
-        $fileSize = $fstat['size'];
+        $fileSize = $this->fileSize;
         $marker = self::$METADATA_START_MARKER;
         $markerLength = self::$METADATA_START_MARKER_LENGTH;
 
@@ -362,8 +419,10 @@ class Reader
     }
 
     /**
-     * @throws \InvalidArgumentException if arguments are passed to the method
-     * @throws \BadMethodCallException   if the database has been closed
+     * The C extension can also throw InvalidDatabaseException if it cannot
+     * decode the metadata. The pure PHP reader decodes it during construction.
+     *
+     * @throws \BadMethodCallException if the database has been closed
      *
      * @return Metadata object for the database
      */
@@ -389,8 +448,7 @@ class Reader
     /**
      * Closes the MaxMind DB and returns resources to the system.
      *
-     * @throws \Exception
-     *                    if an I/O error occurs
+     * @throws \BadMethodCallException if the database has already been closed
      */
     public function close(): void
     {
