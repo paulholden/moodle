@@ -1,6 +1,41 @@
 CHANGELOG
 =========
 
+3.4.0 (2026-07-16)
+------------------
+
+* A new `residential` property has been added to `GeoIp2\Record\Anonymizer`.
+  This property is an instance of the new `GeoIp2\Record\AnonymizerFeed`
+  class and provides residential proxy data for the network, including
+  `confidence`, `networkLastSeen`, and `providerName`. This may be the only
+  property with data even when the other anonymizer properties are unset.
+  This data is available from the GeoIP Insights web service.
+* Updated the `GeoIp2\Model\City` constructor to handle an empty
+  `subdivisions` array. This provides compatibility with some third-party
+  databases that publish empty subdivisions arrays. Pull request by Jarek
+  Jakubowski. GitHub #290.
+* The `GeoIP2` prefix in web service error messages has been changed to
+  `GeoIP`.
+
+3.3.0 (2025-11-20)
+------------------
+
+* A new `anonymizer` property has been added to `GeoIp2\Model\Insights`.
+  This property is an instance of `GeoIp2\Record\Anonymizer` and provides
+  information about whether the IP address belongs to an anonymous network,
+  VPN provider details (including `confidence`, `providerName`, and
+  `networkLastSeen`), and various anonymity flags. This data is available
+  from the GeoIP2 Insights web service.
+* A new `ipRiskSnapshot` property has been added to `GeoIp2\Record\Traits`.
+  This property provides a risk score from 0.01 to 99.99 indicating the risk
+  associated with the IP address. Higher values indicate higher risk. This is
+  a static snapshot that is less dynamic than minFraud risk scoring. This
+  attribute is only available from the GeoIP2 Insights web service.
+* The `isAnonymous`, `isAnonymousVpn`, `isHostingProvider`, `isPublicProxy`,
+  `isResidentialProxy`, and `isTorExitNode` properties in
+  `GeoIp2\Record\Traits` have been deprecated. Please use the corresponding
+  properties in the new `anonymizer` object in the Insights response instead.
+
 3.2.0 (2025-05-05)
 ------------------
 
