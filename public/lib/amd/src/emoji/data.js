@@ -367,6 +367,12 @@ export const byCategory = [
                 ]
             },
             {
+                "unified": "1FAE9",
+                "shortnames": [
+                    "face_with_bags_under_eyes"
+                ]
+            },
+            {
                 "unified": "1F637",
                 "shortnames": [
                     "mask"
@@ -3166,6 +3172,12 @@ export const byCategory = [
                 "shortnames": [
                     "footprints"
                 ]
+            },
+            {
+                "unified": "1FAC6",
+                "shortnames": [
+                    "fingerprint"
+                ]
             }
         ]
     },
@@ -3827,6 +3839,36 @@ export const byCategory = [
                 ]
             },
             {
+                "unified": "1F980",
+                "shortnames": [
+                    "crab"
+                ]
+            },
+            {
+                "unified": "1F99E",
+                "shortnames": [
+                    "lobster"
+                ]
+            },
+            {
+                "unified": "1F990",
+                "shortnames": [
+                    "shrimp"
+                ]
+            },
+            {
+                "unified": "1F991",
+                "shortnames": [
+                    "squid"
+                ]
+            },
+            {
+                "unified": "1F9AA",
+                "shortnames": [
+                    "oyster"
+                ]
+            },
+            {
                 "unified": "1F40C",
                 "shortnames": [
                     "snail"
@@ -4089,6 +4131,12 @@ export const byCategory = [
                 "shortnames": [
                     "mushroom"
                 ]
+            },
+            {
+                "unified": "1FABE",
+                "shortnames": [
+                    "leafless_tree"
+                ]
             }
         ]
     },
@@ -4321,6 +4369,12 @@ export const byCategory = [
                 "unified": "1F344-200D-1F7EB",
                 "shortnames": [
                     "brown_mushroom"
+                ]
+            },
+            {
+                "unified": "1FADC",
+                "shortnames": [
+                    "root_vegetable"
                 ]
             },
             {
@@ -4627,36 +4681,6 @@ export const byCategory = [
                 "unified": "1F961",
                 "shortnames": [
                     "takeout_box"
-                ]
-            },
-            {
-                "unified": "1F980",
-                "shortnames": [
-                    "crab"
-                ]
-            },
-            {
-                "unified": "1F99E",
-                "shortnames": [
-                    "lobster"
-                ]
-            },
-            {
-                "unified": "1F990",
-                "shortnames": [
-                    "shrimp"
-                ]
-            },
-            {
-                "unified": "1F991",
-                "shortnames": [
-                    "squid"
-                ]
-            },
-            {
-                "unified": "1F9AA",
-                "shortnames": [
-                    "oyster"
                 ]
             },
             {
@@ -7195,6 +7219,12 @@ export const byCategory = [
                 ]
             },
             {
+                "unified": "1FA89",
+                "shortnames": [
+                    "harp"
+                ]
+            },
+            {
                 "unified": "1F4F1",
                 "shortnames": [
                     "iphone"
@@ -8020,6 +8050,12 @@ export const byCategory = [
                 "unified": "1FA9C",
                 "shortnames": [
                     "ladder"
+                ]
+            },
+            {
+                "unified": "1FA8F",
+                "shortnames": [
+                    "shovel"
                 ]
             },
             {
@@ -9138,6 +9174,12 @@ export const byCategory = [
                 ]
             },
             {
+                "unified": "1FADF",
+                "shortnames": [
+                    "splatter"
+                ]
+            },
+            {
                 "unified": "0023-FE0F-20E3",
                 "shortnames": [
                     "hash"
@@ -10010,6 +10052,12 @@ export const byCategory = [
                 "unified": "1F1E8-1F1F5",
                 "shortnames": [
                     "flag-cp"
+                ]
+            },
+            {
+                "unified": "1F1E8-1F1F6",
+                "shortnames": [
+                    "flag-sark"
                 ]
             },
             {
@@ -11359,6 +11407,7 @@ export const byShortName = {
     "cn": "1F1E8-1F1F3",
     "flag-co": "1F1E8-1F1F4",
     "flag-cp": "1F1E8-1F1F5",
+    "flag-sark": "1F1E8-1F1F6",
     "flag-cr": "1F1E8-1F1F7",
     "flag-cu": "1F1E8-1F1FA",
     "flag-cv": "1F1E8-1F1FB",
@@ -12922,6 +12971,8 @@ export const byShortName = {
     "nesting_dolls": "1FA86",
     "maracas": "1FA87",
     "flute": "1FA88",
+    "harp": "1FA89",
+    "shovel": "1FA8F",
     "ringed_planet": "1FA90",
     "chair": "1FA91",
     "razor": "1FA92",
@@ -12968,6 +13019,7 @@ export const byShortName = {
     "hyacinth": "1FABB",
     "jellyfish": "1FABC",
     "wing": "1FABD",
+    "leafless_tree": "1FABE",
     "goose": "1FABF",
     "anatomical_heart": "1FAC0",
     "lungs": "1FAC1",
@@ -12975,6 +13027,7 @@ export const byShortName = {
     "pregnant_man": "1FAC3",
     "pregnant_person": "1FAC4",
     "person_with_crown": "1FAC5",
+    "fingerprint": "1FAC6",
     "moose": "1FACE",
     "donkey": "1FACF",
     "blueberries": "1FAD0",
@@ -12989,6 +13042,8 @@ export const byShortName = {
     "jar": "1FAD9",
     "ginger_root": "1FADA",
     "pea_pod": "1FADB",
+    "root_vegetable": "1FADC",
+    "splatter": "1FADF",
     "melting_face": "1FAE0",
     "saluting_face": "1FAE1",
     "face_with_open_eyes_and_hand_over_mouth": "1FAE2",
@@ -12998,6 +13053,7 @@ export const byShortName = {
     "biting_lip": "1FAE6",
     "bubbles": "1FAE7",
     "shaking_face": "1FAE8",
+    "face_with_bags_under_eyes": "1FAE9",
     "hand_with_index_finger_and_thumb_crossed": "1FAF0",
     "rightwards_hand": "1FAF1",
     "leftwards_hand": "1FAF2",
