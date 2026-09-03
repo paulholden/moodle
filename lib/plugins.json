@@ -5,6 +5,7 @@
             "editor"
         ],
         "aiprovider": [
+            "anthropic",
             "awsbedrock",
             "azureai",
             "deepseek",
