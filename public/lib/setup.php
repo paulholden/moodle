@@ -546,9 +546,6 @@ global $FULLSCRIPT;
  */
 global $SCRIPT;
 
-// The httpswwwroot has been deprecated, we keep it as an alias for backwards compatibility with plugins only.
-$CFG->httpswwwroot = $CFG->wwwroot;
-
 // We have to call this always before starting session because it discards headers!
 if (NO_OUTPUT_BUFFERING) {
     // Try to disable all output buffering and purge all headers.
