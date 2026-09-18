@@ -174,7 +174,7 @@ final class messages_test extends core_reportbuilder_testcase {
             ], true],
             'Message time created (no match)' => ['message:timecreated', [
                 'message:timecreated_operator' => date::DATE_RANGE,
-                'message:timecreated_to' => 1622502000,
+                'message:timecreated_to' => 1622501999,
             ], false],
 
             // Conversation.
@@ -206,7 +206,7 @@ final class messages_test extends core_reportbuilder_testcase {
             ], true],
             'Conversation time created (no match)' => ['conversation:timecreated', [
                 'conversation:timecreated_operator' => date::DATE_RANGE,
-                'conversation:timecreated_to' => 1622502000,
+                'conversation:timecreated_to' => 1622501999,
             ], false],
 
             // Author.
