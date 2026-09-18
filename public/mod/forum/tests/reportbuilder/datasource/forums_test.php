@@ -263,7 +263,7 @@ final class forums_test extends core_reportbuilder_testcase {
             ], true],
             'Discussion time modified (no match)' => ['discussion:timemodified', [
                 'discussion:timemodified_operator' => date::DATE_RANGE,
-                'discussion:timemodified_to' => 1622502000,
+                'discussion:timemodified_to' => 1622501999,
             ], false],
 
             // Post.
@@ -289,7 +289,7 @@ final class forums_test extends core_reportbuilder_testcase {
             ], true],
             'Post time created (no match)' => ['post:timecreated', [
                 'post:timecreated_operator' => date::DATE_RANGE,
-                'post:timecreated_to' => 1622502000,
+                'post:timecreated_to' => 1622501999,
             ], false],
             'Post time modified' => ['post:timemodified', [
                 'post:timemodified_operator' => date::DATE_RANGE,
@@ -297,7 +297,7 @@ final class forums_test extends core_reportbuilder_testcase {
             ], true],
             'Post time modified (no match)' => ['post:timemodified', [
                 'post:timemodified_operator' => date::DATE_RANGE,
-                'post:timemodified_to' => 1622502000,
+                'post:timemodified_to' => 1622501999,
             ], false],
             'Post word count' => ['post:wordcount', [
                 'post:wordcount_operator' => number::EQUAL_TO,
