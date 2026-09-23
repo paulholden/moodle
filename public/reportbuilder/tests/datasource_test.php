@@ -33,6 +33,7 @@ use core_reportbuilder\local\filters\text;
 use core_reportbuilder\local\report\{column, filter};
 use lang_string;
 use ReflectionClass;
+use PHPUnit\Framework\Attributes\{CoversClass, DataProvider};
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -40,12 +41,11 @@ defined('MOODLE_INTERNAL') || die();
  * Unit tests for base datasource
  *
  * @package     core_reportbuilder
- * @coversDefaultClass \core_reportbuilder\datasource
  * @copyright   2023 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(datasource::class)]
 final class datasource_test extends advanced_testcase {
-
     /**
      * Data provider for {@see test_add_columns_from_entity}
      *
@@ -68,6 +68,16 @@ final class datasource_test extends advanced_testcase {
                 ['first', 'extra*'],
                 1,
             ],
+            'Include columns wildcard-first (extra1, extra2, first)' => [
+                ['extra*', 'first'],
+                [],
+                3,
+            ],
+            'Exclude columns wildcard-first (extra1, extra2, first)' => [
+                [],
+                ['extra*', 'first'],
+                1,
+            ],
         ];
     }
 
@@ -77,11 +87,8 @@ final class datasource_test extends advanced_testcase {
      * @param string[] $include
      * @param string[] $exclude
      * @param int $expectedcount
-     *
-     * @covers ::add_columns_from_entity
-     *
-     * @dataProvider add_columns_from_entity_provider
      */
+    #[DataProvider('add_columns_from_entity_provider')]
     public function test_add_columns_from_entity(
         array $include,
         array $exclude,
@@ -124,6 +131,16 @@ final class datasource_test extends advanced_testcase {
                 ['first', 'extra*'],
                 1,
             ],
+            'Include filters wildcard-first (extra1, extra2, first)' => [
+                ['extra*', 'first'],
+                [],
+                3,
+            ],
+            'Exclude filters wildcard-first (extra1, extra2, first)' => [
+                [],
+                ['extra*', 'first'],
+                1,
+            ],
         ];
     }
 
@@ -133,11 +150,8 @@ final class datasource_test extends advanced_testcase {
      * @param string[] $include
      * @param string[] $exclude
      * @param int $expectedcount
-     *
-     * @covers ::add_filters_from_entity
-     *
-     * @dataProvider add_filters_from_entity_provider
      */
+    #[DataProvider('add_filters_from_entity_provider')]
     public function test_add_filters_from_entity(
         array $include,
         array $exclude,
@@ -180,6 +194,16 @@ final class datasource_test extends advanced_testcase {
                 ['first', 'extra*'],
                 1,
             ],
+            'Include conditions wildcard-first (extra1, extra2, first)' => [
+                ['extra*', 'first'],
+                [],
+                3,
+            ],
+            'Exclude conditions wildcard-first (extra1, extra2, first)' => [
+                [],
+                ['extra*', 'first'],
+                1,
+            ],
         ];
     }
 
@@ -189,11 +213,8 @@ final class datasource_test extends advanced_testcase {
      * @param string[] $include
      * @param string[] $exclude
      * @param int $expectedcount
-     *
-     * @covers ::add_conditions_from_entity
-     *
-     * @dataProvider add_conditions_from_entity_provider
      */
+    #[DataProvider('add_conditions_from_entity_provider')]
     public function test_add_conditions_from_entity(
         array $include,
         array $exclude,
@@ -216,8 +237,6 @@ final class datasource_test extends advanced_testcase {
 
     /**
      * Test adding all from entity
-     *
-     * @covers ::add_all_from_entity
      */
     public function test_add_all_from_entity(): void {
         $instance = $this->get_datasource_test_source();
@@ -267,11 +286,8 @@ final class datasource_test extends advanced_testcase {
      * @param int $expectedcountcolumns
      * @param int $expectedcountfilters
      * @param int $expectedcountconditions
-     *
-     * @covers ::add_all_from_entities
-     *
-     * @dataProvider add_all_from_entities_provider
      */
+    #[DataProvider('add_all_from_entities_provider')]
     public function test_add_all_from_entities(
         array $entitynames,
         int $expectedcountcolumns,
@@ -290,8 +306,6 @@ final class datasource_test extends advanced_testcase {
 
     /**
      * Test getting active conditions
-     *
-     * @covers ::get_active_conditions
      */
     public function test_get_active_conditions(): void {
         $instance = $this->get_datasource_test_source();
@@ -344,7 +358,6 @@ final class datasource_test extends advanced_testcase {
  * Simple implementation of the base datasource
  */
 class datasource_test_source extends datasource {
-
     protected function initialise(): void {
         $this->set_main_table('user', 'u');
 
@@ -378,7 +391,6 @@ class datasource_test_source extends datasource {
  * Simple implementation of the base entity
  */
 class datasource_test_entity extends base {
-
     protected function get_default_tables(): array {
         return ['course'];
     }
