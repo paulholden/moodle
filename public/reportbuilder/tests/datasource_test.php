@@ -34,6 +34,7 @@ use core_reportbuilder\local\entities\base;
 use core_reportbuilder\local\filters\text;
 use core_reportbuilder\local\report\{column, filter};
 use ReflectionClass;
+use PHPUnit\Framework\Attributes\{CoversClass, DataProvider};
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -44,7 +45,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   2023 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\core_reportbuilder\datasource::class)]
+#[CoversClass(datasource::class)]
 final class datasource_test extends advanced_testcase {
     /**
      * Data provider for {@see test_add_columns_from_entity}
@@ -82,6 +83,24 @@ final class datasource_test extends advanced_testcase {
                     'entityone:second',
                 ],
             ],
+            'Include columns wildcard-first (extra1, extra2, first)' => [
+                ['extra*', 'first'],
+                [],
+                [
+                    'dummy:test',
+                    'entityone:first',
+                    'entityone:extra1',
+                    'entityone:extra2',
+                ],
+            ],
+            'Exclude columns wildcard-first (extra1, extra2, first)' => [
+                [],
+                ['extra*', 'first'],
+                [
+                    'dummy:test',
+                    'entityone:second',
+                ],
+            ],
         ];
     }
 
@@ -92,7 +111,7 @@ final class datasource_test extends advanced_testcase {
      * @param string[] $exclude
      * @param string[] $expectedcolumns
      */
-    #[\PHPUnit\Framework\Attributes\DataProvider('add_columns_from_entity_provider')]
+    #[DataProvider('add_columns_from_entity_provider')]
     public function test_add_columns_from_entity(
         array $include,
         array $exclude,
@@ -196,6 +215,22 @@ final class datasource_test extends advanced_testcase {
                     'entityone:second',
                 ],
             ],
+            'Include filters wildcard-first (extra1, extra2, first)' => [
+                ['extra*', 'first'],
+                [],
+                [
+                    'entityone:first',
+                    'entityone:extra1',
+                    'entityone:extra2',
+                ],
+            ],
+            'Exclude filters wildcard-first (extra1, extra2, first)' => [
+                [],
+                ['extra*', 'first'],
+                [
+                    'entityone:second',
+                ],
+            ],
         ];
     }
 
@@ -206,7 +241,7 @@ final class datasource_test extends advanced_testcase {
      * @param string[] $exclude
      * @param string[] $expectedfilters
      */
-    #[\PHPUnit\Framework\Attributes\DataProvider('add_filters_from_entity_provider')]
+    #[DataProvider('add_filters_from_entity_provider')]
     public function test_add_filters_from_entity(
         array $include,
         array $exclude,
@@ -309,6 +344,22 @@ final class datasource_test extends advanced_testcase {
                     'entityone:second',
                 ],
             ],
+            'Include conditions wildcard-first (extra1, extra2, first)' => [
+                ['extra*', 'first'],
+                [],
+                [
+                    'entityone:first',
+                    'entityone:extra1',
+                    'entityone:extra2',
+                ],
+            ],
+            'Exclude conditions wildcard-first (extra1, extra2, first)' => [
+                [],
+                ['extra*', 'first'],
+                [
+                    'entityone:second',
+                ],
+            ],
         ];
     }
 
@@ -319,7 +370,7 @@ final class datasource_test extends advanced_testcase {
      * @param string[] $exclude
      * @param string[] $expectedconditions
      */
-    #[\PHPUnit\Framework\Attributes\DataProvider('add_conditions_from_entity_provider')]
+    #[DataProvider('add_conditions_from_entity_provider')]
     public function test_add_conditions_from_entity(
         array $include,
         array $exclude,
@@ -531,7 +582,7 @@ final class datasource_test extends advanced_testcase {
      * @param string[] $expectedfilters
      * @param string[] $expectedconditions
      */
-    #[\PHPUnit\Framework\Attributes\DataProvider('add_all_from_entities_provider')]
+    #[DataProvider('add_all_from_entities_provider')]
     public function test_add_all_from_entities(
         array $entitynames,
         array $expectedcolumns,
