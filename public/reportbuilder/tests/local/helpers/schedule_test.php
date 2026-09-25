@@ -28,6 +28,7 @@ use core_reportbuilder\local\schedules\base;
 use core_reportbuilder\reportbuilder\audience\manual;
 use core_reportbuilder\reportbuilder\schedule\message;
 use core_user\reportbuilder\datasource\users;
+use PHPUnit\Framework\Attributes\{CoversClass, DataProvider};
 
 /**
  * Unit tests for the schedule helper class
@@ -36,9 +37,8 @@ use core_user\reportbuilder\datasource\users;
  * @copyright   2021 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\core_reportbuilder\local\helpers\schedule::class)]
+#[CoversClass(schedule::class)]
 final class schedule_test extends advanced_testcase {
-
     /** @var clock $clock */
     private readonly clock $clock;
 
@@ -70,7 +70,7 @@ final class schedule_test extends advanced_testcase {
      * @param string $classname
      * @param bool $expected
      */
-    #[\PHPUnit\Framework\Attributes\DataProvider('valid_provider')]
+    #[DataProvider('valid_provider')]
     public function test_valid(string $classname, bool $expected): void {
         $this->assertEquals($expected, schedule::valid($classname));
     }
@@ -80,39 +80,6 @@ final class schedule_test extends advanced_testcase {
      */
     public function test_get_schedules(): void {
         $this->assertContains(message::class, schedule::get_schedules());
-    }
-
-    /**
-     * Test create schedule
-     */
-    public function test_create_schedule(): void {
-        $this->resetAfterTest();
-        $this->setAdminUser();
-
-        /** @var core_reportbuilder_generator $generator */
-        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
-        $report = $generator->create_report(['name' => 'My report', 'source' => users::class]);
-
-        // Create schedule for tomorrow.
-        $timescheduled = $this->clock->time() + DAYSECS;
-        $schedule = schedule::create_schedule((object) [
-            'name' => 'My schedule',
-            'reportid' => $report->get('id'),
-            'classname' => message::class,
-            'configdata' => json_encode(['subject' => 'Hello', 'message' => 'Hola']),
-            'format' => 'csv',
-            'timescheduled' => $timescheduled,
-        ]);
-
-        $this->assertDebuggingCalled(null, DEBUG_DEVELOPER);
-
-        $this->assertEquals('My schedule', $schedule->get('name'));
-        $this->assertEquals($report->get('id'), $schedule->get('reportid'));
-        $this->assertEquals(message::class, $schedule->get('classname'));
-        $this->assertEquals('{"subject":"Hello","message":"Hola"}', $schedule->get('configdata'));
-        $this->assertEquals('csv', $schedule->get('format'));
-        $this->assertEquals($timescheduled, $schedule->get('timescheduled'));
-        $this->assertEquals($timescheduled, $schedule->get('timenextsend'));
     }
 
     /**
@@ -287,23 +254,6 @@ final class schedule_test extends advanced_testcase {
     }
 
     /**
-     * Test getting schedule report row count
-     */
-    public function test_get_schedule_report_count(): void {
-        $this->resetAfterTest();
-
-        /** @var core_reportbuilder_generator $generator */
-        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
-        $report = $generator->create_report(['name' => 'My report', 'source' => users::class]);
-        $schedule = $generator->create_schedule(['reportid' => $report->get('id'), 'name' => 'My schedule']);
-
-        // There is only one row in the report (the only user on the site).
-        $count = schedule::get_schedule_report_count($schedule);
-        $this->assertDebuggingCalled(null, DEBUG_DEVELOPER);
-        $this->assertEquals(1, $count);
-    }
-
-    /**
      * Data provider for {@see test_get_schedule_report_file}
      *
      * @return string[]
@@ -324,7 +274,7 @@ final class schedule_test extends advanced_testcase {
      *
      * @param string $format
      */
-    #[\PHPUnit\Framework\Attributes\DataProvider('get_schedule_report_file_format')]
+    #[DataProvider('get_schedule_report_file_format')]
     public function test_get_schedule_report_file(string $format): void {
         $this->resetAfterTest();
         $this->setAdminUser();
@@ -379,7 +329,7 @@ final class schedule_test extends advanced_testcase {
      * @param string|null $timenextsend Relative time suitable for passing to {@see strtotime}, or null to ignore
      * @param bool $expected
      */
-    #[\PHPUnit\Framework\Attributes\DataProvider('should_send_schedule_provider')]
+    #[DataProvider('should_send_schedule_provider')]
     public function test_should_send_schedule(
         int $recurrence,
         string $timescheduled,
@@ -475,7 +425,7 @@ final class schedule_test extends advanced_testcase {
      * @param string $timescheduled Absolute time suitable for passing to {@see strtotime}
      * @param string $expected Absolute time suitable for passing to {@see strtotime}
      */
-    #[\PHPUnit\Framework\Attributes\DataProvider('calculate_next_send_time_provider')]
+    #[DataProvider('calculate_next_send_time_provider')]
     public function test_calculate_next_send_time(int $recurrence, string $timescheduled, string $expected): void {
         $this->resetAfterTest();
 
