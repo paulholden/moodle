@@ -22,15 +22,16 @@ use advanced_testcase;
 use core_reportbuilder_generator;
 use core_reportbuilder\local\models\user_filter;
 use core_user\reportbuilder\datasource\users;
+use PHPUnit\Framework\Attributes\{CoversClass, DataProvider};
 
 /**
  * Unit tests for the user filter helper
  *
  * @package     core_reportbuilder
- * @covers      \core_reportbuilder\local\helpers\user_filter_manager
  * @copyright   2021 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(user_filter_manager::class)]
 final class user_filter_manager_test extends advanced_testcase {
     /**
      * Data provider for {@see test_get}
@@ -49,9 +50,8 @@ final class user_filter_manager_test extends advanced_testcase {
      * Test getting filter values
      *
      * @param string $value
-     *
-     * @dataProvider get_provider
      */
+    #[DataProvider('get_provider')]
     public function test_get(string $value): void {
         $this->resetAfterTest();
 
@@ -98,9 +98,8 @@ final class user_filter_manager_test extends advanced_testcase {
      * Test resetting all filter values
      *
      * @param string $value
-     *
-     * @dataProvider reset_provider
      */
+    #[DataProvider('reset_provider')]
     public function test_reset(string $value): void {
         $this->resetAfterTest();
 
@@ -120,102 +119,5 @@ final class user_filter_manager_test extends advanced_testcase {
 
         // All filter preferences should be removed.
         $this->assertFalse(user_filter::get_record(['reportid' => $report->get('id')]));
-    }
-
-    /**
-     * Test resetting single filter values
-     */
-    public function test_reset_single(): void {
-        $this->resetAfterTest();
-
-        /** @var core_reportbuilder_generator $generator */
-        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
-        $report = $generator->create_report(['name' => 'My report', 'source' => users::class]);
-
-        user_filter_manager::set($report->get('id'), [
-            'entity:filter_name' => 'foo',
-            'entity:filter_value' => 'bar',
-            'entity:other_name' => 'baz',
-            'entity:other_value' => 'bax',
-        ]);
-
-        $reset = user_filter_manager::reset_single($report->get('id'), 'entity:other');
-        $this->assertDebuggingCalled();
-        $this->assertTrue($reset);
-
-        $this->assertEquals([
-            'entity:filter_name' => 'foo',
-            'entity:filter_value' => 'bar',
-        ], user_filter_manager::get($report->get('id')));
-    }
-
-    /**
-     * Test merging filter values
-     */
-    public function test_merge(): void {
-        $this->resetAfterTest();
-
-        /** @var core_reportbuilder_generator $generator */
-        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
-        $report = $generator->create_report(['name' => 'My report', 'source' => users::class]);
-
-        user_filter_manager::set($report->get('id'), [
-            'entity:filter_name' => 'foo',
-            'entity:filter_value' => 'bar',
-            'entity:filter2_name' => 'tree',
-            'entity:filter2_value' => 'house',
-        ]);
-
-        // Make sure that both values have been changed and the other values have not been modified.
-        user_filter_manager::merge($report->get('id'), [
-            'entity:filter_name' => 'twotimesfoo',
-            'entity:filter_value' => 'twotimesbar',
-        ]);
-        $this->assertDebuggingCalled();
-        $this->assertEqualsCanonicalizing([
-            'entity:filter_name' => 'twotimesfoo',
-            'entity:filter_value' => 'twotimesbar',
-            'entity:filter2_name' => 'tree',
-            'entity:filter2_value' => 'house',
-        ], user_filter_manager::get($report->get('id')));
-    }
-
-    /**
-     * Test to get all filters from a given user
-     */
-    public function test_get_all_for_user(): void {
-        $this->resetAfterTest();
-
-        /** @var core_reportbuilder_generator $generator */
-        $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
-        $reportone = $generator->create_report(['name' => 'Report 1', 'source' => users::class]);
-        $reporttwo = $generator->create_report(['name' => 'Report 2', 'source' => users::class]);
-
-        $userone = $this->getDataGenerator()->create_user();
-        $usertwo = $this->getDataGenerator()->create_user();
-
-        $reportonefilter = [
-            'entity:filter_name' => 'foo',
-            'entity:filter_value' => 'bar',
-            'entity:other_name' => 'baz',
-            'entity:other_value' => 'bax',
-        ];
-        user_filter_manager::set($reportone->get('id'), $reportonefilter, (int) $userone->id);
-
-        $reporttwofilter = [
-            'entity:filter_name' => 'blue',
-            'entity:filter_value' => 'red',
-        ];
-        user_filter_manager::set($reporttwo->get('id'), $reporttwofilter, (int) $userone->id);
-
-        // First user has filters in two reports.
-        $useronefilters = user_filter_manager::get_all_for_user((int) $userone->id);
-        $this->assertDebuggingCalled();
-        $this->assertEqualsCanonicalizing([$reportonefilter, $reporttwofilter], $useronefilters);
-
-        // Check for a user with no filters.
-        $usertwofilters = user_filter_manager::get_all_for_user((int) $usertwo->id);
-        $this->assertDebuggingCalled();
-        $this->assertEmpty($usertwofilters);
     }
 }
