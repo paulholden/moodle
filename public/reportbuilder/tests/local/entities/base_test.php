@@ -27,11 +27,11 @@ declare(strict_types=1);
 namespace core_reportbuilder\local\entities;
 
 use advanced_testcase;
-use coding_exception;
-use lang_string;
+use core\exception\coding_exception;
+use core\lang_string;
 use core_reportbuilder\local\filters\text;
-use core_reportbuilder\local\report\column;
-use core_reportbuilder\local\report\filter;
+use core_reportbuilder\local\report\{column, filter};
+use PHPUnit\Framework\Attributes\CoversClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -39,12 +39,11 @@ defined('MOODLE_INTERNAL') || die();
  * Unit tests for base entity
  *
  * @package     core_reportbuilder
- * @covers      \core_reportbuilder\local\entities\base
  * @copyright   2021 David Matamoros <davidmc@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[CoversClass(base::class)]
 final class base_test extends advanced_testcase {
-
     /**
      * Test entity table alias
      */
@@ -71,26 +70,53 @@ final class base_test extends advanced_testcase {
     public function test_get_table_alias_deprecated(): void {
         $entity = new base_test_entity();
 
-        $entity->get_table_alias('mydeprecatedtable');
+        $mydeprecatedtablealias = $entity->get_table_alias('mydeprecatedtable');
 
         // Debugging called twice, as get_table_alias internally calls set_table_alias for undefined alias.
         $this->assertDebuggingCalledCount(2, [
             'The table \'mydeprecatedtable\' is deprecated, please do not use it any more.',
             'The table \'mydeprecatedtable\' is deprecated, please do not use it any more.',
         ]);
+
+        $this->assertMatchesRegularExpression('/^rbalias(\d+)$/', $mydeprecatedtablealias);
     }
 
     /**
      * Test for deprecated get table alias replacement
      */
-    public function test_get_table_alias_deprecated_replacement(): void {
-        $entity = new base_test_entity_second();
+    public function test_get_table_alias_deprecated_tables_replacement(): void {
+        $entity = new base_test_entity_deprecated_tables_replacement();
 
-        $mydeprecatedtable = $entity->get_table_alias('mydeprecatedtable');
+        $mydeprecatedtablealias = $entity->get_table_alias('mydeprecatedtable');
         $this->assertDebuggingCalled();
 
         // We should get back the same alias for the replacement table.
-        $this->assertEquals($mydeprecatedtable, $entity->get_table_alias('mytable'));
+        $this->assertEquals($mydeprecatedtablealias, $entity->get_table_alias('mytable'));
+    }
+
+    /**
+     * Test for deprecated get table alias replacements array containing both list and associative entries
+     */
+    public function test_get_table_alias_deprecated_tables_mixed(): void {
+        $entity = new base_test_entity_deprecated_tables_mixed();
+
+        $mydeprecatedtablealias = $entity->get_table_alias('mydeprecatedtable');
+        $this->assertDebuggingCalled();
+
+        // We should get back the same alias for the replacement table.
+        $this->assertEquals($mydeprecatedtablealias, $entity->get_table_alias('mytable'));
+
+        // This one has no replacement, alias belongs to that same name.
+        $myothertablealias = $entity->get_table_alias('myothertable');
+
+        // Debugging called twice, as get_table_alias internally calls set_table_alias for undefined alias.
+        $this->assertDebuggingCalledCount(2, [
+            'The table \'myothertable\' is deprecated, please do not use it any more.',
+            'The table \'myothertable\' is deprecated, please do not use it any more.',
+        ]);
+
+        $this->assertMatchesRegularExpression('/^rbalias(\d+)$/', $myothertablealias);
+        $this->assertNotEquals($mydeprecatedtablealias, $myothertablealias);
     }
 
     /**
@@ -150,16 +176,35 @@ final class base_test extends advanced_testcase {
     }
 
     /**
-     * Test for deprecated get table alias replacement
+     * Test for deprecated set table alias replacement
      */
-    public function test_set_table_alias_deprecated_replacement(): void {
-        $entity = new base_test_entity_second();
+    public function test_set_table_alias_deprecated_tables_replacement(): void {
+        $entity = new base_test_entity_deprecated_tables_replacement();
 
         $entity->set_table_alias('mydeprecatedtable', 'newalias');
         $this->assertDebuggingCalled();
 
         // We should get back the same alias for the replacement table.
         $this->assertEquals('newalias', $entity->get_table_alias('mytable'));
+    }
+
+    /**
+     * Test for deprecated set table alias replacements array containing both list and associative entries
+     */
+    public function test_set_table_alias_deprecated_tables_mixed(): void {
+        $entity = new base_test_entity_deprecated_tables_mixed();
+
+        $entity->set_table_aliases([
+            'mydeprecatedtable' => 'newalias1',
+            'myothertable' => 'newalias2',
+        ]);
+        $this->assertDebuggingCalledCount(2);
+
+        // We should get back the same alias for the replacement table.
+        $this->assertEquals('newalias1', $entity->get_table_alias('mytable'));
+
+        $this->assertEquals('newalias2', $entity->get_table_alias('myothertable'));
+        $this->assertDebuggingCalled();
     }
 
     /**
@@ -353,12 +398,7 @@ final class base_test extends advanced_testcase {
  * Simple implementation of the base entity
  */
 class base_test_entity extends base {
-
-    /**
-     * Database tables that this entity uses
-     *
-     * @return string[]
-     */
+    #[\Override]
     protected function get_default_tables(): array {
         return [
             'mytable',
@@ -366,31 +406,19 @@ class base_test_entity extends base {
         ];
     }
 
-    /**
-     * Database tables that this entity no longer uses
-     *
-     * @return string[]
-     */
+    #[\Override]
     protected function get_deprecated_tables(): array {
         return [
             'mydeprecatedtable',
         ];
     }
 
-    /**
-     * Entity title
-     *
-     * @return lang_string
-     */
+    #[\Override]
     protected function get_default_entity_title(): lang_string {
         return new lang_string('yes');
     }
 
-    /**
-     * Initialise entity
-     *
-     * @return base
-     */
+    #[\Override]
     public function initialise(): base {
         $column = (new column(
             'test',
@@ -417,16 +445,24 @@ class base_test_entity extends base {
 /**
  * Another simple implementation of the base entity
  */
-class base_test_entity_second extends base_test_entity {
-
-    /**
-     * Database tables that this entity no longer uses
-     *
-     * @return string[]
-     */
+class base_test_entity_deprecated_tables_replacement extends base_test_entity {
+    #[\Override]
     protected function get_deprecated_tables(): array {
         return [
             'mytable' => 'mydeprecatedtable',
+        ];
+    }
+}
+
+/**
+ * Implementation of the base entity with a mixed deprecated tables array (both list and assoc entries)
+ */
+class base_test_entity_deprecated_tables_mixed extends base_test_entity {
+    #[\Override]
+    protected function get_deprecated_tables(): array {
+        return [
+            'mytable' => 'mydeprecatedtable',
+            'myothertable',
         ];
     }
 }
