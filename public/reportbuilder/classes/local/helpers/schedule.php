@@ -21,11 +21,9 @@ namespace core_reportbuilder\local\helpers;
 use context_user;
 use core\{component, clock, di};
 use core\exception\{coding_exception, invalid_parameter_exception};
-use core_user;
 use stdClass;
 use stored_file;
 use table_dataformat_export_format;
-use core\message\message;
 use core\plugininfo\dataformat;
 use core_reportbuilder\local\models\audience as audience_model;
 use core_reportbuilder\local\models\schedule as model;
@@ -62,23 +60,11 @@ class schedule {
     }
 
     /**
-     * Create report schedule, calculate when it should be next sent
-     *
-     * @param stdClass $data
-     * @param int|null $timenow Deprecated since Moodle 4.5 - please use {@see clock} dependency injection
-     * @return model
-     *
      * @deprecated since Moodle 5.1 - please do not use this function any more, {@see base::create}
      */
-    #[\core\attribute\deprecated(base::class . '::create', since: '5.1', mdl: 'MDL-86066')]
+    #[\core\attribute\deprecated(base::class . '::create', since: '5.1', mdl: 'MDL-86066', final: true)]
     public static function create_schedule(stdClass $data, ?int $timenow = null): model {
         \core\deprecation::emit_deprecation([self::class, __FUNCTION__]);
-
-        if ($timenow !== null) {
-            debugging('Passing $timenow is deprecated, please use \core\clock dependency injection', DEBUG_DEVELOPER);
-        }
-
-        return base::create($data)->get_persistent();
     }
 
     /**
@@ -158,18 +144,11 @@ class schedule {
     }
 
     /**
-     * Return count of schedule report rows
-     *
-     * @param model $schedule
-     * @return int
-     *
      * @deprecated since Moodle 5.0 - please do not use this function any more, {@see report::get_report_row_count}
      */
-    #[\core\attribute\deprecated('report::get_report_row_count', since: '5.0', mdl: 'MDL-74488')]
+    #[\core\attribute\deprecated('report::get_report_row_count', since: '5.0', mdl: 'MDL-74488', final: true)]
     public static function get_schedule_report_count(model $schedule): int {
         \core\deprecation::emit_deprecation([self::class, __FUNCTION__]);
-
-        return report::get_report_row_count($schedule->get('reportid'));
     }
 
     /**
@@ -209,7 +188,7 @@ class schedule {
             $table->download,
             $exportclass->format_data($table->headers),
             $table->rawdata,
-            static function(stdClass $record, bool $supportshtml) use ($table, $exportclass): array {
+            static function (stdClass $record, bool $supportshtml) use ($table, $exportclass): array {
                 $record = $table->format_row($record);
                 if (!$supportshtml) {
                     $record = $exportclass->format_data($record);
@@ -290,10 +269,10 @@ class schedule {
         switch ($recurrence) {
             case model::RECURRENCE_HOURLY:
                 $hour += 1;
-            break;
+                break;
             case model::RECURRENCE_DAILY:
                 $day += 1;
-            break;
+                break;
             case model::RECURRENCE_WEEKDAYS:
                 $day += 1;
 
@@ -304,16 +283,16 @@ class schedule {
                 while ((bool) ($weekend & (1 << (++$dayofweek % $calendar->get_num_weekdays())))) {
                     $day++;
                 }
-            break;
+                break;
             case model::RECURRENCE_WEEKLY:
                 $day += 7;
-            break;
+                break;
             case model::RECURRENCE_MONTHLY:
                 $month += 1;
-            break;
+                break;
             case model::RECURRENCE_ANNUALLY:
                 $year += 1;
-            break;
+                break;
             default:
                 throw new coding_exception('Invalid recurrence value', $recurrence);
             break;
@@ -332,36 +311,11 @@ class schedule {
     }
 
     /**
-     * Send schedule message to user
-     *
-     * @param model $schedule
-     * @param stdClass $user
-     * @param stored_file $attachment
-     * @return bool
-     *
      * @deprecated since Moodle 5.1 - please do not use this function any more
      */
-    #[\core\attribute\deprecated(reason: 'It is no longer used', since: '5.1', mdl: 'MDL-86066')]
+    #[\core\attribute\deprecated(reason: 'It is no longer used', since: '5.1', mdl: 'MDL-86066', final: true)]
     public static function send_schedule_message(model $schedule, stdClass $user, stored_file $attachment): bool {
         \core\deprecation::emit_deprecation([self::class, __FUNCTION__]);
-
-        $message = new message();
-        $message->component = 'moodle';
-        $message->name = 'reportbuilderschedule';
-        $message->courseid = SITEID;
-        $message->userfrom = core_user::get_noreply_user();
-        $message->userto = $user;
-        $message->subject = $schedule->get('subject');
-        $message->fullmessage = $schedule->get('message');
-        $message->fullmessageformat = $schedule->get('messageformat');
-        $message->fullmessagehtml = $message->fullmessage;
-        $message->smallmessage = $message->fullmessage;
-
-        // Attach report to outgoing message.
-        $message->attachment = $attachment;
-        $message->attachname = $attachment->get_filename();
-
-        return (bool) message_send($message);
     }
 
     /**
@@ -389,7 +343,7 @@ class schedule {
     public static function get_format_options(): array {
         $dataformats = dataformat::get_enabled_plugins();
 
-        return array_map(static function(string $pluginname): string {
+        return array_map(static function (string $pluginname): string {
             return get_string('dataformat', 'dataformat_' . $pluginname);
         }, $dataformats);
     }
@@ -425,20 +379,10 @@ class schedule {
     }
 
     /**
-     * Return list of options for when report is empty
-     *
-     * @return string[]
-     *
      * @deprecated since Moodle 5.1 - please do not use this function any more
      */
-    #[\core\attribute\deprecated(reason: 'It is no longer used', since: '5.1', mdl: 'MDL-86066')]
+    #[\core\attribute\deprecated(reason: 'It is no longer used', since: '5.1', mdl: 'MDL-86066', final: true)]
     public static function get_report_empty_options(): array {
         \core\deprecation::emit_deprecation([self::class, __FUNCTION__]);
-
-        return [
-            0 => get_string('scheduleemptysendwithattachment', 'core_reportbuilder'),
-            1 => get_string('scheduleemptysendwithoutattachment', 'core_reportbuilder'),
-            2 => get_string('scheduleemptydontsend', 'core_reportbuilder'),
-        ];
     }
 }

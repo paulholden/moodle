@@ -1,0 +1,16 @@
+issueNumber: MDL-84439
+notes:
+  core_reportbuilder:
+    - message: >-
+        The implementation of the following deprecated schedule helper methods
+        has been removed:
+
+
+        * `create_schedule`
+
+        * `get_report_empty_options`
+
+        * `get_schedule_report_count`
+
+        * `send_schedule_message`
+      type: removed
