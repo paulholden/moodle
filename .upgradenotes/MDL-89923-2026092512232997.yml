@@ -1,0 +1,9 @@
+issueNumber: MDL-89923
+notes:
+  core_reportbuilder:
+    - message: >-
+        Report entity implementations of `get_deprecated_tables` can now return
+        both lists: `['t1', 't2']`, and associative arrays: `['t3' => 't1']`
+        within the same return structure to indicate deprecated tables and
+        optional replacements
+      type: fixed
