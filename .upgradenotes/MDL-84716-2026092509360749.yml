@@ -1,0 +1,9 @@
+issueNumber: MDL-84716
+notes:
+  core_reportbuilder:
+    - message: >-
+        The `/tests/helpers.php` file, containing aliased
+        `core_reportbuilder_testcase` class, has been removed. Tests should
+        instead use namespaced
+        `core_reportbuilder\tests\core_reportbuilder_testcase` class
+      type: removed
