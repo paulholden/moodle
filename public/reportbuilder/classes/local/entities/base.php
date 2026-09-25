@@ -31,7 +31,6 @@ use core_reportbuilder\local\report\{column, filter};
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class base {
-
     use join_trait;
 
     /** @var string|null $entityname Internal reference to name of entity */
@@ -67,7 +66,7 @@ abstract class base {
      * simply removing the table from {@see get_default_tables} you can override this method, which will emit developer debug
      *
      * Returns a simple list of table names, ['t1', 't2'] if they have no replacement; or ['t3' => 't1'] if an equivalent
-     * replacement table name exists, where 't3' replaces 't1'
+     * replacement table name exists, where 't3' replaces 't1'. Both forms can be used within the same return structure
      *
      * @return string[]
      */
@@ -179,8 +178,8 @@ abstract class base {
         if (($tablenamereplacement = array_search($tablename, $deprecatedtables)) !== false) {
             debugging("The table '{$tablename}' is deprecated, please do not use it any more.", DEBUG_DEVELOPER);
 
-            // An associative array contains the replacement table name as the key, so return that.
-            if (!array_is_list($deprecatedtables)) {
+            // A string key indicates the replacement table name for this deprecated entry, so return that.
+            if (is_string($tablenamereplacement)) {
                 return $tablenamereplacement;
             }
         }
