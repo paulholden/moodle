@@ -31,7 +31,6 @@ use core_reportbuilder\local\report\{column, filter};
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class base {
-
     use join_trait;
 
     /** @var string|null $entityname Internal reference to name of entity */
@@ -179,8 +178,8 @@ abstract class base {
         if (($tablenamereplacement = array_search($tablename, $deprecatedtables)) !== false) {
             debugging("The table '{$tablename}' is deprecated, please do not use it any more.", DEBUG_DEVELOPER);
 
-            // An associative array contains the replacement table name as the key, so return that.
-            if (!array_is_list($deprecatedtables)) {
+            // A string key indicates the replacement table name for this deprecated entry, so return that.
+            if (is_string($tablenamereplacement)) {
                 return $tablenamereplacement;
             }
         }
