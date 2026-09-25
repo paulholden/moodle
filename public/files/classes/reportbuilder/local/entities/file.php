@@ -36,7 +36,6 @@ use core_reportbuilder\local\report\{column, filter};
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class file extends base {
-
     /**
      * Database tables that this entity uses
      *
@@ -45,17 +44,6 @@ class file extends base {
     protected function get_default_tables(): array {
         return [
             'files',
-        ];
-    }
-
-    /**
-     * Database tables that this entity no longer uses
-     *
-     * @return string[]
-     */
-    protected function get_deprecated_tables(): array {
-        return [
-            'context',
         ];
     }
 
@@ -94,7 +82,7 @@ class file extends base {
             ->set_type(column::TYPE_INTEGER)
             ->add_field("{$filesalias}.filesize")
             ->add_field("CASE WHEN {$filesalias}.filename = '.' THEN 1 ELSE 0 END", 'directory')
-            ->add_callback(static function($filesize, stdClass $fileinfo): string {
+            ->add_callback(static function ($filesize, stdClass $fileinfo): string {
                 // Absent file size and/or directory should not return output.
                 if ($fileinfo->filesize === null || $fileinfo->directory) {
                     return '';
@@ -120,7 +108,7 @@ class file extends base {
             ->set_type(column::TYPE_TEXT)
             ->add_field("{$filesalias}.mimetype")
             ->add_field("CASE WHEN {$filesalias}.filename = '.' THEN 1 ELSE 0 END", 'directory')
-            ->add_callback(static function($mimetype, stdClass $fileinfo): string {
+            ->add_callback(static function ($mimetype, stdClass $fileinfo): string {
                 global $CFG;
                 require_once("{$CFG->libdir}/filelib.php");
 
@@ -145,7 +133,7 @@ class file extends base {
             ->add_field("CASE WHEN {$filesalias}.filename = '.' THEN 1 ELSE 0 END", 'directory')
             ->set_disabled_aggregation_all()
             ->set_is_sortable(false)
-            ->add_callback(static function($mimetype, stdClass $fileinfo): string {
+            ->add_callback(static function ($mimetype, stdClass $fileinfo): string {
                 global $CFG, $OUTPUT;
                 require_once("{$CFG->libdir}/filelib.php");
 
@@ -181,7 +169,7 @@ class file extends base {
         ))
             ->set_type(column::TYPE_TEXT)
             ->add_field("{$filesalias}.license")
-            ->add_callback(static function(?string $license): string {
+            ->add_callback(static function (?string $license): string {
                 global $CFG;
                 require_once("{$CFG->libdir}/licenselib.php");
 
@@ -194,7 +182,7 @@ class file extends base {
 
         // Content hash.
         $columns[] = (new column(
-             'contenthash',
+            'contenthash',
             new lang_string('contenthash', 'core_files'),
             $this->get_entity_name()
         ))
@@ -292,11 +280,11 @@ class file extends base {
             $this->get_entity_name(),
             "{$filesalias}.mimetype"
         ))
-            ->set_options_callback(static function(): array {
+            ->set_options_callback(static function (): array {
                 $mimetypenames = array_column(core_filetypes::get_types(), 'type');
 
                 // Convert the names into a map of name => description.
-                $mimetypes = array_combine($mimetypenames, array_map(static function(string $mimetype): string {
+                $mimetypes = array_combine($mimetypenames, array_map(static function (string $mimetype): string {
                     return get_mimetype_description($mimetype);
                 }, $mimetypenames));
 
@@ -321,13 +309,13 @@ class file extends base {
             $this->get_entity_name(),
             "COALESCE({$filesalias}.license, 'unknown')"
         ))
-            ->set_options_callback(static function(): array {
+            ->set_options_callback(static function (): array {
                 global $CFG;
                 require_once("{$CFG->libdir}/licenselib.php");
 
                 $licenses = license_manager::get_licenses();
 
-                return array_map(static function(stdClass $license): string {
+                return array_map(static function (stdClass $license): string {
                     return $license->fullname;
                 }, $licenses);
             });

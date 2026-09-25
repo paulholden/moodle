@@ -40,7 +40,6 @@ use stdClass;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class completion extends base {
-
     /**
      * Database tables that this entity uses
      *
@@ -50,20 +49,9 @@ class completion extends base {
         return [
             'course',
             'course_completions',
-            'grade_grades' ,
+            'grade_grades',
             'grade_items',
             'user',
-        ];
-    }
-
-    /**
-     * Database tables that this entity no longer uses
-     *
-     * @return string[]
-     */
-    protected function get_deprecated_tables(): array {
-        return [
-            'course_completions' => 'course_completion',
         ];
     }
 
@@ -123,7 +111,7 @@ class completion extends base {
             ->add_field("{$user}.id", 'userid')
             ->set_disabled_aggregation_all()
             ->set_is_sortable(false)
-            ->add_callback(static function($id, stdClass $record): string {
+            ->add_callback(static function ($id, stdClass $record): string {
                 if (!$record->courseid) {
                     return '';
                 }
@@ -136,7 +124,7 @@ class completion extends base {
                 }
 
                 // Map all completion data to their criteria summaries.
-                $items = array_map(static function(completion_criteria_completion $completion): string {
+                $items = array_map(static function (completion_criteria_completion $completion): string {
                     $criteria = $completion->get_criteria();
 
                     return get_string('criteriasummary', 'core_completion', [
@@ -253,7 +241,7 @@ class completion extends base {
             ")
             ->set_type(column::TYPE_FLOAT)
             ->add_fields("{$grade}.finalgrade")
-            ->add_callback(function(?float $value): string {
+            ->add_callback(static function (?float $value): string {
                 if ($value === null) {
                     return '';
                 }

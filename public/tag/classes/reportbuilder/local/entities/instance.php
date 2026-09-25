@@ -35,7 +35,6 @@ use core_reportbuilder\local\report\{column, filter};
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class instance extends base {
-
     /**
      * Database tables that this entity uses
      *
@@ -44,17 +43,6 @@ class instance extends base {
     protected function get_default_tables(): array {
         return [
             'tag_instance',
-        ];
-    }
-
-    /**
-     * Database tables that this entity no longer uses
-     *
-     * @return string[]
-     */
-    protected function get_deprecated_tables(): array {
-        return [
-            'context',
         ];
     }
 
@@ -80,12 +68,11 @@ class instance extends base {
             'area',
             new lang_string('tagarea', 'core_tag'),
             $this->get_entity_name()
-
         ))
             ->set_type(column::TYPE_TEXT)
             ->add_fields("{$instancealias}.component, {$instancealias}.itemtype")
             ->set_is_sortable(true, ["{$instancealias}.component", "{$instancealias}.itemtype"])
-            ->add_callback(static function($component, stdClass $area): string {
+            ->add_callback(static function ($component, stdClass $area): string {
                 if ($component === null) {
                     return '';
                 }
@@ -159,12 +146,14 @@ class instance extends base {
             $this->get_entity_name(),
             $DB->sql_concat("{$instancealias}.component", "'/'", "{$instancealias}.itemtype")
         ))
-            ->set_options_callback(static function(): array {
+            ->set_options_callback(static function (): array {
                 $options = [];
                 foreach (core_tag_area::get_areas() as $areas) {
                     foreach ($areas as $area) {
                         $options["{$area->component}/{$area->itemtype}"] = core_tag_area::display_name(
-                            $area->component, $area->itemtype);
+                            $area->component,
+                            $area->itemtype,
+                        );
                     }
                 }
 

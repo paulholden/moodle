@@ -1,0 +1,15 @@
+issueNumber: MDL-84713
+notes:
+  core_reportbuilder:
+    - message: >-
+        Support for deprecated table names in the following report entities has
+        been removed:
+
+
+        * `completion` entity `course_completion` table (use
+        `course_completions` table instead)
+
+        * `file` entity `context` table
+
+        * `instance` (tag) entity `context` table
+      type: removed
