@@ -30,7 +30,6 @@ use stdClass;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class completion {
-
     /**
      * Return completion progress as a percentage
      *
@@ -61,22 +60,10 @@ class completion {
     }
 
     /**
-     * Return number of days for methods daystakingcourse and daysuntilcompletion
-     *
-     * @param int|null $value
-     * @param stdClass $row
-     * @return int|null
-     *
      * @deprecated since Moodle 4.5 - please do not use this function any more
      */
-    #[\core\attribute\deprecated(null, mdl: 'MDL-82467', since: '4.5')]
+    #[\core\attribute\deprecated(reason: 'It is no longer used', mdl: 'MDL-82467', since: '4.5', final: true)]
     public static function get_days(?int $value, stdClass $row): ?int {
         \core\deprecation::emit_deprecation([self::class, __FUNCTION__]);
-
-        // Do not show anything if there is no userid.
-        if (!$row->userid) {
-            return null;
-        }
-        return $value;
     }
 }

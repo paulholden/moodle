@@ -18,9 +18,6 @@ declare(strict_types=1);
 
 namespace core_course\reportbuilder\local\formatters;
 
-use core\lang_string;
-use core_user\output\status_field;
-
 /**
  * Formatters for the course enrolment entity
  *
@@ -32,46 +29,18 @@ use core_user\output\status_field;
  */
 class enrolment {
     /**
-     * Returns list of enrolment statuses
-     *
-     * @return lang_string[]
-     *
      * @deprecated since Moodle 5.2 - please do not use this function any more
      */
-    #[\core\attribute\deprecated(reason: 'It is no longer used', since: '5.2', mdl: 'MDL-87000')]
+    #[\core\attribute\deprecated(reason: 'It is no longer used', since: '5.2', mdl: 'MDL-87000', final: true)]
     public static function enrolment_values(): array {
         \core\deprecation::emit_deprecation([self::class, __FUNCTION__]);
-
-        return [
-            status_field::STATUS_ACTIVE => new lang_string('participationactive', 'enrol'),
-            status_field::STATUS_SUSPENDED => new lang_string('participationsuspended', 'enrol'),
-            status_field::STATUS_NOT_CURRENT => new lang_string('participationnotcurrent', 'enrol'),
-        ];
     }
 
     /**
-     * Return enrolment status for user
-     *
-     * @param string|null $value
-     * @return string|null
-     *
      * @deprecated since Moodle 5.2 - please do not use this function any more
      */
-    #[\core\attribute\deprecated(reason: 'It is no longer used', since: '5.2', mdl: 'MDL-87000')]
+    #[\core\attribute\deprecated(reason: 'It is no longer used', since: '5.2', mdl: 'MDL-87000', final: true)]
     public static function enrolment_status(?string $value): ?string {
         \core\deprecation::emit_deprecation([self::class, __FUNCTION__]);
-
-        if ($value === null) {
-            return null;
-        }
-
-        $statusvalues = self::enrolment_values();
-
-        $value = (int) $value;
-        if (!array_key_exists($value, $statusvalues)) {
-            return null;
-        }
-
-        return (string) $statusvalues[$value];
     }
 }
