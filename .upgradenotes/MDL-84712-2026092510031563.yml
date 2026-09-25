@@ -1,0 +1,7 @@
+issueNumber: MDL-84712
+notes:
+  core_reportbuilder:
+    - message: >-
+        The implementation of the deprecated renderer `render_new_report_button`
+        method has been removed
+      type: removed
