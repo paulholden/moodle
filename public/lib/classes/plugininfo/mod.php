@@ -221,6 +221,10 @@ class mod extends base {
             return;
         }
 
+        // Cleanup the gradebook, while the course modules and their contexts still exist.
+        require_once("{$CFG->libdir}/gradelib.php");
+        grade_uninstalled_module($module->name);
+
         // Delete all the relevant instances from all course sections.
         if ($coursemods = $DB->get_records('course_modules', array('module' => $module->id))) {
             foreach ($coursemods as $coursemod) {
@@ -249,10 +253,6 @@ class mod extends base {
 
         // Delete the module entry itself.
         $DB->delete_records('modules', array('name' => $module->name));
-
-        // Cleanup the gradebook.
-        require_once($CFG->libdir.'/gradelib.php');
-        grade_uninstalled_module($module->name);
 
         // Do not look for legacy $module->name . '_uninstall any more,
         // they should have migrated to db/uninstall.php by now.
