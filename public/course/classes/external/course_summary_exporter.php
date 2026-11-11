@@ -14,22 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace core_course\external;
+
+use renderer_base;
+use moodle_url;
+use stdClass;
+
 /**
  * Class for exporting a course summary from an stdClass.
  *
  * @package    core_course
- * @copyright  2015 Damyon Wiese
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-namespace core_course\external;
-defined('MOODLE_INTERNAL') || die();
-
-use renderer_base;
-use moodle_url;
-
-/**
- * Class for exporting a course summary from an stdClass.
- *
  * @copyright  2015 Damyon Wiese
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -50,16 +44,19 @@ class course_summary_exporter extends \core\external\exporter {
 
     protected static function define_related() {
         // We cache the context so it does not need to be retrieved from the course.
-        return array('context' => '\\context', 'isfavourite' => 'bool?');
+        return ['context' => '\\context', 'isfavourite' => 'bool?', 'userid' => 'int?'];
     }
 
     protected function get_other_values(renderer_base $output) {
-        global $CFG;
+        global $CFG, $USER;
+
+        $userid = $this->related['userid'] ?: $USER->id;
+
         $courseimage = self::get_course_image($this->data);
         if (!$courseimage) {
             $courseimage = $output->get_generated_image_for_id($this->data->id);
         }
-        $progress = self::get_course_progress($this->data);
+        $progress = self::get_course_progress_for_user($this->data, $userid);
         $hasprogress = false;
         if ($progress === 0 || $progress > 0) {
             $hasprogress = true;
@@ -73,7 +70,7 @@ class course_summary_exporter extends \core\external\exporter {
             'progress' => $progress,
             'hasprogress' => $hasprogress,
             'isfavourite' => $this->related['isfavourite'],
-            'hidden' => boolval(get_user_preferences('block_myoverview_hidden_course_' . $this->data->id, 0)),
+            'hidden' => boolval(get_user_preferences('block_myoverview_hidden_course_' . $this->data->id, 0, $userid)),
             'showshortname' => $CFG->courselistshortnames ? true : false,
             'coursecategory' => $coursecategory->name
         );
@@ -211,11 +208,22 @@ class course_summary_exporter extends \core\external\exporter {
     /**
      * Get the course progress percentage.
      *
-     * @param object $course
-     * @return int progress
+     * @param stdClass $course
+     * @return null|float
      */
     public static function get_course_progress($course) {
-        return \core_completion\progress::get_course_progress_percentage($course);
+        return self::get_course_progress_for_user($course);
+    }
+
+    /**
+     * Get the course progress percentage for given user
+     *
+     * @param stdClass $course
+     * @param int $userid The user to calculate progress for, defaults to the current user
+     * @return null|float
+     */
+    public static function get_course_progress_for_user($course, int $userid = 0) {
+        return \core_completion\progress::get_course_progress_percentage($course, $userid);
     }
 
     /**

@@ -89,7 +89,10 @@ class user_competency_summary_in_course_exporter extends \core\external\exporter
             $this->related['course']->id);
 
         $context = context_course::instance($this->related['course']->id);
-        $exporter = new course_summary_exporter($this->related['course'], array('context' => $context));
+        $exporter = new course_summary_exporter($this->related['course'], [
+            'context' => $context,
+            'userid' => (int) $this->related['user']->id,
+        ]);
         $result->course = $exporter->export($output);
 
         $coursemodules = api::list_course_modules_using_competency($this->related['competency']->get('id'),
