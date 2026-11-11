@@ -533,9 +533,23 @@ define([
 
             // Show it if it is hidden.
             Aria.unhide(suggestionsElement.get());
+            // Use fixed positioning so the suggestions are not clipped by any scrolling ancestor of the input.
             Popper.createPopper(inputElement[0], suggestionsElement[0], {
                 placement: 'bottom-start',
-                modifiers: [{name: 'flip', enabled: false}],
+                strategy: 'fixed',
+                modifiers: [
+                    {name: 'flip', enabled: false},
+                    {
+                        // The suggestions should be at least as wide as the input.
+                        name: 'minWidth',
+                        enabled: true,
+                        phase: 'beforeWrite',
+                        requires: ['computeStyles'],
+                        fn: ({state}) => {
+                            state.styles.popper.minWidth = `${state.rects.reference.width}px`;
+                        },
+                    },
+                ],
             });
 
             // For each option in the list, hide it if it doesn't match the query.

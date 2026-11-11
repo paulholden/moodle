@@ -40394,7 +40394,6 @@ div.editor_atto_toolbar button .icon {
   width: 27rem;
   padding: 0 0 4rem 0;
   z-index: 1055;
-  overflow: hidden;
 }
 @media (max-width: 767.98px) {
   .reportbuilder-wrapper .filters-dropdown {
@@ -40620,10 +40619,6 @@ div.editor_atto_toolbar button .icon {
 .reportbuilder-sidebar-settings div[data-region=settings-conditions] .reportbuilder-conditions-select .form-autocomplete-input,
 .reportbuilder-sidebar-settings div[data-region=settings-filters] .reportbuilder-filters-select .form-autocomplete-input {
   width: 100%;
-}
-.reportbuilder-sidebar-settings div[data-region=settings-conditions] .reportbuilder-conditions-select .form-autocomplete-suggestions,
-.reportbuilder-sidebar-settings div[data-region=settings-filters] .reportbuilder-filters-select .form-autocomplete-suggestions {
-  width: calc(100% - 2 * 0.5rem);
 }
 .reportbuilder-sidebar-settings .list-group-item {
   padding: 0.75rem;
