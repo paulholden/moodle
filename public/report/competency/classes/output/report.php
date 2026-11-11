@@ -90,7 +90,7 @@ class report implements renderable, templatable {
 
         $course = $DB->get_record('course', array('id' => $this->courseid));
         $coursecontext = context_course::instance($course->id);
-        $exporter = new course_summary_exporter($course, array('context' => $coursecontext));
+        $exporter = new course_summary_exporter($course, ['context' => $coursecontext, 'userid' => (int) $this->userid]);
         $coursecompetencysettings = api::read_course_competency_settings($course->id);
         $data->pushratingstouserplans = $coursecompetencysettings->get('pushratingstouserplans');
         $data->course = $exporter->export($output);

@@ -1,0 +1,15 @@
+issueNumber: MDL-89830
+notes:
+  core_course:
+    - message: >-
+        The `course_summary_exporter` accepts an optional `?int $userid`
+        attribute in it's related data structure, to specify for which user
+        course progress should be obtained for (defaults to the current user). A
+        new method on the exporter has been added to additionally facilitate that:
+        `get_course_progress_for_user()`
+      type: changed
+    - message: >-
+        The `course_summary_exporter::get_course_progress()` method has been
+        deprecated, use the new `::get_course_progress_for_user()` method in
+        it's place
+      type: deprecated
