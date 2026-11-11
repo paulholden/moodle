@@ -4421,11 +4421,15 @@ class core_course_external extends external_api {
 
         $renderer = $PAGE->get_renderer('core');
 
-        $recentcourses = array_map(function($course) use ($renderer) {
+        $recentcourses = array_map(function ($course) use ($renderer, $userid) {
             context_helper::preload_from_record($course);
             $context = context_course::instance($course->id);
             $isfavourite = !empty($course->component);
-            $exporter = new course_summary_exporter($course, ['context' => $context, 'isfavourite' => $isfavourite]);
+            $exporter = new course_summary_exporter($course, [
+                'context' => $context,
+                'isfavourite' => $isfavourite,
+                'userid' => (int) $userid,
+            ]);
             return $exporter->export($renderer);
         }, $courses);
 
