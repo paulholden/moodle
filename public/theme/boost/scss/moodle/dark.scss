@@ -144,12 +144,17 @@
     // colour. In light mode the link colour is just dark enough against the body text to qualify on contrast alone
     // (3.07:1), but no colour can manage that on a dark page: a link needs 3:1 against the body text and 4.5:1
     // against the surface behind it, and on dark those two ranges do not overlap. So prose links are underlined.
+    // Buttons are told apart by their own fill and border, but .btn-link has neither and renders as a plain link,
+    // whether it is an <a> or a <button>.
     #page-header,
     #region-main,
     #page-footer,
     .block_html .card-text {
-        a:not(.btn):not(.nav-link):not(.dropdown-item):not(.list-group-item):not(.page-link) {
-            text-decoration: underline;
+        a:not(.btn:not(.btn-link)),
+        button.btn-link {
+            &:not(.nav-link):not(.dropdown-item):not(.list-group-item):not(.page-link) {
+                text-decoration: underline;
+            }
         }
     }
 
