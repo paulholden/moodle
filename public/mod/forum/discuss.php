@@ -280,7 +280,7 @@ if (!$post = $postvault->get_from_id($parent)) {
 }
 
 if (!$capabilitymanager->can_view_post($USER, $discussion, $post)) {
-    throw new \moodle_exception('noviewdiscussionspermission', 'forum', "$CFG->wwwroot/mod/forum/view.php?id={$forum->get_id()}");
+    throw new \moodle_exception('noviewdiscussionspermission', 'forum', "$CFG->wwwroot/mod/forum/view.php?f={$forum->get_id()}");
 }
 
 $istracked = forum_tp_is_tracked($forumrecord, $USER);
