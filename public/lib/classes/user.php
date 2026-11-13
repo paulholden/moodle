@@ -752,7 +752,7 @@ class user {
             'default' => $CFG->country,
             'choices' => array_merge(
                 ['' => ''],
-                get_string_manager()->get_list_of_countries(true, true)
+                get_string_manager()->get_list_of_countries(true),
             ),
         ];
         $fields['lang'] = [
