@@ -2741,6 +2741,12 @@ require([
 
                     // This handles both randomised (MDL-65217) and non-randomised IDs.
                     $errorid = preg_replace('/^id_/', 'id_error_', $elem->_attributes['id']);
+
+                    // Multiple select elements are submitted as an array, alongside a hidden element without the suffix.
+                    if (in_array($elem->getType(), ['select', 'autocomplete']) && $elem->getMultiple()) {
+                        $elementName .= '[]';
+                    }
+
                     $validateJS .= '
       ret = validate_' . $this->_formName . '_' . $escapedElementName.'(frm.elements[\''.$elementName.'\'], \''.$escapedElementName.'\') && ret;
       if (!ret && !first_focus) {
