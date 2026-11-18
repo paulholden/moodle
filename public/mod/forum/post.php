@@ -145,7 +145,7 @@ if (!empty($forum)) {
             if (!is_enrolled($coursecontext)) {
                 if (enrol_selfenrol_available($course->id)) {
                     $SESSION->wantsurl = qualified_me();
-                    $SESSION->enrolcancel = get_local_referer(false);
+
                     redirect(new moodle_url('/enrol/index.php', array('id' => $course->id,
                         'returnurl' => '/mod/forum/view.php?f=' . $forum->id)),
                         get_string('youneedtoenrol'));
@@ -218,7 +218,7 @@ if (!empty($forum)) {
         if (!isguestuser()) {
             if (!is_enrolled($coursecontext)) {  // User is a guest here!
                 $SESSION->wantsurl = qualified_me();
-                $SESSION->enrolcancel = get_local_referer(false);
+
                 redirect(new moodle_url('/enrol/index.php', array('id' => $course->id,
                     'returnurl' => '/mod/forum/view.php?f=' . $forum->id)),
                     get_string('youneedtoenrol'));

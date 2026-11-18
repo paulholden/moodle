@@ -1,0 +1,7 @@
+issueNumber: MDL-90649
+notes:
+  core_enrol:
+    - message: >-
+        Activity modules no longer populate defunct `$SESSION->enrolcancel`
+        property - the last usage of which was removed many years ago
+      type: removed
