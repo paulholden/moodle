@@ -26,6 +26,7 @@ $font-size-xs: ($font-size-base * .75) !default;
     }
     --#{$prefix}collapse-list-item-hover-bg: #{shift-color($info, -90%)};
     --#{$prefix}collapse-list-item-hover-border: #{shift-color($info, -70%)};
+    --#{$prefix}primary-light-bg: #{$primary-light-background};
     // The fill and the underline of the accessible link focus style below.
     --#{$prefix}link-focus-bg: #{lighten($primary, 50%)};
     --#{$prefix}link-focus-underline: #{$gray-800};
@@ -272,7 +273,7 @@ button.btn-close,
 }
 
 .bg-primary-light {
-    background-color: $primary-light-background;
+    background-color: var(--#{$prefix}primary-light-bg);
 }
 
 .fitem.advanced .text-info {
