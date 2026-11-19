@@ -292,10 +292,13 @@ define([
                 type: series.getType(),
                 fill: series.getFill(),
                 backgroundColor: colors,
-                // Pie charts look better without borders.
-                borderColor: this._chart.getType() == Pie.prototype.TYPE ? '#fff' : colors,
                 tension: this._isSmooth(series) ? 0.3 : 0
             };
+
+            // Pie charts look better with borders matching the page background, which is the Chart.js default.
+            if (this._chart.getType() != Pie.prototype.TYPE) {
+                dataset.borderColor = colors;
+            }
 
             if (series.getXAxis() !== null) {
                 dataset.xAxisID = makeAxisId('x', series.getXAxis());
