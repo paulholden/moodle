@@ -125,6 +125,7 @@
     }
     --#{$prefix}collapse-list-item-hover-bg: #{shade-color($info, 70%)};
     --#{$prefix}collapse-list-item-hover-border: #{shade-color($info, 40%)};
+    --#{$prefix}primary-light-bg: #{shade-color($primary, 70%)};
 
     // The link focus fill carries body text, so it is shaded rather than tinted, the same as the state tints above.
     // The underline is what marks the focus out against the page, since a fill dark enough to take light text cannot

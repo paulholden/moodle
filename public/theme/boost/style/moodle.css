@@ -30060,6 +30060,7 @@ textarea.form-control-lg {
   --bs-state-danger-border: #efc1bc;
   --bs-collapse-list-item-hover-bg: #e6f2f5;
   --bs-collapse-list-item-hover-border: #b3d9e0;
+  --bs-primary-light-bg: #e7f0f9;
   --bs-link-focus-bg: #d2e8fb;
   --bs-link-focus-underline: #343a40;
 }
@@ -30300,7 +30301,7 @@ button.btn-close:focus:hover,
 }
 
 .bg-primary-light {
-  background-color: #e7f0f9;
+  background-color: var(--bs-primary-light-bg);
 }
 
 .fitem.advanced .text-info {
@@ -53885,6 +53886,7 @@ input[type=button].btn-block {
   --bs-state-danger-border: #791d13;
   --bs-collapse-list-item-hover-bg: #00272d;
   --bs-collapse-list-item-hover-border: #004d5a;
+  --bs-primary-light-bg: #052039;
   --bs-link-focus-bg: #083660;
   --bs-link-focus-underline: #dee2e6;
 }
