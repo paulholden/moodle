@@ -1,0 +1,8 @@
+issueNumber: MDL-90665
+notes:
+  theme_boost:
+    - message: >-
+        Styles previously referring to the `$primary-light-background` variable
+        should now instead use `var(--#{$prefix}primary-light-bg)`, ensuring the
+        layout is responsive to the current page colour mode (e.g. dark mode)
+      type: improved
