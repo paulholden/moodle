@@ -36959,7 +36959,7 @@ body.editing#page-course-learningoutcomes .activity-item:hover:not(:has(.activit
 }
 .modchoosercontent .optionscontainer .option.selected {
   border: 2px solid #0f6cbf;
-  background-color: #e7f0f9;
+  background-color: var(--bs-primary-light-bg);
 }
 .modchoosercontent .optionscontainer .option:not(.selected):hover {
   background-color: var(--bs-gray-100);
