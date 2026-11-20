@@ -244,7 +244,7 @@
 
         &.selected {
             border: 2px solid $primary;
-            background-color: $primary-light-background;
+            background-color: var(--#{$prefix}primary-light-bg);
         }
 
         &:not(.selected):hover {
