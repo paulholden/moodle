@@ -168,7 +168,7 @@ Feature: Set question bank column order and size
     And I navigate to "Plugins > Question bank plugins > Question custom fields" in site administration
     And I choose the "Delete" item in the "Actions" action menu of the "Category for test" "core_customfield > Category header"
     And I click on "Yes" "button" in the "Confirm" "dialogue"
-    And I should not see "Category for test" in the "#customfield_catlist" "css_element"
+    And "Category for test" "core_customfield > Category" should not exist
     And I am on the "Test quiz Q001" "mod_quiz > question bank" page logged in as "teacher1"
     And I apply question bank filter "Category" with value "Question category 1"
     And I should see "Question bank"
