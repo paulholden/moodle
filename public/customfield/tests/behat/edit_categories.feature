@@ -8,10 +8,8 @@ Feature: Managers can manage categories for course custom fields
     Given I log in as "admin"
     When I navigate to "Courses > Default settings > Course custom fields" in site administration
     And I press "Add a new category"
-    And I wait until the page is ready
-    Then I should see "Other fields" in the "#customfield_catlist" "css_element"
+    Then "Other fields" "core_customfield > Category" should exist
     And "Category added." "toast_message" should exist
-    And I wait until "Category added." "toast_message" does not exist
     And I navigate to "Reports > Logs" in site administration
     And I press "Get these logs"
 
@@ -39,9 +37,8 @@ Feature: Managers can manage categories for course custom fields
     And I log in as "admin"
     And I navigate to "Courses > Default settings > Course custom fields" in site administration
     And I set the field "Edit category name" in the "//div[contains(@class,'categoryinstance') and contains(.,'Category for test')]" "xpath_element" to "Good fields"
-    Then I should not see "Category for test" in the "#customfield_catlist" "css_element"
-    And "New value for Category for test" "field" should not exist
-    And I should see "Good fields" in the "#customfield_catlist" "css_element"
+    Then "Category for test" "core_customfield > Category" should not exist
+    And "Good fields" "core_customfield > Category" should exist
     And I navigate to "Reports > Logs" in site administration
     And I press "Get these logs"
 
@@ -56,9 +53,7 @@ Feature: Managers can manage categories for course custom fields
     And I navigate to "Courses > Default settings > Course custom fields" in site administration
     And I choose the "Delete" item in the "Actions" action menu of the "Category for test" "core_customfield > Category header"
     And I click on "Yes" "button" in the "Confirm" "dialogue"
-    And I wait until the page is ready
-    And I wait until "Test category" "text" does not exist
-    Then I should not see "Test category" in the "#customfield_catlist" "css_element"
+    Then "Category for test" "core_customfield > Category" should not exist
     And I navigate to "Reports > Logs" in site administration
     And I press "Get these logs"
 

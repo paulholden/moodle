@@ -68,7 +68,7 @@
 {{{alert}}}
 
 <div class="customfield-category-list"
-    id="customfield_catlist"
+    id="customfield_catlist-{{uniqid}}"
     data-region="list-page"
     data-component="{{component}}"
     data-area="{{area}}"
@@ -108,7 +108,7 @@
 
 {{#js}}
     require(['core_customfield/form', 'core_customfield/toggle_shared'], function(s, toggle) {
-        s.init();
+        s.init('customfield_catlist-{{uniqid}}');
         toggle.init();
     });
 {{/js}}
