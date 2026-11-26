@@ -30,6 +30,7 @@ import {
 import {add as addToast} from 'core/toast';
 import * as Repository from 'core_customfield/repository';
 import ModalForm from 'core_form/modalform';
+import {eventTypes as inplaceEditableEvents} from 'core/local/inplace_editable/events';
 import Notification from 'core/notification';
 import Pending from 'core/pending';
 import SortableList from 'core/sortable_list';
@@ -240,13 +241,22 @@ const editField = (element, component, area, itemid) => {
  * @returns {String}
  */
 const getCategoryNameFor = nodeElement => nodeElement
-    .closest('[data-category-id]')
-    .attr('data-category-name');
+    .closest('[data-category-id]').attr('data-category-name');
+
+/**
+ * Set the category name for an inplace editable, given a child node of that field.
+ *
+ * @param {NodeElement} nodeElement
+ * @param {String} newName
+ */
+const setCategoryNameFor = (nodeElement, newName) => nodeElement
+    .closest('[data-category-id]').attr('data-category-name', newName);
 
 const setupSortableLists = rootNode => {
+
     // Sort category.
     const sortCat = new SortableList(
-        '#customfield_catlist .categorieslist',
+        `#${rootNode.id} .categorieslist`,
         {
             moveHandlerSelector: '.movecategory [data-drag-type=move]',
         }
@@ -254,7 +264,7 @@ const setupSortableLists = rootNode => {
     sortCat.getElementName = nodeElement => Promise.resolve(getCategoryNameFor(nodeElement));
 
     // Note: The sortable list currently uses jQuery events.
-    jQuery('[data-category-id]').on(SortableList.EVENTS.DROP, (evt, info) => {
+    jQuery(`#${rootNode.id} [data-category-id]`).on(SortableList.EVENTS.DROP, (evt, info) => {
         if (info.positionChanged) {
             const pendingPromise = new Pending('core_customfield/form:categoryid:on:sortablelist-drop');
             fetchMany([{
@@ -273,7 +283,7 @@ const setupSortableLists = rootNode => {
 
     // Sort fields.
     var sort = new SortableList(
-        '#customfield_catlist .fieldslist tbody',
+        `#${rootNode.id} .fieldslist tbody`,
         {
             moveHandlerSelector: '.movefield [data-drag-type=move]',
         }
@@ -290,7 +300,7 @@ const setupSortableLists = rootNode => {
         }
     };
 
-    jQuery('[data-field-name]').on(SortableList.EVENTS.DROP, (evt, info) => {
+    jQuery(`#${rootNode.id} [data-field-name]`).on(SortableList.EVENTS.DROP, (evt, info) => {
         if (info.positionChanged) {
             const pendingPromise = new Pending('core_customfield/form:fieldname:on:sortablelist-drop');
             fetchMany([{
@@ -307,7 +317,7 @@ const setupSortableLists = rootNode => {
         evt.stopPropagation(); // Important for nested lists to prevent multiple targets.
     });
 
-    jQuery('[data-field-name]').on(SortableList.EVENTS.DRAG, evt => {
+    jQuery(`#${rootNode.id} [data-field-name]`).on(SortableList.EVENTS.DRAG, evt => {
         var pendingPromise = new Pending('core_customfield/form:fieldname:on:sortablelist-drag');
 
         evt.stopPropagation(); // Important for nested lists to prevent multiple targets.
@@ -332,22 +342,22 @@ const setupSortableLists = rootNode => {
         .catch(Notification.exception);
     });
 
-    jQuery('[data-category-id], [data-field-name]').on(SortableList.EVENTS.DRAGSTART, (evt, info) => {
-        setTimeout(() => {
-            jQuery('.sortable-list-is-dragged').width(info.element.width());
-        }, 501);
-    });
+    jQuery(`#${rootNode.id} [data-category-id], #${rootNode.id} [data-field-name]`)
+        .on(SortableList.EVENTS.DRAGSTART, (evt, info) => {
+            setTimeout(() => {
+                jQuery('.sortable-list-is-dragged').width(info.element.width());
+            }, 501);
+        });
 };
 
 /**
  * Initialise the custom fields manager.
+ *
+ * @param {String} rootNodeId
  */
-export const init = () => {
-    const rootNode = document.querySelector('#customfield_catlist');
-
-    const component = rootNode.dataset.component;
-    const area = rootNode.dataset.area;
-    const itemid = rootNode.dataset.itemid;
+export const init = rootNodeId => {
+    const rootNode = document.getElementById(rootNodeId);
+    const {component, area, itemid} = rootNode.dataset;
 
     rootNode.addEventListener('click', e => {
         const roleHolder = e.target.closest('[data-role]');
@@ -406,4 +416,12 @@ export const init = () => {
     });
 
     setupSortableLists(rootNode, component, area, itemid);
+
+    // Initialize inplace editable listeners for categories.
+    document.addEventListener(inplaceEditableEvents.elementUpdated, e => {
+        const categoryElement = e.target.closest('[data-category-id]');
+        if (categoryElement) {
+            setCategoryNameFor(jQuery(categoryElement), e.detail.ajaxreturn.displayvalue);
+        }
+    });
 };

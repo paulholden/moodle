@@ -8,13 +8,11 @@ Feature: Create shared categories and fields
     Given I log in as "admin"
     When I navigate to "Custom fields > Shared custom fields" in site administration
     And I press "Add a new category"
-    And I wait until the page is ready
-    Then I should see "Other fields" in the "#customfield_catlist" "css_element"
+    Then "Other fields" "core_customfield > Category" should exist
     And "Category added." "toast_message" should exist
     And I choose the "Delete" item in the "Actions" action menu of the "Other fields" "core_customfield > Category header"
     And I click on "Yes" "button" in the "Confirm" "dialogue"
-    And I wait until the page is ready
-    And I wait until "Other fields" "text" does not exist
+    And "Other fields" "core_customfield > Category" should not exist
 
   @accessibility
   Scenario: Create categories for shared custom fields using keyboard
@@ -26,11 +24,11 @@ Feature: Create shared categories and fields
     And I press the tab key
     And the focused element is "Add a new category" "button"
     When I press the space key
-    Then I wait until "Other fields" "text" exists
+    Then "Other fields" "core_customfield > Category" should exist
     And I press the tab key
     And the focused element is "Add a new category" "button"
     And I press enter
-    And I wait until "Other fields 1" "text" exists
+    And "Other fields 1" "core_customfield > Category" should exist
     And the "region-main" "region" should meet accessibility standards with "best-practice" extra tests
 
   Scenario: Shared custom field short name must be unique across all instance fields
@@ -73,11 +71,11 @@ Feature: Create shared categories and fields
       | Shared field 1  | My shared category | text | f1        |
     And I log in as "admin"
     And I navigate to "Courses > Default settings > Course custom fields" in site administration
-    Then I should see "My shared category" in the "#customfield_catlist" "css_element"
-    And I should see "Shared field 1" in the "#customfield_catlist" "css_element"
+    Then "My shared category" "core_customfield > Category" should exist
+    And I should see "Shared field 1" in the "My shared category" "core_customfield > Category"
     And I navigate to "Users > Accounts > Cohort custom fields" in site administration
-    And I should see "My shared category" in the "#customfield_catlist" "css_element"
-    And I should see "Shared field 1" in the "#customfield_catlist" "css_element"
+    And "My shared category" "core_customfield > Category" should exist
+    And I should see "Shared field 1" in the "My shared category" "core_customfield > Category"
 
   Scenario: Shared custom fields cannot be reordered, edited or deleted from other entities
     Given the following "custom field categories" exist:
