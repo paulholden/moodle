@@ -9,7 +9,7 @@ Feature: Site administrators can manage categories for question custom fields
     When I navigate to "Plugins > Question bank plugins > Question custom fields" in site administration
     And I press "Add a new category"
     And I wait until the page is ready
-    Then I should see "Other fields" in the "#customfield_catlist" "css_element"
+    Then "Other fields" "core_customfield > Category" should exist
 
   Scenario: Edit a category name for custom question fields
     Given the following "custom field categories" exist:
@@ -18,9 +18,8 @@ Feature: Site administrators can manage categories for question custom fields
     And I log in as "admin"
     And I navigate to "Plugins > Question bank plugins > Question custom fields" in site administration
     And I set the field "Edit category name" in the "//div[contains(@class,'categoryinstance') and contains(.,'Category for test')]" "xpath_element" to "Good fields"
-    Then I should not see "Category for test" in the "#customfield_catlist" "css_element"
-    And "New value for Category for test" "field" should not exist
-    And I should see "Good fields" in the "#customfield_catlist" "css_element"
+    Then "Category for test" "core_customfield > Category" should not exist
+    And "Good fields" "core_customfield > Category" should exist
 
   Scenario: Delete a category for custom question fields
     Given the following "custom field categories" exist:
@@ -33,9 +32,7 @@ Feature: Site administrators can manage categories for question custom fields
     And I navigate to "Plugins > Question bank plugins > Question custom fields" in site administration
     And I choose the "Delete" item in the "Actions" action menu of the "Category for test" "core_customfield > Category header"
     And I click on "Yes" "button" in the "Confirm" "dialogue"
-    And I wait until the page is ready
-    And I wait until "Test category" "text" does not exist
-    Then I should not see "Test category" in the "#customfield_catlist" "css_element"
+    Then "Category for test" "core_customfield > Category" should not exist
 
   Scenario: Move field in the question custom fields to another category
     Given the following "custom field categories" exist:

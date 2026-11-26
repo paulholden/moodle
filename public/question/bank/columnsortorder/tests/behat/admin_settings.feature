@@ -144,7 +144,7 @@ Feature: Set default question bank column order and size
     And I navigate to "Plugins > Question bank plugins > Question custom fields" in site administration
     And I choose the "Delete" item in the "Actions" action menu of the "Category for test" "core_customfield > Category header"
     And I click on "Yes" "button" in the "Confirm" "dialogue"
-    And I should not see "Category for test" in the "#customfield_catlist" "css_element"
+    And "Category for test" "core_customfield > Category" should not exist
     And I navigate to "Plugins > Question bank plugins > Column sort order" in site administration
     And I should see "Column sort order"
 
