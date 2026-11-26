@@ -50,16 +50,18 @@
             {{/canmovecategories}}
             <h3 class="h4 ms-2 mb-0">{{{nameeditable}}}</h3>
         </div>
+        {{/usescategories}}
         <div class="ms-auto d-flex align-items-center gap-2">
             {{{addfieldmenu}}}
-            {{{actionsmenu}}}
-            {{#toggle}}
-            <div class="ms-auto" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}} sharedcategoryhelptext, customfield {{/str}}">
-                {{{.}}}
-            </div>
-            {{/toggle}}
+            {{#usescategories}}
+                {{{actionsmenu}}}
+                {{#toggle}}
+                <div class="ms-auto" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}} sharedcategoryhelptext, customfield {{/str}}">
+                    {{{.}}}
+                </div>
+                {{/toggle}}
+            {{/usescategories}}
         </div>
-        {{/usescategories}}
     </div>
     <div class="card-body p-0">
         <table class="table generaltable table-striped table-hover mb-0 {{#canedit}}fieldslist{{/canedit}}">

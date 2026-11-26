@@ -162,7 +162,7 @@ class management implements renderable, templatable {
             'itemid' => $itemid,
             'usescategories' => $this->handler->uses_categories(),
             'hascategories' => $movablecategoriescount > 0,
-            'hassharedcategories' => $movablecategoriescount < count($categoriesdata),
+            'hassharedcategories' => $this->handler->uses_categories() && $movablecategoriescount < count($categoriesdata),
             'categories' => $categoriesdata,
             'canmovecategories' => $movablecategoriescount > 1,
             'canmovefields' => $movablefieldscount > 1 || $movablecategoriescount > 1,
